@@ -19,8 +19,8 @@ export default function Deploy() {
     const [step, setStep] = useState(1);
 
     const [tick, setTick] = useState('')
-    const [amount, setAmount] = useState(21000000);
-    const [limit, setLimit] = useState(1);
+    const [amount, setAmount] = useState('21000000');
+    const [limit, setLimit] = useState('1');
     const [rAddress, setRAddress] = useState('');
     const [feeType, setFeeType] = useState('normal');
     const [isModalShow, setIsModalShow] = useState(false);
