@@ -1,10 +1,15 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
     Divider,
     FormControl,
     FormLabel,
     FormErrorMessage,
     Input,
+    Slider,
+    SliderTrack,
+    SliderFilledTrack,
+    SliderThumb,
+    SliderMark,
     NumberInput,
     NumberInputField,
     NumberInputStepper,
@@ -15,6 +20,12 @@ import {
 import FeeType from "./FeeType";
 import PayModal from "./PayModal";
 
+const feeTypeMap: { [k: string]: string } = {
+    'economy': '28',
+    'normal': '30',
+    'custom': '32',
+};
+
 export default function Deploy() {
     const [step, setStep] = useState(1);
 
@@ -23,7 +34,13 @@ export default function Deploy() {
     const [limit, setLimit] = useState('1');
     const [rAddress, setRAddress] = useState('');
     const [feeType, setFeeType] = useState('normal');
+    const [customFee, setCustomFee] = useState(feeTypeMap['custom']);
+    const [fee, setFee] = useState('29');
     const [isModalShow, setIsModalShow] = useState(false);
+
+    useEffect(() => {
+        setFee(feeTypeMap[feeType])
+    }, [feeType])
 
     const [isTickError, setIsTickError] = useState(false);
     const [isAmountError, setIsAmountError] = useState(false);
@@ -136,7 +153,7 @@ export default function Deploy() {
                     <div className='mb-4'>
                         <FormControl>
                             <FormLabel htmlFor='raddress'>You are about to inscribe {amount} brc-20. </FormLabel>
-                            <pre className="px-2 py-2 bg-gray-500 rounded ">{JSON.stringify({
+                            <pre className="px-2 py-2 bg-gray-500 rounded break-all whitespace-break-spaces">{JSON.stringify({
                                 p: 'brc-20',
                                 op: 'deploy',
                                 tick: tick,
@@ -159,11 +176,31 @@ export default function Deploy() {
                     <div className='mb-4'>
                         <FormControl>
                             <FormLabel htmlFor='amount'>Network Fee</FormLabel>
-                            <div className="flex justify-between">
-                                <div><FeeType type="Economy" amount={29} focus={feeType === 'economy'} onClick={() => setFeeType('economy')} /></div>
-                                <div><FeeType type="Normal" amount={29} focus={feeType === 'normal'} onClick={() => setFeeType('normal')} /></div>
-                                <div><FeeType type="Custom" amount={29} focus={feeType === 'custom'} onClick={() => setFeeType('custom')} /></div>
+                            <div className="mb-4 flex justify-between">
+                                <div><FeeType type="Economy" amount={Number(feeTypeMap['economy'])} focus={feeType === 'economy'} onClick={() => setFeeType('economy')} /></div>
+                                <div><FeeType type="Normal" amount={Number(feeTypeMap['normal'])} focus={feeType === 'normal'} onClick={() => setFeeType('normal')} /></div>
+                                <div><FeeType type="Custom" amount={Number(customFee)} focus={feeType === 'custom'} onClick={() => setFeeType('custom')} /></div>
                             </div>
+                            {
+                                feeType === 'custom' && <div className="mb-4 flex">
+                                    <Slider className="flex-auto" aria-label='slider-ex-1' focusThumbOnChange={false} value={Number(customFee)} onChange={(val) => setCustomFee(val.toString())}>
+                                        <SliderTrack>
+                                            <SliderFilledTrack />
+                                        </SliderTrack>
+                                        <SliderThumb />
+                                    </Slider>
+                                    <div className="w-24 ml-4">
+                                        <NumberInput defaultValue={1} min={1} value={customFee} onChange={(value) => setCustomFee(value)}>
+                                            <NumberInputField />
+                                            <NumberInputStepper>
+                                                <NumberIncrementStepper />
+                                                <NumberDecrementStepper />
+                                            </NumberInputStepper>
+                                        </NumberInput>
+                                    </div>
+
+                                </div>
+                            }
                         </FormControl>
                     </div>
 
