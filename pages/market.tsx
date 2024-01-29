@@ -1,8 +1,11 @@
 
+
+import PlaceHolder from "@/components/PlaceHolder";
+
 export default function Market() {
     return (
         <div className={`flex min-h-screen flex-col`}>
-            this is market page
+            <PlaceHolder text="Market Page is under heavy developement" />
         </div>
     )
 }
