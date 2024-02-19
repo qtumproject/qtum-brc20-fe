@@ -1,7 +1,7 @@
 import {
     Radio, RadioGroup, Stack
 } from '@chakra-ui/react'
-import { useState, useEffect } from "react";
+import { useState, useEffect,useRef } from "react";
 import Mint from '@/components/Mint';
 import Deploy from '@/components/Deploy';
 import { axios } from '@/utils';
