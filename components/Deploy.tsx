@@ -18,7 +18,7 @@ import {
     Button,
 } from '@chakra-ui/react'
 import FeeType from "./FeeType";
-import PayModal from "./PayModal";
+// import PayModal from "./PayModal";
 
 const feeTypeMap: { [k: string]: string } = {
     'economy': '28',
@@ -243,7 +243,7 @@ export default function Deploy() {
                 </div>
             }
 
-            <PayModal isShow={isModalShow} />
+            {/* <PayModal isShow={isModalShow} /> */}
 
         </>
     )
