@@ -4,9 +4,18 @@ import {
 import { useState, useEffect } from "react";
 import Mint from '@/components/Mint';
 import Deploy from '@/components/Deploy';
+import { axios } from '@/utils';
 
 export default function Inscribe() {
     const [value, setValue] = useState('mint');
+    
+    useEffect(() => {
+        const getFee = async () => {
+            const res = await axios.get('https://mempool.space/api/v1/fees/recommended');
+            console.log('res', res)
+        }
+        getFee();
+    }, [])
 
     return (
         <div className={`flex min-h-screen flex-col items-center`}>
