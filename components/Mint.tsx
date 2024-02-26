@@ -19,6 +19,7 @@ import {
 } from '@chakra-ui/react'
 import FeeType from "./FeeType";
 import PayModal from "./PayModal";
+import { log } from "console";
 
 const feeTypeMap: { [k: string]: string } = {
     'economy': '28',
@@ -26,11 +27,11 @@ const feeTypeMap: { [k: string]: string } = {
     'custom': '32',
 }
 
-// interface IProps {
-//     privkey: string,
-// }
+interface IProps {
+    bitcoinPrice: number,
+}
 
-export default function Mint() {
+export default function Mint({ bitcoinPrice }: IProps) {
 
     const encodedAddressPrefix = 'main';// TODO replace qtum
     const [step, setStep] = useState(1);
@@ -41,6 +42,8 @@ export default function Mint() {
     const [feeType, setFeeType] = useState('normal');
     const [customFee, setCustomFee] = useState(feeTypeMap['custom']);
     const [fee, setFee] = useState('29');
+    const [totalFees, setTotalFees] = useState(0);
+    const [totalDollarFees, setTotalDollarFees] = useState(0);
     const [isModalShow, setIsModalShow] = useState(false);
 
     const [isTickError, setIsTickError] = useState(false);
@@ -68,9 +71,47 @@ export default function Mint() {
 
 
     useEffect(() => {
-        setFee(feeTypeMap[feeType])
+        setFee(feeTypeMap[feeType]);
     }, [feeType])
 
+    async function getTotalFee(totalFees: number, bitcoinPrice: number) {
+        const dollarFee = await satsToDollars(totalFees, bitcoinPrice);
+        console.log('dollarFee change', dollarFee)
+        setTotalDollarFees(dollarFee);
+    }
+
+    const calcTotalFees = async (customFee: string, fee: string, mint: object, bitcoinPrice: number) => {
+        console.log('===============')
+        let totalFee = 0;
+        let totalFees = 0;
+        if (mint && fee) {
+            const hex = textToHex(JSON.stringify(mint));
+            const data = hexToBytes(hex);
+            let prefix = 160;
+            let txsize = prefix + Math.floor(data.length / 4);
+            if (feeType === 'custom') {
+                fee = customFee;
+            }
+            let feeTemp = Number(fee) * txsize;
+            totalFee += feeTemp;
+
+            let baseSize = 160;
+            let padding = 546;
+            let repeat = 1;
+            totalFees += totalFee + ((69 + (repeat + 1) * 2) * 31 + 10) * Number(fee);
+            totalFees += baseSize * repeat;
+            totalFees += padding * repeat;
+        }
+
+        setTotalFees(totalFees);
+        const dollarFee = await satsToDollars(totalFee, bitcoinPrice);
+        setTotalDollarFees(Number(Number(dollarFee).toFixed(2)));
+
+    }
+
+    useEffect(() => {
+        calcTotalFees(customFee, fee, mint, bitcoinPrice);
+    }, [customFee, fee, mint, bitcoinPrice])
 
     const validForm = () => {
         let valid = true;
@@ -103,6 +144,14 @@ export default function Mint() {
             valid = false;
         }
         return valid;
+    }
+
+    async function satsToDollars(sats: number, bitcoinPrice: number) {
+        if (sats >= 100000000) sats = sats * 10;
+        let bitcoin_price = bitcoinPrice;
+        console.log('mint comp bitcoinprice is', bitcoinPrice)
+        let value_in_dollars = Number(String(sats).padStart(8, "0").slice(0, -9) + "." + String(sats).padStart(8, "0").slice(-9)) * bitcoin_price;
+        return value_in_dollars;
     }
 
     function buf2hex(buffer: any) { // buffer is an ArrayBuffer
@@ -246,7 +295,9 @@ export default function Mint() {
 
         console.log('Address that will receive the inscription:', rAddress);
 
-        const total_fees = 1000;
+        const total_fees = total_fee;
+
+        setTotalFees(total_fees)
 
         let qr_value = "bitcoin:" + fundingAddress + "?amount=" + satsToBitcoin(total_fees);
         console.log("qr:", qr_value);
@@ -254,13 +305,7 @@ export default function Mint() {
         const qrimg = createQR(qr_value);
         setQrImg(qrimg as any);
 
-        
-
     }
-
-    // useEffect(() => {
-    //     transfer();
-    // }, [])
 
     const handleSubmit = () => {
         const valid = validSecondForm();
@@ -366,20 +411,11 @@ export default function Mint() {
 
                         </FormControl>
                     </div >
-
+                    <Divider className="mb-4" />
                     <div className="mb-4">
                         <div className="mb-4 flex justify-between">
                             <div className="">Network Fee</div>
-                            <div>123 sats = $0.99</div>
-                        </div>
-                        <div className="mb-4 flex justify-between">
-                            <div className="">Service Fee</div>
-                            <div>123 sats = $0.99</div>
-                        </div>
-                        <Divider className="mb-4" />
-                        <div className="mb-4 flex justify-between">
-                            <div className="">Total Fee</div>
-                            <div>123 sats = $0.99</div>
+                            <div>{totalFees} sats = ${totalDollarFees}</div>
                         </div>
                     </div>
 
@@ -407,8 +443,12 @@ export default function Mint() {
             }
 
 
-            <PayModal isShow={isModalShow} fundingAddress={fundingAddress} close={() => setIsModalShow(false)}>
-                {qrImg}    
+            <PayModal
+                isShow={isModalShow}
+                fundingAddress={fundingAddress}
+                totalPay={totalFees}
+                close={() => setIsModalShow(false)}>
+                {qrImg}
             </PayModal>
 
         </>

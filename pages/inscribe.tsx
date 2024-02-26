@@ -1,25 +1,112 @@
 import {
     Radio, RadioGroup, Stack
 } from '@chakra-ui/react'
-import { useState, useEffect,useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import Mint from '@/components/Mint';
 import Deploy from '@/components/Deploy';
 import { axios } from '@/utils';
 
 export default function Inscribe() {
     const [value, setValue] = useState('mint');
-    
+    const [bitcoinPrice, setBitcoinPrice] = useState(0);
+
+    function getData(url: string) {
+        return new Promise(async function (resolve, reject) {
+            function inner_get(url: string) {
+                let xhttp = new XMLHttpRequest();
+                xhttp.open("GET", url, true);
+                xhttp.send();
+                return xhttp;
+            }
+
+            let data = inner_get(url);
+            data.onerror = function (e) {
+                resolve("error");
+            }
+
+            async function isResponseReady() {
+                return new Promise(function (resolve2, reject) {
+                    if (!data.responseText || data.readyState != 4) {
+                        setTimeout(async function () {
+                            let msg = await isResponseReady();
+                            resolve2(msg);
+                        }, 1);
+                    } else {
+                        resolve2(data.responseText);
+                    }
+                });
+            }
+
+            let returnable = await isResponseReady();
+            resolve(returnable);
+        });
+    }
+
+    async function getBitcoinPriceFromCoinbase() {
+        let data = await getData("https://api.coinbase.com/v2/prices/BTC-USD/spot");
+        try {
+            let json = JSON.parse(data as any);
+            let price = json["data"]["amount"];
+            return price;
+        } catch (e) {
+            console.error(e);
+        }
+
+        return 0;
+    }
+
+    async function getBitcoinPriceFromKraken() {
+        let data = await getData("https://api.kraken.com/0/public/Ticker?pair=XBTUSD");
+        let json = JSON.parse(data as any);
+        let price = json["result"]["XXBTZUSD"]["a"][0];
+        return price;
+    }
+
+    async function getBitcoinPriceFromCoindesk() {
+        let data = await getData("https://api.coindesk.com/v1/bpi/currentprice.json");
+        let json = JSON.parse(data as any);
+        let price = json["bpi"]["USD"]["rate_float"];
+        return price;
+    }
+
+    async function getBitcoinPriceFromGemini() {
+        let data = await getData("https://api.gemini.com/v2/ticker/BTCUSD");
+        let json = JSON.parse(data as any);
+        let price = json["bid"];
+        return price;
+    }
+
+    async function getBitcoinPriceFromBybit() {
+        let data = await getData("https://api-testnet.bybit.com/derivatives/v3/public/order-book/L2?category=linear&symbol=BTCUSDT");
+        let json = JSON.parse(data as any);
+        let price = json["result"]["b"][0][0];
+        return price;
+    }
+
     useEffect(() => {
         const getFee = async () => {
             const res = await axios.get('https://mempool.space/api/v1/fees/recommended');
             console.log('res', res)
         }
+        const getBitcoinPrice = async () => {
+            let prices = [];
+            let cbprice = await getBitcoinPriceFromCoinbase();
+            let kprice = await getBitcoinPriceFromKraken();
+            let cdprice = await getBitcoinPriceFromCoindesk();
+            let gprice = await getBitcoinPriceFromGemini();
+            let bprice = await getBitcoinPriceFromBybit();
+            prices.push(Number(cbprice), Number(kprice), Number(cdprice), Number(gprice), Number(bprice));
+            prices.sort();
+            setBitcoinPrice(prices[2]);
+            console.log('current bitcoin price is: ', prices[2])
+        }
         getFee();
-    }, [])
+        getBitcoinPrice();
+    }, []);
 
     return (
         <div className={`flex min-h-screen flex-col items-center`}>
-            <div className={`w-2/5 flex flex-col items-center rounded-md py-10 px-8`} style={{ backgroundColor: "rgba(255,255,255,0.2)" }}>
+            <div className={`w-2/5 flex flex-col items-center rounded-md py-10 px-8 min-w-[670px]`} style={{ backgroundColor: "rgba(255,255,255,0.2)" }}>
                 <div className={`font-bold mb-4`}>Inscribe  QBRC20</div>
                 <div className='w-full'>
                     <div className='mb-4 text-center'>
@@ -32,7 +119,7 @@ export default function Inscribe() {
                     </div>
 
                     {
-                        value === "mint" && <Mint />
+                        value === "mint" && <Mint bitcoinPrice={bitcoinPrice} />
                     }
 
                     {
