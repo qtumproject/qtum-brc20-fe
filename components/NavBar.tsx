@@ -15,22 +15,24 @@ export default function NavBar() {
     const router = useRouter();
     const tabIndex = navList.findIndex((nav) => nav.path === router.pathname)
 
-    return <div className={`header-wrap flex items-center h-16 bg-black text-white px-10`} style={{ background: "#090808", borderBottom: "1px solid hsla(0,0%,100%,.06)" }}>
-        <div className={`text-x font-bold`}>QBRC-20</div>
+    return <div className={`header-wrap flex items-center h-[5.5625rem] px-10`} style={{ borderBottom: "1px solid hsla(0,0%,100%,.06)" }}>
+        <div className={`text-x font-bold mr-[10.75rem]`}>
+            <img className="w-[15rem] h-[2.375rem] shrink-0" src="./logo.svg" alt="logo" />
+        </div>
         <div className={`tab-nav px-8`}>
             <Tabs position="relative" variant="unstyled" index={tabIndex}>
                 <TabList>
                     {navList.map((nav) => <Link key={nav.name} href={nav.path}>
-                        <Tab>{nav.name}</Tab>
+                        <Tab _selected={{ color: '#2d73ff' }}>{nav.name}</Tab>
                     </Link>)}
                 </TabList>
                 <TabIndicator
-                    mt="0"
-                    height="2px"
-                    bg="white"
+                    mt="-1.5px"
+                    height="1px"
+                    bg="#2d73ff"
                     borderRadius="1px"
                 />
             </Tabs>
         </div>
-    </div>
+    </div >
 }
