@@ -12,9 +12,9 @@ export default function Home() {
                     <img className="absolute top-[267px] right-[-74px] w-[148px] h-[148px]" src="./banner-r.png" alt="banner-right" />
                 </div>
                 <div className="relative ml-[165px] mt-[267px]">
-                    <p className="text-[68px] ">What's</p>
+                    <p className="text-[68px] ">What&apos;s</p>
                     <p className="text-[68px] ">QBRC20</p>
-                    <p className="mb-[30px]">Explanation 01-Some alternative descriptive text</p>
+                    <p className="mb-[30px] mt-[50px]">Explanation 01-Some alternative descriptive text</p>
                     <p className="mb-[30px]">Explanation 01-Some alternative descriptive text</p>
                     <p>Explanation 01-Some alternative descriptive text</p>
                     <img className="absolute left-[260px] top-[90px] w-[66px] h-[100px]" src="./banner-q.png" alt="banner-q.png" />
