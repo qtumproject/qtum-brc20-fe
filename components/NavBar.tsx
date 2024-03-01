@@ -17,7 +17,7 @@ export default function NavBar() {
 
     return <div className={`header-wrap flex items-center h-[5.5625rem] px-10`} style={{ borderBottom: "1px solid hsla(0,0%,100%,.06)" }}>
         <div className={`text-x font-bold mr-[10.75rem]`}>
-            <img className="w-[15rem] h-[2.375rem] shrink-0" src="./logo.svg" alt="logo" />
+            <img src="./logo.svg" alt="logo" />
         </div>
         <div className={`tab-nav px-8`}>
             <Tabs position="relative" variant="unstyled" index={tabIndex}>
