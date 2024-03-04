@@ -1,14 +1,11 @@
-
-import PlaceHolder from "@/components/PlaceHolder";
-
 export default function Home() {
     return (
-        <div className={`flex min-h-screen flex-col`}>
+        <div className={`flex min-h-screen flex-col mx-auto	w-[1200px]`}>
 
-            <div className="px-[120px] flex mb-[80px]">
+            <div className="flex mb-[80px]">
                 <div className="relative inline-block">
                     <img className="absolute top-[80px] left-[-105px] w-[230px] h-[230px]" src="./banner-l.png" alt="banner-left" />
-                    <img className="w-[680px] h-[880px]" src="./home-banner.png" alt="banner" />
+                    <img width={680} height={880} src="./home-banner.png" alt="banner" />
                     <img className="absolute top-[267px] right-[-74px] w-[148px] h-[148px]" src="./banner-r.png" alt="banner-right" />
                 </div>
                 <div className="relative ml-[165px] mt-[267px]">
@@ -22,13 +19,72 @@ export default function Home() {
                 </div>
             </div>
 
-            <div className="px-[120px] py-[80px]">
-                <h1 className="text-[68px] mb-[40px]">Parteners.</h1>
+            <div className="py-[80px]">
+                <h1 className="text-[68px] mb-[40px]">Partners.</h1>
                 <div className="flex-grow border-t border-gray-400"></div>
-
+                <div className="flex justify-between flex-wrap">
+                    <div className="flex items-center px-[20px] py-[30px] align-center w-[208px] h-[106px] rounded-[12px] border-2 border-[#E7E7E1] hover:border-[#2D73FF] bg-white mt-[40px]">
+                        <img src="https://filecoin.io/images/filecoin-logo.svg" alt="" width={20} className="mr-[4px]" />
+                        <span className="text-[30px]">Filecoin</span>
+                    </div>
+                    <div className="flex items-center px-[20px] py-[30px] align-center w-[208px] h-[106px] rounded-[12px] border-2 border-[#E7E7E1] hover:border-[#2D73FF] bg-white mt-[40px]">
+                        <img src="https://filecoin.io/images/filecoin-logo.svg" alt="" width={20} className="mr-[4px]" />
+                        <span className="text-[30px]">Filecoin</span>
+                    </div>
+                    <div className="flex items-center px-[20px] py-[30px] align-center w-[208px] h-[106px] rounded-[12px] border-2 border-[#E7E7E1] hover:border-[#2D73FF] bg-white mt-[40px]">
+                        <img src="https://filecoin.io/images/filecoin-logo.svg" alt="" width={20} className="mr-[4px]" />
+                        <span className="text-[30px]">Filecoin</span>
+                    </div>
+                    <div className="flex items-center px-[20px] py-[30px] align-center w-[208px] h-[106px] rounded-[12px] border-2 border-[#E7E7E1] hover:border-[#2D73FF] bg-white mt-[40px]">
+                        <img src="https://filecoin.io/images/filecoin-logo.svg" alt="" width={20} className="mr-[4px]" />
+                        <span className="text-[30px]">Filecoin</span>
+                    </div>
+                    <div className="flex items-center px-[20px] py-[30px] align-center w-[208px] h-[106px] rounded-[12px] border-2 border-[#E7E7E1] hover:border-[#2D73FF] bg-white mt-[40px]">
+                        <img src="https://filecoin.io/images/filecoin-logo.svg" alt="" width={20} className="mr-[4px]" />
+                        <span className="text-[30px]">Filecoin</span>
+                    </div>
+                    <div className="flex items-center px-[20px] py-[30px] align-center w-[208px] h-[106px] rounded-[12px] border-2 border-[#E7E7E1] hover:border-[#2D73FF] bg-white mt-[40px]">
+                        <img src="https://filecoin.io/images/filecoin-logo.svg" alt="" width={20} className="mr-[4px]" />
+                        <span className="text-[30px]">Filecoin</span>
+                    </div>
+                    <div className="flex items-center px-[20px] py-[30px] align-center w-[208px] h-[106px] rounded-[12px] border-2 border-[#E7E7E1] hover:border-[#2D73FF] bg-white mt-[40px]">
+                        <img src="https://filecoin.io/images/filecoin-logo.svg" alt="" width={20} className="mr-[4px]" />
+                        <span className="text-[30px]">Filecoin</span>
+                    </div>
+                    <div className="flex items-center px-[20px] py-[30px] align-center w-[208px] h-[106px] rounded-[12px] border-2 border-[#E7E7E1] hover:border-[#2D73FF] bg-white mt-[40px]">
+                        <img src="https://filecoin.io/images/filecoin-logo.svg" alt="" width={20} className="mr-[4px]" />
+                        <span className="text-[30px]">Filecoin</span>
+                    </div>
+                    <div className="flex items-center px-[20px] py-[30px] align-center w-[208px] h-[106px] rounded-[12px] border-2 border-[#E7E7E1] hover:border-[#2D73FF] bg-white mt-[40px]">
+                        <img src="https://filecoin.io/images/filecoin-logo.svg" alt="" width={20} className="mr-[4px]" />
+                        <span className="text-[30px]">Filecoin</span>
+                    </div>
+                    <div className="flex items-center px-[20px] py-[30px] align-center w-[208px] h-[106px] rounded-[12px] border-2 border-[#E7E7E1] hover:border-[#2D73FF] bg-white mt-[40px]">
+                        <img src="https://filecoin.io/images/filecoin-logo.svg" alt="" width={20} className="mr-[4px]" />
+                        <span className="text-[30px]">Filecoin</span>
+                    </div>
+                    <div className="flex items-center px-[20px] py-[30px] align-center w-[208px] h-[106px] rounded-[12px] border-2 border-[#E7E7E1] hover:border-[#2D73FF] bg-white mt-[40px]">
+                        <img src="https://filecoin.io/images/filecoin-logo.svg" alt="" width={20} className="mr-[4px]" />
+                        <span className="text-[30px]">Filecoin</span>
+                    </div>
+                    <div className="flex items-center px-[20px] py-[30px] align-center w-[208px] h-[106px] rounded-[12px] border-2 border-[#E7E7E1] hover:border-[#2D73FF] bg-white mt-[40px]">
+                        <img src="https://filecoin.io/images/filecoin-logo.svg" alt="" width={20} className="mr-[4px]" />
+                        <span className="text-[30px]">Filecoin</span>
+                    </div>
+                    <div className="flex items-center px-[20px] py-[30px] align-center w-[208px] h-[106px] rounded-[12px] border-2 border-[#E7E7E1] hover:border-[#2D73FF] bg-white mt-[40px]">
+                        <img src="https://filecoin.io/images/filecoin-logo.svg" alt="" width={20} className="mr-[4px]" />
+                        <span className="text-[30px]">Filecoin</span>
+                    </div>
+                    <div className="flex items-center px-[20px] py-[30px] align-center w-[208px] h-[106px] rounded-[12px] border-2 border-[#E7E7E1] hover:border-[#2D73FF] bg-white mt-[40px]">
+                        <img src="https://filecoin.io/images/filecoin-logo.svg" alt="" width={20} className="mr-[4px]" />
+                        <span className="text-[30px]">Filecoin</span>
+                    </div>
+                    <div className="flex items-center px-[20px] py-[30px] align-center w-[208px] h-[106px] rounded-[12px] border-2 border-[#E7E7E1] hover:border-[#2D73FF] bg-white mt-[40px]">
+                        <img src="https://filecoin.io/images/filecoin-logo.svg" alt="" width={20} className="mr-[4px]" />
+                        <span className="text-[30px]">Filecoin</span>
+                    </div>
+                </div>
             </div>
-
-            <PlaceHolder text="Home Page is under heavy development" />
         </div>
     )
 }
