@@ -422,7 +422,6 @@ export default function Mint({ bitcoinPrice }: IProps) {
                         <Button
                             mt={4}
                             width='236px'
-                            colorScheme='brandPrimary'
                             variant='outline'
                             className='mr-8'
                             onClick={() => setStep(1)}

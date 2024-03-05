@@ -17,10 +17,27 @@ const brandPrimary = defineStyle({
       color: 'white',
     }
   })
+
+  const round = defineStyle({
+    background: '#2D73FF',
+    color: 'white',
+    borderRadius: 'full',
+  
+    // let's also provide dark mode alternatives
+    _dark: {
+      background: '#2D73FF',
+      color: 'white',
+    }
+  })
+
+  const link = defineStyle({
+    color: 'black',
+  })
+
   
 
 export const buttonTheme = defineStyleConfig({
-  variants: { brandPrimary,  outline},
+  variants: { brandPrimary, outline, round, link },
   defaultProps: {
     size: 'lg', // default is md
   },

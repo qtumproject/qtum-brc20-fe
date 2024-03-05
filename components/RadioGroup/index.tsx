@@ -5,26 +5,32 @@ import {
 import RadioCard from './RadioCard';
 
 interface IProps {
+  options: string[],
+  defaultValue: string,
+  name: string,
   onChange: Function,
 }
 
-export default function RadioGroup({ onChange }: IProps) {
+export default function RadioGroup({
+  options,
+  name = 'opType',
+  defaultValue = '',
+  onChange }: IProps) {
 
-  const options = ['Mint', 'Deploy']
   const handleChange = (val: string) => {
     onChange(val);
   }
 
   const { getRootProps, getRadioProps } = useRadioGroup({
-    name: 'opType',
-    defaultValue: 'Mint',
+    name: name,
+    defaultValue: defaultValue,
     onChange: handleChange,
   })
 
   const group = getRootProps()
 
   return (
-    <HStack {...group} className='bg-[#F3F3F0] h-12 rounded-xl p-1.5'>
+    <HStack {...group} className='bg-[#F3F3F0] flex h-12 rounded-xl p-1.5'>
       {options.map((value) => {
         const radio = getRadioProps({ value })
         return (

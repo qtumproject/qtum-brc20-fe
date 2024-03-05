@@ -3,7 +3,7 @@ interface IProps {
 }
 
 export default function PlaceHolder({ text }: IProps) {
-    return <div className="flex items-center justify-center font-bold h-96">
+    return <div className="flex items-center justify-center font-bold">
         {text}
     </div>
 }

@@ -10,13 +10,14 @@ export default function RadioCard(props: any) {
   const checkbox = getRadioProps()
 
   return (
-    <Box as='label' className='block w-[340px] h-9 leading-9'>
+    <Box as='label' className='block flex-1 h-9 leading-9'>
       <input {...input} />
       <Box
         {...checkbox}
         cursor='pointer'
         borderWidth='0'
         borderRadius='md'
+        className='text-center'
         _checked={{
           bg: 'white',
           color: '#2d73ff',
