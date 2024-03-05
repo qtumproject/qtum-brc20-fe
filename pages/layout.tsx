@@ -21,7 +21,7 @@ export default function Layout({ children }: {
                 <script src="lib/qrcode.js" defer></script>
             </Head>
             <NavBar></NavBar>
-            <div style={{ background: '#F7F7F0', paddingTop: "80px" }}>{children}</div >
+            <div className='bg-[#F7F7F0] pt-[80px] min-h-[calc(100vh_-_185px)] pb-20'>{children}</div >
             <Footer />
         </>
     )

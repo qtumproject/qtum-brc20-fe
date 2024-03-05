@@ -137,8 +137,8 @@ export default function Deploy() {
                     <div className='mb-4 text-center'>
                         <Button
                             mt={4}
-                            width='200px'
-                            colorScheme='yellow'
+                            width='400px'
+                            variant='brandPrimary'
                             type='submit'
                             onClick={() => { handleGoNext() }}
                         >
@@ -146,14 +146,13 @@ export default function Deploy() {
                         </Button>
                     </div>
 
-                </div>
+                </div >
             }
             {
                 step === 2 && <div>
                     <div className='mb-4'>
                         <FormControl>
-                            <FormLabel htmlFor='raddress'>You are about to inscribe {amount} brc-20. </FormLabel>
-                            <pre className="px-2 py-2 bg-gray-500 rounded break-all whitespace-break-spaces">{JSON.stringify({
+                            <pre className="py-[16px] rounded-[12px] pl-[16px] bg-[#F3F3F0] break-all whitespace-break-spaces">{JSON.stringify({
                                 p: 'brc-20',
                                 op: 'deploy',
                                 tick: tick,
@@ -204,18 +203,10 @@ export default function Deploy() {
                         </FormControl>
                     </div>
 
+                    <Divider className="mb-4" />
                     <div className="mb-4">
                         <div className="mb-4 flex justify-between">
                             <div className="">Network Fee</div>
-                            <div>123 sats = $0.99</div>
-                        </div>
-                        <div className="mb-4 flex justify-between">
-                            <div className="">Service Fee</div>
-                            <div>123 sats = $0.99</div>
-                        </div>
-                        <Divider className="mb-4" />
-                        <div className="mb-4 flex justify-between">
-                            <div className="">Total Fee</div>
                             <div>123 sats = $0.99</div>
                         </div>
                     </div>
@@ -223,8 +214,7 @@ export default function Deploy() {
                     <div className='mb-4 text-center'>
                         <Button
                             mt={4}
-                            width='200px'
-                            colorScheme='yellow'
+                            width='236px'
                             variant='outline'
                             className='mr-10'
                             onClick={() => setStep(1)}
@@ -233,8 +223,8 @@ export default function Deploy() {
                         </Button>
                         <Button
                             mt={4}
-                            width='200px'
-                            colorScheme='yellow'
+                            width='236px'
+                            variant='brandPrimary'
                             onClick={() => handleSubmit()}
                         >
                             Submit&Pay

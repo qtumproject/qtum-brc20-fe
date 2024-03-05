@@ -19,7 +19,6 @@ import {
 } from '@chakra-ui/react'
 import FeeType from "./FeeType";
 import PayModal from "./PayModal";
-import { log } from "console";
 
 const feeTypeMap: { [k: string]: string } = {
     'economy': '28',
@@ -350,9 +349,9 @@ export default function Mint({ bitcoinPrice }: IProps) {
                     <div className='mb-4 text-center'>
                         <Button
                             mt={4}
-                            width='200px'
-                            colorScheme='yellow'
-                            type='submit'
+                            width='400px'
+                            type="submit"
+                            variant='brandPrimary'
                             onClick={() => { handleGoNext() }}
                         >
                             Next
@@ -365,8 +364,7 @@ export default function Mint({ bitcoinPrice }: IProps) {
                 step === 2 && <div>
                     <div className='mb-4'>
                         <FormControl>
-                            <FormLabel htmlFor='raddress'>You are about to inscribe {amount} brc-20. </FormLabel>
-                            <pre className="px-2 py-2 bg-gray-500 rounded break-all whitespace-break-spaces	">{JSON.stringify(mint)} </pre>
+                            <pre className="py-[16px] rounded-[12px] pl-[16px] bg-[#F3F3F0] break-all whitespace-break-spaces">{JSON.stringify(mint)} </pre>
                         </FormControl>
                     </div>
                     <div className='mb-4'>
@@ -376,6 +374,7 @@ export default function Mint({ bitcoinPrice }: IProps) {
                                 id='raddress'
                                 placeholder='input your receiving address'
                                 value={rAddress}
+                                variant='outline'
                                 onChange={(e) => setRAddress(e.target.value)} />
                             {isRAddressError && <FormErrorMessage>invalid receive address</FormErrorMessage>}
                         </FormControl>
@@ -413,7 +412,7 @@ export default function Mint({ bitcoinPrice }: IProps) {
                     </div >
                     <Divider className="mb-4" />
                     <div className="mb-4">
-                        <div className="mb-4 flex justify-between">
+                        <div className="mb-4 flex justify-between bg-[#F3F3F0] p-4 rounded-[12px]">
                             <div className="">Network Fee</div>
                             <div>{totalFees} sats = ${totalDollarFees}</div>
                         </div>
@@ -422,18 +421,18 @@ export default function Mint({ bitcoinPrice }: IProps) {
                     <div className='mb-4 text-center'>
                         <Button
                             mt={4}
-                            width='200px'
-                            colorScheme='yellow'
+                            width='236px'
+                            colorScheme='brandPrimary'
                             variant='outline'
-                            className='mr-10'
+                            className='mr-8'
                             onClick={() => setStep(1)}
                         >
                             Back
                         </Button>
                         <Button
                             mt={4}
-                            width='200px'
-                            colorScheme='yellow'
+                            width='236px'
+                            variant='brandPrimary'
                             onClick={() => handleSubmit()}
                         >
                             Submit&Pay

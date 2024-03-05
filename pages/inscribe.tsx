@@ -1,13 +1,15 @@
 import {
-    Radio, RadioGroup, Stack
+    Radio, Stack
 } from '@chakra-ui/react'
 import { useState, useEffect, useRef } from "react";
 import Mint from '@/components/Mint';
 import Deploy from '@/components/Deploy';
 import { axios } from '@/utils';
+import RadioGroup from "../components/RadioGroup";
+
 
 export default function Inscribe() {
-    const [value, setValue] = useState('mint');
+    const [value, setValue] = useState('Mint');
     const [bitcoinPrice, setBitcoinPrice] = useState(0);
 
     function getData(url: string) {
@@ -105,25 +107,26 @@ export default function Inscribe() {
     }, []);
 
     return (
-        <div className={`flex min-h-screen flex-col items-center`}>
-            <div className={`w-2/5 flex flex-col items-center rounded-md py-10 px-8 min-w-[670px]`} style={{ backgroundColor: "rgba(255,255,255,0.2)" }}>
-                <div className={`font-bold mb-4`}>Inscribe  QBRC20</div>
-                <div className='w-full'>
+        <div className={`flex flex-col items-center`}>
+            <div className={`font-bold mb-[40px] text-[40px]`}>Inscribe  QBRC20</div>
+            <div className={`flex flex-col items-center py-10 px-8 bg-white w-[1024px] rounded-[12px] shadow-lg`}>
+                <div className='w-[680px]'>
                     <div className='mb-4 text-center'>
-                        <RadioGroup onChange={setValue} value={value}>
+                        {/* <RadioGroup onChange={setValue} value={value}>
                             <Stack direction='row'>
                                 <Radio value='mint'>Mint</Radio>
                                 <Radio value='deploy'>Deploy</Radio>
                             </Stack>
-                        </RadioGroup>
+                        </RadioGroup> */}
+                        <RadioGroup onChange={setValue} />
                     </div>
 
                     {
-                        value === "mint" && <Mint bitcoinPrice={bitcoinPrice} />
+                        value === "Mint" && <Mint bitcoinPrice={bitcoinPrice} />
                     }
 
                     {
-                        value === "deploy" && <Deploy />
+                        value === "Deploy" && <Deploy />
                     }
                 </div>
             </div>

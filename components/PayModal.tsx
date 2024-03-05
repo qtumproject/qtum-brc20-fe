@@ -35,19 +35,15 @@ export default function PayModal({ isShow, children, fundingAddress, totalPay, c
                     <ModalHeader>Scan QR code to pay</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody pb={6}>
-                        <div className='m-auto flex justify-center w-60' ref={(node) => { node && node.appendChild(children) }}></div>
-                        <div className='mt-4 text-center'>
-                            Total Pay: {totalPay} sats
+                        <div className='m-auto flex justify-center w-[170px] h-[170px]' ref={(node) => { node && node.appendChild(children) }}></div>
+                        <div className='mb-4 text-center'>
+                            Payment amount: {totalPay} sats
                         </div>
-                        <Input className='mt-4' isDisabled={true} variant='outline' placeholder='Outline' value={fundingAddress} />
+                        <div className='mt-4 bg-[#F3F3F0] p-4 rounded-xl'>{fundingAddress} </div >
+                        <div className='mt-4 text-[#D2311B] text-center'>
+                            Please stay on the current page before completing the transfer
+                        </div>
                     </ModalBody>
-
-                    <ModalFooter>
-                        <Button colorScheme='blue' mr={3} onClick={onClose}>
-                            Close
-                        </Button>
-                        <Button variant='ghost'>Confirm</Button>
-                    </ModalFooter>
                 </ModalContent>
             </Modal>
         </>
