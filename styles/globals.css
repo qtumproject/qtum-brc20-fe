@@ -25,3 +25,12 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+
+@font-face {
+  font-family: "Outfit";
+  src: url("../assets/fonts/Outfit-Bold.ttf");
+}
+@font-face {
+  font-family: "DMsans";
+  src: url("../assets/fonts/DMSans-Regular.ttf");
+}

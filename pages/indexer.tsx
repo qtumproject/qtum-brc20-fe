@@ -21,7 +21,7 @@ export default function Indexer() {
     const [page, setPage] = useState(0);
     return (
         <div className={`flex flex-col items-center px-6`}>
-            <div className={`font-bold mb-[40px] text-[40px] mt-[-40px]`}>Inscribe  QBRC20</div>
+            <div className={`font-bold mb-[40px] text-[40px] mt-[-40px] font-[Outfit] font-medium`}>QBRC20 List</div>
             <div className={`flex flex-col items-center py-10 px-8 bg-white w-[1024px] rounded-[12px] shadow-lg`}>
                 <div className='w-[680px] mb-8'>
                     <InputGroup>

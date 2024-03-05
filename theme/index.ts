@@ -12,6 +12,9 @@ const config: ThemeConfig = {
 
 const theme = extendTheme({ 
   config,
+  fonts: {
+    body: 'DMsans'
+  },
   components: { 
     Button: buttonTheme,
     Input: inputTheme,

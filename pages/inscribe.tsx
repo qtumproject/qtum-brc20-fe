@@ -108,7 +108,7 @@ export default function Inscribe() {
 
     return (
         <div className={`flex flex-col items-center`}>
-            <div className={`font-bold mb-[40px] text-[40px] mt-[-40px]`}>Inscribe  QBRC20</div>
+            <div className={`font-bold mb-[40px] text-[40px] mt-[-40px] font-[Outfit] font-medium`}>Inscribe  QBRC20</div>
             <div className={`flex flex-col items-center py-10 px-8 bg-white w-[1024px] rounded-[12px] shadow-lg`}>
                 <div className='w-[680px]'>
                     <div className='mb-4 text-center'>

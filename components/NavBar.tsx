@@ -23,7 +23,7 @@ export default function NavBar() {
             <Tabs position="relative" variant="unstyled" index={tabIndex}>
                 <TabList>
                     {navList.map((nav) => <Link key={nav.name} href={nav.path}>
-                        <Tab _selected={{ color: '#2d73ff' }}>{nav.name}</Tab>
+                        <Tab _selected={{ color: '#2d73ff', fontWeight: 800 }}>{nav.name}</Tab>
                     </Link>)}
                 </TabList>
                 <TabIndicator
