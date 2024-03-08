@@ -11,7 +11,9 @@
   "dependencies": {
     "@chakra-ui/icons": "^2.1.1",
     "@chakra-ui/react": "^2.0.0",
-    "@cmdcode/buff-utils": "^1.9.7",
+    "@cmdcode/buff-utils": "^1.7.1",
+    "@cmdcode/crypto-utils": "^1.5.11",
+    "@cmdcode/tapscript": "^1.2.7",
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
     "axios": "^1.6.7",

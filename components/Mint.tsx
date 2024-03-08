@@ -28,8 +28,10 @@ import {
     addressReceivedMoneyInThisTx,
     pushBTCpmt,
     satsToQtum,
-    generateAddress
+    p2trEncode,
+    p2trDecode
 } from '@/utils';
+import { Address, Script, Signer, Tap, Tx } from '@cmdcode/tapscript';
 import FeeType from "./FeeType";
 import PayModal from "./PayModal";
 
@@ -40,7 +42,6 @@ const feeTypeMap: { [k: string]: string } = {// TODO add interface
 }
 
 export default function Mint() {
-
     const encodedAddressPrefix = 'tq'; // qc for qtum | tq for qtum_testnet
     const [step, setStep] = useState(1);
 
@@ -147,8 +148,9 @@ export default function Mint() {
 
     const transfer = async () => {
         let inscriptions = [];
+        console.log(p2trDecode('tq1pw4w9ga00nwn369e62wp2fjfukj4une95wdzg0t7qcajaswkrwkjsg772p9').hex)
+        // console.log(Address.toScriptPubKey('tq1pw4w9ga00nwn369e62wp2fjfukj4une95wdzg0t7qcajaswkrwkjsg772p9'))
         console.log('================transfer=================');
-        const { Address, Script, Signer, Tap, Tx } = (window as any).tapscript
 
         let privkey = bytesToHex((window as any).cryptoUtils.Noble.utils.randomPrivateKey());
         console.log('privkey', privkey);
@@ -158,23 +160,15 @@ export default function Mint() {
         let seckey = new KeyPair(privkey);
         let pubkey = seckey.pub.rawX;
 
-        const ec = new TextEncoder();
-
         const init_script = [
             pubkey,
             'OP_CHECKSIG'
         ];
-
-        const init_script_backup = [
-            '0x' + buf2hex(pubkey.buffer),
-            'OP_CHECKSIG'
-        ];
-
         let init_leaf = await Tap.tree.getLeaf(Script.encode(init_script));
         let [init_tapkey, init_cblock] = await Tap.getPubKey(pubkey, { target: init_leaf });
-        console.log('init_tapkey', init_tapkey);
-        console.log('init_cblock', init_cblock);
 
+
+        const ec = new TextEncoder();
 
         const hex = textToHex(JSON.stringify(mint));
         const data = hexToBytes(hex);
@@ -208,10 +202,11 @@ export default function Mint() {
         const leaf = await Tap.tree.getLeaf(Script.encode(script));
         const [tapkey, cblock] = await Tap.getPubKey(pubkey, { target: leaf });
 
-        let inscriptionAddress = Address.p2tr.encode(tapkey, encodedAddressPrefix);
+        let inscriptionAddress = p2trEncode(tapkey, encodedAddressPrefix);
 
         console.log('Inscription address: ', inscriptionAddress);
         console.log('Tapkey:', tapkey);
+
         let prefix = 160;
         let txsize = prefix + Math.floor(data.length / 4);
 
@@ -229,8 +224,7 @@ export default function Mint() {
             }
         );
 
-
-        let { address: fundingAddress } = generateAddress();
+        const fundingAddress = p2trEncode(init_tapkey, encodedAddressPrefix);
         console.log('Funding address: ', fundingAddress, 'based on', init_tapkey);
         setFundingAddress(fundingAddress)
 
@@ -340,7 +334,6 @@ export default function Mint() {
     const handleSubmit = () => {
         const valid = validSecondForm();
         if (valid) {
-            generateAddress();
             transfer();
             setIsModalShow(true);
         }

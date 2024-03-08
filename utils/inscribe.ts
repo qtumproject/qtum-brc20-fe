@@ -4,11 +4,24 @@ import {
 import BIP32Factory from 'bip32';
 import * as ecc from 'tiny-secp256k1';
 import { axiosInstance } from '@/utils';
+import { Buff } from '@cmdcode/buff-utils';
 
 const rng = require('randombytes');
 const qtumjs = require('@/lib/qtum');
 
 const toXOnly = (pubKey: any) => (pubKey.length === 32 ? pubKey : pubKey.slice(1, 33));
+
+export function p2trEncode(input: string, prefix = 'qc') {
+    const bytes = Buff.bytes(input)
+    if (bytes.length !== 32) {
+        throw new Error(`Invalid input size: ${bytes.hex} !== ${32}`)
+    }
+    return bytes.toBech32(prefix, 1)
+}
+
+export function p2trDecode(address: string) {
+    return Buff.bech32(address);
+}
 
 export function generateAddress() {
     // TODO add net params
@@ -25,9 +38,7 @@ export function generateAddress() {
         address,
         publicKey,
     }
-    // console.log('address', address);
 }
-
 
 export function textToHex(text: string) {
     var encoder = new TextEncoder().encode(text);

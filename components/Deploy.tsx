@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { Address, Script, Signer, Tap, Tx } from '@cmdcode/tapscript';
 import {
     Divider,
     FormControl,
@@ -27,7 +28,8 @@ import {
     waitSomeSeconds,
     addressReceivedMoneyInThisTx,
     pushBTCpmt,
-    satsToQtum
+    satsToQtum,
+    p2trEncode,
 } from '@/utils';
 import FeeType from "./FeeType";
 import PayModal from "./PayModal";
@@ -155,7 +157,6 @@ export default function Deploy() {
     const transfer = async () => {
         let inscriptions = [];
         console.log('================transfer=================');
-        const { Address, Script, Signer, Tap, Tx } = (window as any).tapscript
 
         let privkey = bytesToHex((window as any).cryptoUtils.Noble.utils.randomPrivateKey());
         console.log('privkey', privkey);
@@ -171,12 +172,6 @@ export default function Deploy() {
             pubkey,
             'OP_CHECKSIG'
         ];
-
-        const init_script_backup = [
-            '0x' + buf2hex(pubkey.buffer),
-            'OP_CHECKSIG'
-        ];
-
         let init_leaf = await Tap.tree.getLeaf(Script.encode(init_script));
         let [init_tapkey, init_cblock] = await Tap.getPubKey(pubkey, { target: init_leaf });
         console.log('init_tapkey', init_tapkey);
@@ -215,7 +210,7 @@ export default function Deploy() {
         const leaf = await Tap.tree.getLeaf(Script.encode(script));
         const [tapkey, cblock] = await Tap.getPubKey(pubkey, { target: leaf });
 
-        let inscriptionAddress = Address.p2tr.encode(tapkey, encodedAddressPrefix);
+        let inscriptionAddress = p2trEncode(tapkey, encodedAddressPrefix);
 
         console.log('Inscription address: ', inscriptionAddress);
         console.log('Tapkey:', tapkey);
@@ -236,7 +231,7 @@ export default function Deploy() {
         );
 
 
-        let fundingAddress = Address.p2tr.encode(init_tapkey, encodedAddressPrefix);
+        let fundingAddress = p2trEncode(init_tapkey, encodedAddressPrefix);
         console.log('Funding address: ', fundingAddress, 'based on', init_tapkey);
         setFundingAddress(fundingAddress)
 
@@ -316,7 +311,7 @@ export default function Deploy() {
                 }],
                 vout: [{
                     value: amt2 - inscription.fee,
-                    scriptPubKey: ['OP_1', Address.p2tr.decode(rAddress, encodedAddressPrefix).hex]
+                    scriptPubKey: ['OP_1', Address.p2tr.decode(rAddress).hex]
                 }],
             });
 
