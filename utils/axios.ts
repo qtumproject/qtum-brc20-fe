@@ -1,6 +1,10 @@
 import axios from 'axios';
 
-axios.interceptors.response.use(function (response) {
+const axiosInstance = axios.create({
+  baseURL: 'https://testnet.qtum.info/api/',
+});
+
+axiosInstance.interceptors.response.use(function (response) {
     // Any status code that lie within the range of 2xx cause this function to trigger
     // Do something with response data
     const { status, data } = response;
@@ -14,4 +18,5 @@ axios.interceptors.response.use(function (response) {
     return Promise.reject(error);
   });
 
-export { axios }; 
+
+ export  { axiosInstance };

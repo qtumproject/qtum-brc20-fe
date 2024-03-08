@@ -22,6 +22,7 @@ export default function RadioCard(props: any) {
           bg: 'white',
           color: '#2d73ff',
           borderColor: 'transparent',
+          fontWeight: 800
         }}
       >
         {props.children}

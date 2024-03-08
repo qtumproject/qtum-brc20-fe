@@ -11,13 +11,20 @@
   "dependencies": {
     "@chakra-ui/icons": "^2.1.1",
     "@chakra-ui/react": "^2.0.0",
+    "@cmdcode/buff-utils": "^1.9.7",
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
     "axios": "^1.6.7",
+    "bignumber.js": "^9.1.2",
+    "bip32": "^4.0.0",
+    "bitcoinjs-lib": "^6.1.5",
     "framer-motion": "^6.5.1",
     "next": "14.0.4",
+    "qtum-opcodes": "^1.0.0",
+    "randombytes": "^2.1.0",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "tiny-secp256k1": "^2.2.3"
   },
   "devDependencies": {
     "@types/node": "^20",

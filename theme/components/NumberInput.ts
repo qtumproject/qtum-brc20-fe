@@ -13,8 +13,8 @@ const baseStyle = definePartsStyle({
     borderRadius: '12px'
   },
   stepper: {
-    color: "purple.500",
-    background: "gray.200",
+    color: "#2d73ff",
+    background: "#f3f3f0",
     borderRadius: '6px',
     mr: '2px'
   }

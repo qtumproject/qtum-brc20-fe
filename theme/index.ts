@@ -10,12 +10,12 @@ const config: ThemeConfig = {
   useSystemColorMode: false,
 }
 
-const theme = extendTheme({ 
+const theme = extendTheme({
   config,
   fonts: {
     body: 'DMsans'
   },
-  components: { 
+  components: {
     Button: buttonTheme,
     Input: inputTheme,
     NumberInput: numberInputTheme,

@@ -17,16 +17,30 @@ import {
     NumberDecrementStepper,
     Button,
 } from '@chakra-ui/react'
+import {
+    textToHex,
+    hexToBytes,
+    bytesToHex,
+    buf2hex,
+    createQR,
+    loopTilAddressReceivesMoney,
+    waitSomeSeconds,
+    addressReceivedMoneyInThisTx,
+    pushBTCpmt,
+    satsToQtum
+} from '@/utils';
 import FeeType from "./FeeType";
-// import PayModal from "./PayModal";
+import PayModal from "./PayModal";
 
-const feeTypeMap: { [k: string]: string } = {
-    'economy': '28',
-    'normal': '30',
-    'custom': '32',
+const feeTypeMap: { [k: string]: string } = { // TODO add interface 
+    'economy': '742.74',
+    'normal': '742.74',
+    'custom': '742.74',
 };
 
 export default function Deploy() {
+    const encodedAddressPrefix = 'tq'; // qc for qtum | tq for qtum_testnet
+
     const [step, setStep] = useState(1);
 
     const [tick, setTick] = useState('')
@@ -35,17 +49,67 @@ export default function Deploy() {
     const [rAddress, setRAddress] = useState('');
     const [feeType, setFeeType] = useState('normal');
     const [customFee, setCustomFee] = useState(feeTypeMap['custom']);
-    const [fee, setFee] = useState('29');
+    const [fee, setFee] = useState('742.74');
     const [isModalShow, setIsModalShow] = useState(false);
-
-    useEffect(() => {
-        setFee(feeTypeMap[feeType])
-    }, [feeType])
-
     const [isTickError, setIsTickError] = useState(false);
     const [isAmountError, setIsAmountError] = useState(false);
     const [isLimitError, setIsLimitError] = useState(false);
     const [isRAddressError, setisRAddressError] = useState(false);
+
+    const [totalFees, setTotalFees] = useState(0);
+    const [qrImg, setQrImg] = useState('');
+    const [fundingAddress, setFundingAddress] = useState('');
+
+    const [deploy, setDeploy] = useState({
+        p: 'brc-20',
+        op: 'deploy',
+        tick: '',
+        amt: '0',
+    })
+
+    useEffect(() => {
+        setDeploy({
+            p: 'brc-20',
+            op: 'deploy',
+            tick,
+            amt: amount,
+        })
+    }, [tick, amount])
+
+    useEffect(() => {
+        setFee(feeTypeMap[feeType]);
+    }, [feeType])
+
+    const calcTotalFees = async (customFee: string, fee: string, mint: object) => {
+        let totalFee = 0;
+        let totalFees = 0;
+        if (mint && fee) {
+            const hex = textToHex(JSON.stringify(mint));
+            const data = hexToBytes(hex);
+            let prefix = 160;
+            let txsize = prefix + Math.floor(data.length / 4);
+            if (feeType === 'custom') {
+                fee = customFee;
+            }
+            let feeTemp = Number(fee) * txsize;
+            totalFee += feeTemp;
+
+            let baseSize = 160;
+            let padding = 546;
+            let repeat = 1;
+            totalFees += totalFee + ((69 + (repeat + 1) * 2) * 31 + 10) * Number(fee);
+            totalFees += baseSize * repeat;
+            totalFees += padding * repeat;
+        }
+
+        setTotalFees(totalFees);
+
+    }
+
+    useEffect(() => {
+        calcTotalFees(customFee, fee, deploy);
+    }, [customFee, fee, deploy])
+
 
     const validForm = () => {
         let valid = true;
@@ -83,8 +147,200 @@ export default function Deploy() {
     const handleSubmit = () => {
         const valid = validSecondForm();
         if (valid) {
+            transfer();
             setIsModalShow(true);
         }
+    }
+
+    const transfer = async () => {
+        let inscriptions = [];
+        console.log('================transfer=================');
+        const { Address, Script, Signer, Tap, Tx } = (window as any).tapscript
+
+        let privkey = bytesToHex((window as any).cryptoUtils.Noble.utils.randomPrivateKey());
+        console.log('privkey', privkey);
+
+        const KeyPair = (window as any).cryptoUtils.KeyPair;
+
+        let seckey = new KeyPair(privkey);
+        let pubkey = seckey.pub.rawX;
+
+        const ec = new TextEncoder();
+
+        const init_script = [
+            pubkey,
+            'OP_CHECKSIG'
+        ];
+
+        const init_script_backup = [
+            '0x' + buf2hex(pubkey.buffer),
+            'OP_CHECKSIG'
+        ];
+
+        let init_leaf = await Tap.tree.getLeaf(Script.encode(init_script));
+        let [init_tapkey, init_cblock] = await Tap.getPubKey(pubkey, { target: init_leaf });
+        console.log('init_tapkey', init_tapkey);
+        console.log('init_cblock', init_cblock);
+
+
+        const hex = textToHex(JSON.stringify(deploy));
+        const data = hexToBytes(hex);
+        const mimetype = ec.encode("text/plain;charset=utf-8");
+        const script = [
+            pubkey,
+            'OP_CHECKSIG',
+            'OP_0',
+            'OP_IF',
+            ec.encode('ord'),
+            '01',
+            mimetype,
+            'OP_0',
+            data,
+            'OP_ENDIF'
+        ];
+
+        const script_backup = [
+            '0x' + buf2hex(pubkey.buffer),
+            'OP_CHECKSIG',
+            'OP_0',
+            'OP_IF',
+            '0x' + buf2hex(ec.encode('ord')),
+            '01',
+            '0x' + buf2hex(mimetype),
+            'OP_0',
+            '0x' + buf2hex(data),
+            'OP_ENDIF'
+        ];
+
+        const leaf = await Tap.tree.getLeaf(Script.encode(script));
+        const [tapkey, cblock] = await Tap.getPubKey(pubkey, { target: leaf });
+
+        let inscriptionAddress = Address.p2tr.encode(tapkey, encodedAddressPrefix);
+
+        console.log('Inscription address: ', inscriptionAddress);
+        console.log('Tapkey:', tapkey);
+        let prefix = 160;
+        let txsize = prefix + Math.floor(data.length / 4);
+        console.log("TXSIZE", txsize);
+        inscriptions.push(
+            {
+                leaf: leaf,
+                tapkey: tapkey,
+                cblock: cblock,
+                inscriptionAddress: inscriptionAddress,
+                txsize: txsize,
+                fee: fee,
+                script: script_backup,
+                script_orig: script
+            }
+        );
+
+
+        let fundingAddress = Address.p2tr.encode(init_tapkey, encodedAddressPrefix);
+        console.log('Funding address: ', fundingAddress, 'based on', init_tapkey);
+        setFundingAddress(fundingAddress)
+
+        console.log('Address that will receive the inscription:', rAddress);
+
+        let qr_value = "qtum:" + fundingAddress + "?amount=" + satsToQtum(totalFees);
+        console.log("qr:", qr_value);
+
+        const qrimg = createQR(qr_value);
+        setQrImg(qrimg as any);
+
+        // 检查转账是否完成
+        await loopTilAddressReceivesMoney(fundingAddress, true);
+        await waitSomeSeconds(2);
+        let txinfo = await addressReceivedMoneyInThisTx(fundingAddress);
+
+        let txid = txinfo[0];
+        let vout = txinfo[1];
+        let amt = txinfo[2];
+
+        console.log("yay! txid:", txid, "vout:", vout, "amount:", amt);
+
+        // 开始转账到toaddress和inscription address
+        let outputs = [];
+        for (let i = 0; i < inscriptions.length; i++) {
+
+            outputs.push(
+                {
+                    value: 546 + inscriptions[i].fee,
+                    scriptPubKey: ['OP_1', inscriptions[i].tapkey]
+                }
+            );
+
+        }
+
+        const init_redeemtx = Tx.create({
+            vin: [{
+                txid: txid,
+                vout: vout,
+                prevout: {
+                    value: amt,
+                    scriptPubKey: ['OP_1', init_tapkey]
+                },
+            }],
+            vout: outputs
+        })
+
+        const init_sig = await Signer.taproot.sign(seckey.raw, init_redeemtx, 0, { extension: init_leaf });
+        init_redeemtx.vin[0].witness = [init_sig.hex, init_script, init_cblock];
+
+        console.dir(init_redeemtx, { depth: null });
+        console.log('YOUR SECKEY', seckey);
+        let rawtx = Tx.encode(init_redeemtx).hex;
+        let _txid = await pushBTCpmt(rawtx);
+
+        console.log('Init TX', _txid);
+
+        const inscribe = async (inscription: any, vout: any) => {
+            // we are running into an issue with 25 child transactions for unconfirmed parents.
+            // so once the limit is reached, we wait for the parent tx to confirm.
+
+            await loopTilAddressReceivesMoney(inscription.inscriptionAddress, true);
+            await waitSomeSeconds(2);
+            let txinfo2 = await addressReceivedMoneyInThisTx(inscription.inscriptionAddress);
+
+            let txid2 = txinfo2[0];
+            let amt2 = txinfo2[2] || 0;
+
+            const redeemtx = Tx.create({
+                vin: [{
+                    txid: txid2,
+                    vout: vout,
+                    prevout: {
+                        value: amt2,
+                        scriptPubKey: ['OP_1', inscription.tapkey]
+                    },
+                }],
+                vout: [{
+                    value: amt2 - inscription.fee,
+                    scriptPubKey: ['OP_1', Address.p2tr.decode(rAddress, encodedAddressPrefix).hex]
+                }],
+            });
+
+            const sig = await Signer.taproot.sign(seckey.raw, redeemtx, 0, { extension: inscription.leaf });
+            redeemtx.vin[0].witness = [sig.hex, inscription.script_orig, inscription.cblock];
+
+            console.dir(redeemtx, { depth: null });
+
+            let rawtx2 = Tx.encode(redeemtx).hex;
+            let _txid2;
+
+            _txid2 = await pushBTCpmt(rawtx2) || '';
+
+            if (_txid2.includes('descendant')) {
+                inscribe(inscription, vout);
+                return;
+            }
+        }
+
+        for (let i = 0; i < inscriptions.length; i++) {
+
+            inscribe(inscriptions[i], i);
+        }
+
     }
 
     return (
@@ -152,13 +408,7 @@ export default function Deploy() {
                 step === 2 && <div>
                     <div className='mb-4'>
                         <FormControl>
-                            <pre className="py-[16px] rounded-[12px] pl-[16px] bg-[#F3F3F0] break-all whitespace-break-spaces">{JSON.stringify({
-                                p: 'brc-20',
-                                op: 'deploy',
-                                tick: tick,
-                                max: amount,
-                                limit: limit,
-                            })} </pre>
+                            <pre className="py-[16px] rounded-[12px] pl-[16px] bg-[#F3F3F0] break-all whitespace-break-spaces">{JSON.stringify(deploy)} </pre>
                         </FormControl>
                     </div>
                     <div className='mb-4'>
@@ -207,7 +457,7 @@ export default function Deploy() {
                     <div className="mb-4">
                         <div className="mb-4 flex justify-between">
                             <div className="">Network Fee</div>
-                            <div>123 sats = $0.99</div>
+                            <div>{totalFees} sats = {satsToQtum(totalFees)} QTUM</div>
                         </div>
                     </div>
 
@@ -233,7 +483,13 @@ export default function Deploy() {
                 </div>
             }
 
-            {/* <PayModal isShow={isModalShow} /> */}
+            <PayModal
+                isShow={isModalShow}
+                fundingAddress={fundingAddress}
+                totalPay={totalFees}
+                close={() => setIsModalShow(false)}>
+                {qrImg}
+            </PayModal>
 
         </>
     )

@@ -17,22 +17,31 @@ import {
     NumberDecrementStepper,
     Button,
 } from '@chakra-ui/react'
+import {
+    textToHex,
+    hexToBytes,
+    bytesToHex,
+    buf2hex,
+    createQR,
+    loopTilAddressReceivesMoney,
+    waitSomeSeconds,
+    addressReceivedMoneyInThisTx,
+    pushBTCpmt,
+    satsToQtum,
+    generateAddress
+} from '@/utils';
 import FeeType from "./FeeType";
 import PayModal from "./PayModal";
 
-const feeTypeMap: { [k: string]: string } = {
-    'economy': '28',
-    'normal': '30',
-    'custom': '32',
+const feeTypeMap: { [k: string]: string } = {// TODO add interface
+    'economy': '742.74',
+    'normal': '742.74',
+    'custom': '742.74',
 }
 
-interface IProps {
-    bitcoinPrice: number,
-}
+export default function Mint() {
 
-export default function Mint({ bitcoinPrice }: IProps) {
-
-    const encodedAddressPrefix = 'main';// TODO replace qtum
+    const encodedAddressPrefix = 'tq'; // qc for qtum | tq for qtum_testnet
     const [step, setStep] = useState(1);
 
     const [tick, setTick] = useState('')
@@ -40,9 +49,8 @@ export default function Mint({ bitcoinPrice }: IProps) {
     const [rAddress, setRAddress] = useState('');
     const [feeType, setFeeType] = useState('normal');
     const [customFee, setCustomFee] = useState(feeTypeMap['custom']);
-    const [fee, setFee] = useState('29');
+    const [fee, setFee] = useState('742.74');
     const [totalFees, setTotalFees] = useState(0);
-    const [totalDollarFees, setTotalDollarFees] = useState(0);
     const [isModalShow, setIsModalShow] = useState(false);
 
     const [isTickError, setIsTickError] = useState(false);
@@ -73,14 +81,7 @@ export default function Mint({ bitcoinPrice }: IProps) {
         setFee(feeTypeMap[feeType]);
     }, [feeType])
 
-    async function getTotalFee(totalFees: number, bitcoinPrice: number) {
-        const dollarFee = await satsToDollars(totalFees, bitcoinPrice);
-        console.log('dollarFee change', dollarFee)
-        setTotalDollarFees(dollarFee);
-    }
-
-    const calcTotalFees = async (customFee: string, fee: string, mint: object, bitcoinPrice: number) => {
-        console.log('===============')
+    const calcTotalFees = async (customFee: string, fee: string, mint: object) => {
         let totalFee = 0;
         let totalFees = 0;
         if (mint && fee) {
@@ -92,6 +93,7 @@ export default function Mint({ bitcoinPrice }: IProps) {
                 fee = customFee;
             }
             let feeTemp = Number(fee) * txsize;
+            console.log('fee, txsize,', fee, txsize, feeTemp)
             totalFee += feeTemp;
 
             let baseSize = 160;
@@ -101,16 +103,14 @@ export default function Mint({ bitcoinPrice }: IProps) {
             totalFees += baseSize * repeat;
             totalFees += padding * repeat;
         }
-
+        console.log('calcTotalFees', totalFees)
         setTotalFees(totalFees);
-        const dollarFee = await satsToDollars(totalFee, bitcoinPrice);
-        setTotalDollarFees(Number(Number(dollarFee).toFixed(2)));
 
     }
 
     useEffect(() => {
-        calcTotalFees(customFee, fee, mint, bitcoinPrice);
-    }, [customFee, fee, mint, bitcoinPrice])
+        calcTotalFees(customFee, fee, mint);
+    }, [customFee, fee, mint])
 
     const validForm = () => {
         let valid = true;
@@ -145,60 +145,7 @@ export default function Mint({ bitcoinPrice }: IProps) {
         return valid;
     }
 
-    async function satsToDollars(sats: number, bitcoinPrice: number) {
-        if (sats >= 100000000) sats = sats * 10;
-        let bitcoin_price = bitcoinPrice;
-        console.log('mint comp bitcoinprice is', bitcoinPrice)
-        let value_in_dollars = Number(String(sats).padStart(8, "0").slice(0, -9) + "." + String(sats).padStart(8, "0").slice(-9)) * bitcoin_price;
-        return value_in_dollars;
-    }
-
-    function buf2hex(buffer: any) { // buffer is an ArrayBuffer
-        return [...new Uint8Array(buffer)]
-            .map(x => x.toString(16).padStart(2, '0'))
-            .join('');
-    }
-
-    function bytesToHex(bytes: any) {
-        return bytes.reduce((str: any, byte: any) => str + byte.toString(16).padStart(2, "0"), "");
-    }
-
-    function textToHex(text: any) {
-        var encoder = new TextEncoder().encode(text);
-        return [...new Uint8Array(encoder)]
-            .map(x => x.toString(16).padStart(2, "0"))
-            .join("");
-    }
-
-
-    function hexToBytes(hex: any) {
-        return Uint8Array.from(hex.match(/.{1,2}/g).map((byte: any) => parseInt(byte, 16)));
-    }
-
-    function satsToBitcoin(sats: any) {
-        if (sats >= 100000000) sats = sats * 10;
-        let string = String(sats).padStart(8, "0").slice(0, -9) + "." + String(sats).padStart(8, "0").slice(-9);
-        if (string.substring(0, 1) == ".") string = "0" + string;
-        return string;
-    }
-
-    function createQR(content: any) {
-        let dataUriPngImage = document.createElement("img"),
-            s = (window as any).QRCode.generatePNG(content, {
-                ecclevel: "M",
-                format: "html",
-                fillcolor: "#FFFFFF",
-                textcolor: "#000000",
-                margin: 4,
-                modulesize: 8,
-            });
-        dataUriPngImage.src = s;
-        dataUriPngImage.id = "qr_code";
-        return dataUriPngImage;
-    }
-
     const transfer = async () => {
-        let total_fee = 0;
         let inscriptions = [];
         console.log('================transfer=================');
         const { Address, Script, Signer, Tap, Tx } = (window as any).tapscript
@@ -207,8 +154,6 @@ export default function Mint({ bitcoinPrice }: IProps) {
         console.log('privkey', privkey);
 
         const KeyPair = (window as any).cryptoUtils.KeyPair;
-
-
 
         let seckey = new KeyPair(privkey);
         let pubkey = seckey.pub.rawX;
@@ -271,9 +216,6 @@ export default function Mint({ bitcoinPrice }: IProps) {
         let txsize = prefix + Math.floor(data.length / 4);
 
         console.log("TXSIZE", txsize);
-
-        let feeTemp = Number(fee) * txsize;
-        total_fee += feeTemp;
         inscriptions.push(
             {
                 leaf: leaf,
@@ -288,27 +230,117 @@ export default function Mint({ bitcoinPrice }: IProps) {
         );
 
 
-        let fundingAddress = Address.p2tr.encode(init_tapkey, encodedAddressPrefix);
+        let { address: fundingAddress } = generateAddress();
         console.log('Funding address: ', fundingAddress, 'based on', init_tapkey);
         setFundingAddress(fundingAddress)
 
         console.log('Address that will receive the inscription:', rAddress);
 
-        const total_fees = total_fee;
-
-        setTotalFees(total_fees)
-
-        let qr_value = "bitcoin:" + fundingAddress + "?amount=" + satsToBitcoin(total_fees);
+        let qr_value = "qtum:" + fundingAddress + "?amount=" + satsToQtum(totalFees);
         console.log("qr:", qr_value);
 
         const qrimg = createQR(qr_value);
         setQrImg(qrimg as any);
+
+        // 检查转账是否完成
+        await loopTilAddressReceivesMoney(fundingAddress, true);
+        await waitSomeSeconds(2);
+        let txinfo = await addressReceivedMoneyInThisTx(fundingAddress);
+
+        let txid = txinfo[0];
+        let vout = txinfo[1];
+        let amt = txinfo[2];
+
+        console.log("yay! txid:", txid, "vout:", vout, "amount:", amt);
+
+        // 开始转账到toaddress和inscription address
+        let outputs = [];
+        for (let i = 0; i < inscriptions.length; i++) {
+
+            outputs.push(
+                {
+                    value: 546 + inscriptions[i].fee,
+                    scriptPubKey: ['OP_1', inscriptions[i].tapkey]
+                }
+            );
+
+        }
+
+        const init_redeemtx = Tx.create({
+            vin: [{
+                txid: txid,
+                vout: vout,
+                prevout: {
+                    value: amt,
+                    scriptPubKey: ['OP_1', init_tapkey]
+                },
+            }],
+            vout: outputs
+        })
+
+        const init_sig = await Signer.taproot.sign(seckey.raw, init_redeemtx, 0, { extension: init_leaf });
+        init_redeemtx.vin[0].witness = [init_sig.hex, init_script, init_cblock];
+
+        console.dir(init_redeemtx, { depth: null });
+        console.log('YOUR SECKEY', seckey);
+        let rawtx = Tx.encode(init_redeemtx).hex;
+        let _txid = await pushBTCpmt(rawtx);
+
+        console.log('Init TX', _txid);
+
+        const inscribe = async (inscription: any, vout: any) => {
+            // we are running into an issue with 25 child transactions for unconfirmed parents.
+            // so once the limit is reached, we wait for the parent tx to confirm.
+
+            await loopTilAddressReceivesMoney(inscription.inscriptionAddress, true);
+            await waitSomeSeconds(2);
+            let txinfo2 = await addressReceivedMoneyInThisTx(inscription.inscriptionAddress);
+
+            let txid2 = txinfo2[0];
+            let amt2 = txinfo2[2] || 0;
+
+            const redeemtx = Tx.create({
+                vin: [{
+                    txid: txid2,
+                    vout: vout,
+                    prevout: {
+                        value: amt2,
+                        scriptPubKey: ['OP_1', inscription.tapkey]
+                    },
+                }],
+                vout: [{
+                    value: amt2 - inscription.fee,
+                    scriptPubKey: ['OP_1', Address.p2tr.decode(rAddress, encodedAddressPrefix).hex]
+                }],
+            });
+
+            const sig = await Signer.taproot.sign(seckey.raw, redeemtx, 0, { extension: inscription.leaf });
+            redeemtx.vin[0].witness = [sig.hex, inscription.script_orig, inscription.cblock];
+
+            console.dir(redeemtx, { depth: null });
+
+            let rawtx2 = Tx.encode(redeemtx).hex;
+            let _txid2;
+
+            _txid2 = await pushBTCpmt(rawtx2) || '';
+
+            if (_txid2.includes('descendant')) {
+                inscribe(inscription, vout);
+                return;
+            }
+        }
+
+        for (let i = 0; i < inscriptions.length; i++) {
+
+            inscribe(inscriptions[i], i);
+        }
 
     }
 
     const handleSubmit = () => {
         const valid = validSecondForm();
         if (valid) {
+            generateAddress();
             transfer();
             setIsModalShow(true);
         }
@@ -414,7 +446,7 @@ export default function Mint({ bitcoinPrice }: IProps) {
                     <div className="mb-4">
                         <div className="mb-4 flex justify-between bg-[#F3F3F0] p-4 rounded-[12px]">
                             <div className="">Network Fee</div>
-                            <div>{totalFees} sats = ${totalDollarFees}</div>
+                            <div>{totalFees} sats = {satsToQtum(totalFees)} QTUM</div>
                         </div>
                     </div>
 
