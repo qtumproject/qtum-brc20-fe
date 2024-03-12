@@ -30,7 +30,7 @@ import {
     bytesToHex,
     addressToScript,
 } from '@/utils';
-import { IQtumFeeRates } from '@/types';
+import { IQtumFeeRates, TFeeType } from '@/types';
 import { Script, Signer, Tap, Tx } from '@cmdcode/tapscript';
 import FeeType from "./FeeType";
 import PayModal from "./PayModal";
@@ -48,7 +48,7 @@ export default function Mint({ defaultTick, feeRates }: IProps) {
     const [tick, setTick] = useState(defaultTick)
     const [amount, setAmount] = useState("1");
     const [rAddress, setRAddress] = useState('');
-    const [feeType, setFeeType] = useState('normal');
+    const [feeType, setFeeType] = useState<TFeeType>('normal');
     const [customFee, setCustomFee] = useState(feeRates['custom']);
     const [fee, setFee] = useState('400');
 
@@ -313,7 +313,7 @@ export default function Mint({ defaultTick, feeRates }: IProps) {
                     },
                 }],
                 vout: [{
-                    value: Math.floor(Number(amt2 - inscription.fee)),
+                    value: Math.floor(Number(amt2) - Number(inscription.fee)),
                     scriptPubKey: ['OP_1', rAddressScriptPubKey]
                 }],
             });

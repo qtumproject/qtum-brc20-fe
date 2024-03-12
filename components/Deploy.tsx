@@ -32,7 +32,7 @@ import {
     p2trEncode,
     addressToScript,
 } from '@/utils';
-import { IQtumFeeRates } from '@/types';
+import { IQtumFeeRates, TFeeType } from '@/types';
 import FeeType from "./FeeType";
 import PayModal from "./PayModal";
 
@@ -55,7 +55,7 @@ export default function Deploy({ feeRates }: IProps) {
     const [amount, setAmount] = useState('21000000');
     const [limit, setLimit] = useState('1');
     const [rAddress, setRAddress] = useState('');
-    const [feeType, setFeeType] = useState('normal');
+    const [feeType, setFeeType] = useState<TFeeType>('normal');
     const [customFee, setCustomFee] = useState(feeRates['custom']);
     const [fee, setFee] = useState('400');
     const [isModalShow, setIsModalShow] = useState(false);
@@ -333,7 +333,7 @@ export default function Deploy({ feeRates }: IProps) {
                     },
                 }],
                 vout: [{
-                    value: Math.floor(Number(amt2 - inscription.fee)),
+                    value: Math.floor(Number(amt2) - Number(inscription.fee)),
                     scriptPubKey: ['OP_1', rAddressScriptPubKey]
                 }],
             });

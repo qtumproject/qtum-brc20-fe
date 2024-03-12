@@ -29,6 +29,7 @@ export interface IQtumFeeRates {
     economy: string,
     normal: string,
 }
+export type TFeeType = 'economy' | 'custom' | 'normal';
 
 
 

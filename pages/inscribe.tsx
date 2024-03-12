@@ -14,7 +14,11 @@ import { IQtumFeeRates, TQtumFeeRatesRes } from '@/types'
 export default function Inscribe() {
     const [value, setValue] = useState('Mint');
     const [defaultTick, setDefaultTick] = useState('');
-    const [feeRates, setFeeRates] = useState({});
+    const [feeRates, setFeeRates] = useState<IQtumFeeRates>({
+        custom: '',
+        economy: '',
+        normal: ''
+    });
     const router = useRouter();
 
     const setRouterParams = () => {
@@ -30,7 +34,11 @@ export default function Inscribe() {
     const setQtumFee = async () => {
         const res = await getQtumFee();
         console.log('res', res)
-        let feeRates = {} as IQtumFeeRates;
+        let feeRates = {
+            custom: '',
+            economy: '',
+            normal: ''
+        } as IQtumFeeRates;
         const qtum2satvb = (count: number) => String(count * Math.pow(10, 5));
         if (res && res.length) {
             res.forEach(item => {
