@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Address, Script, Signer, Tap, Tx } from '@cmdcode/tapscript';
+import { Script, Signer, Tap, Tx } from '@cmdcode/tapscript';
 import {
     Divider,
     FormControl,
@@ -23,21 +23,27 @@ import {
     hexToBytes,
     bytesToHex,
     buf2hex,
-    createQR,
-    loopTilAddressReceivesMoney,
+    createQR, loopTilAddressReceivesMoney,
+
     waitSomeSeconds,
     addressReceivedMoneyInThisTx,
     pushBTCpmt,
     satsToQtum,
     p2trEncode,
+    addressToScript,
 } from '@/utils';
 import FeeType from "./FeeType";
 import PayModal from "./PayModal";
 
+const qtumjs = require('@/lib/qtum');
+// console.log(qtumjs.networks.qtum_testnet);
+// console.log(qtumjs.address.toOutputScript('qWcjms4SZYgfFPxPh9itP6KsUfMmFGGonQ', qtumjs.networks.qtum_testnet))
+// console.log(addressToScript('qWcjms4SZYgfFPxPh9itP6KsUfMmFGGonQ', qtumjs.networks.qtum_testnet))
+
 const feeTypeMap: { [k: string]: string } = { // TODO add interface 
-    'economy': '742.74',
-    'normal': '742.74',
-    'custom': '742.74',
+    'economy': '1005.316',
+    'normal': '1005.316',
+    'custom': '1005.316',
 };
 
 export default function Deploy() {
@@ -51,13 +57,14 @@ export default function Deploy() {
     const [rAddress, setRAddress] = useState('');
     const [feeType, setFeeType] = useState('normal');
     const [customFee, setCustomFee] = useState(feeTypeMap['custom']);
-    const [fee, setFee] = useState('742.74');
+    const [fee, setFee] = useState('1005.316');
     const [isModalShow, setIsModalShow] = useState(false);
     const [isTickError, setIsTickError] = useState(false);
     const [isAmountError, setIsAmountError] = useState(false);
     const [isLimitError, setIsLimitError] = useState(false);
     const [isRAddressError, setisRAddressError] = useState(false);
 
+    const [inscriptionFees, setInscriptionFees] = useState(0);
     const [totalFees, setTotalFees] = useState(0);
     const [qrImg, setQrImg] = useState('');
     const [fundingAddress, setFundingAddress] = useState('');
@@ -66,7 +73,9 @@ export default function Deploy() {
         p: 'brc-20',
         op: 'deploy',
         tick: '',
-        amt: '0',
+        max: '0',
+        lim: '0'
+
     })
 
     useEffect(() => {
@@ -74,7 +83,8 @@ export default function Deploy() {
             p: 'brc-20',
             op: 'deploy',
             tick,
-            amt: amount,
+            max: amount,
+            lim: limit,
         })
     }, [tick, amount])
 
@@ -95,6 +105,8 @@ export default function Deploy() {
             }
             let feeTemp = Number(fee) * txsize;
             totalFee += feeTemp;
+            setInscriptionFees(totalFee);
+            console.log('转账给B的金额为', totalFee)
 
             let baseSize = 160;
             let padding = 546;
@@ -103,7 +115,7 @@ export default function Deploy() {
             totalFees += baseSize * repeat;
             totalFees += padding * repeat;
         }
-
+        console.log('一共收费', totalFees)
         setTotalFees(totalFees);
 
     }
@@ -156,9 +168,10 @@ export default function Deploy() {
 
     const transfer = async () => {
         let inscriptions = [];
-        console.log('================transfer=================');
+        console.log('================deploy begin=================');
 
-        let privkey = bytesToHex((window as any).cryptoUtils.Noble.utils.randomPrivateKey());
+        // let privkey = bytesToHex((window as any).cryptoUtils.Noble.utils.randomPrivateKey());
+        const privkey = '3b5bebcf295257ab15c8acb0dcab105f25a3af833f12f23d45ba2edd30faf039'
         console.log('privkey', privkey);
 
         const KeyPair = (window as any).cryptoUtils.KeyPair;
@@ -174,9 +187,6 @@ export default function Deploy() {
         ];
         let init_leaf = await Tap.tree.getLeaf(Script.encode(init_script));
         let [init_tapkey, init_cblock] = await Tap.getPubKey(pubkey, { target: init_leaf });
-        console.log('init_tapkey', init_tapkey);
-        console.log('init_cblock', init_cblock);
-
 
         const hex = textToHex(JSON.stringify(deploy));
         const data = hexToBytes(hex);
@@ -224,11 +234,12 @@ export default function Deploy() {
                 cblock: cblock,
                 inscriptionAddress: inscriptionAddress,
                 txsize: txsize,
-                fee: fee,
+                fee: Number(inscriptionFees),
                 script: script_backup,
                 script_orig: script
             }
         );
+        console.log('inscriptions', inscriptions)
 
 
         let fundingAddress = p2trEncode(init_tapkey, encodedAddressPrefix);
@@ -254,13 +265,12 @@ export default function Deploy() {
 
         console.log("yay! txid:", txid, "vout:", vout, "amount:", amt);
 
-        // 开始转账到toaddress和inscription address
+        // 转账到inscription address
         let outputs = [];
         for (let i = 0; i < inscriptions.length; i++) {
-
             outputs.push(
                 {
-                    value: 546 + inscriptions[i].fee,
+                    value: Math.floor(546 + inscriptions[i].fee),
                     scriptPubKey: ['OP_1', inscriptions[i].tapkey]
                 }
             );
@@ -272,22 +282,30 @@ export default function Deploy() {
                 txid: txid,
                 vout: vout,
                 prevout: {
-                    value: amt,
+                    value: Number(amt),
                     scriptPubKey: ['OP_1', init_tapkey]
                 },
             }],
             vout: outputs
         })
 
+        console.log('outputs', outputs)
+
         const init_sig = await Signer.taproot.sign(seckey.raw, init_redeemtx, 0, { extension: init_leaf });
         init_redeemtx.vin[0].witness = [init_sig.hex, init_script, init_cblock];
 
         console.dir(init_redeemtx, { depth: null });
         console.log('YOUR SECKEY', seckey);
+        // "non-mandatory-script-verify-flag (Invalid Schnorr signature)"
         let rawtx = Tx.encode(init_redeemtx).hex;
         let _txid = await pushBTCpmt(rawtx);
 
         console.log('Init TX', _txid);
+
+        if (!_txid) {
+            alert('广播交易失败')
+            return;
+        }
 
         const inscribe = async (inscription: any, vout: any) => {
             // we are running into an issue with 25 child transactions for unconfirmed parents.
@@ -300,18 +318,23 @@ export default function Deploy() {
             let txid2 = txinfo2[0];
             let amt2 = txinfo2[2] || 0;
 
+            const data = addressToScript(rAddress, qtumjs.networks.qtum_testnet);
+            const rAddressScriptPubKey = buf2hex(data);
+            console.log('receive address scriptpubkey is: ', rAddressScriptPubKey);
+
+            // 转账到receive address
             const redeemtx = Tx.create({
                 vin: [{
                     txid: txid2,
                     vout: vout,
                     prevout: {
-                        value: amt2,
+                        value: Number(amt2),
                         scriptPubKey: ['OP_1', inscription.tapkey]
                     },
                 }],
                 vout: [{
-                    value: amt2 - inscription.fee,
-                    scriptPubKey: ['OP_1', Address.p2tr.decode(rAddress).hex]
+                    value: Math.floor(Number(amt2 - inscription.fee)),
+                    scriptPubKey: ['OP_1', rAddressScriptPubKey]
                 }],
             });
 

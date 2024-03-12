@@ -20,7 +20,6 @@ import {
 import {
     textToHex,
     hexToBytes,
-    bytesToHex,
     buf2hex,
     createQR,
     loopTilAddressReceivesMoney,
@@ -29,16 +28,19 @@ import {
     pushBTCpmt,
     satsToQtum,
     p2trEncode,
-    p2trDecode
+    bytesToHex,
+    addressToScript,
 } from '@/utils';
-import { Address, Script, Signer, Tap, Tx } from '@cmdcode/tapscript';
+import { Script, Signer, Tap, Tx } from '@cmdcode/tapscript';
 import FeeType from "./FeeType";
 import PayModal from "./PayModal";
 
+const qtumjs = require('@/lib/qtum');
+
 const feeTypeMap: { [k: string]: string } = {// TODO add interface
-    'economy': '742.74',
-    'normal': '742.74',
-    'custom': '742.74',
+    'economy': '1005.316',
+    'normal': '1005.316',
+    'custom': '1005.316',
 }
 
 export default function Mint() {
@@ -50,10 +52,12 @@ export default function Mint() {
     const [rAddress, setRAddress] = useState('');
     const [feeType, setFeeType] = useState('normal');
     const [customFee, setCustomFee] = useState(feeTypeMap['custom']);
-    const [fee, setFee] = useState('742.74');
-    const [totalFees, setTotalFees] = useState(0);
-    const [isModalShow, setIsModalShow] = useState(false);
+    const [fee, setFee] = useState('1005.316');
 
+    const [inscriptionFees, setInscriptionFees] = useState(0);
+    const [totalFees, setTotalFees] = useState(0);
+
+    const [isModalShow, setIsModalShow] = useState(false);
     const [isTickError, setIsTickError] = useState(false);
     const [isAmountError, setIsAmountError] = useState(false);
     const [isRAddressError, setisRAddressError] = useState(false);
@@ -96,6 +100,9 @@ export default function Mint() {
             let feeTemp = Number(fee) * txsize;
             console.log('fee, txsize,', fee, txsize, feeTemp)
             totalFee += feeTemp;
+
+            setInscriptionFees(totalFee);
+            console.log('转账给B的金额为', totalFee)
 
             let baseSize = 160;
             let padding = 546;
@@ -148,11 +155,11 @@ export default function Mint() {
 
     const transfer = async () => {
         let inscriptions = [];
-        console.log(p2trDecode('tq1pw4w9ga00nwn369e62wp2fjfukj4une95wdzg0t7qcajaswkrwkjsg772p9').hex)
-        // console.log(Address.toScriptPubKey('tq1pw4w9ga00nwn369e62wp2fjfukj4une95wdzg0t7qcajaswkrwkjsg772p9'))
-        console.log('================transfer=================');
+        console.log('================mint begin=================');
 
-        let privkey = bytesToHex((window as any).cryptoUtils.Noble.utils.randomPrivateKey());
+        // let privkey = bytesToHex((window as any).cryptoUtils.Noble.utils.randomPrivateKey());
+
+        const privkey = 'e9ec61eacfc0d4dfbc04a835ebef86d7bf6488a4fa6d03354bc8dc7e21025d25'
         console.log('privkey', privkey);
 
         const KeyPair = (window as any).cryptoUtils.KeyPair;
@@ -218,7 +225,7 @@ export default function Mint() {
                 cblock: cblock,
                 inscriptionAddress: inscriptionAddress,
                 txsize: txsize,
-                fee: fee,
+                fee: Number(inscriptionFees),
                 script: script_backup,
                 script_orig: script
             }
@@ -253,7 +260,7 @@ export default function Mint() {
 
             outputs.push(
                 {
-                    value: 546 + inscriptions[i].fee,
+                    value: Math.floor(546 + inscriptions[i].fee),
                     scriptPubKey: ['OP_1', inscriptions[i].tapkey]
                 }
             );
@@ -265,7 +272,7 @@ export default function Mint() {
                 txid: txid,
                 vout: vout,
                 prevout: {
-                    value: amt,
+                    value: Number(amt),
                     scriptPubKey: ['OP_1', init_tapkey]
                 },
             }],
@@ -293,18 +300,21 @@ export default function Mint() {
             let txid2 = txinfo2[0];
             let amt2 = txinfo2[2] || 0;
 
+            const data = addressToScript(rAddress, qtumjs.networks.qtum_testnet);
+            const rAddressScriptPubKey = buf2hex(data);
+            console.log('receive address scriptpubkey is: ', rAddressScriptPubKey);
             const redeemtx = Tx.create({
                 vin: [{
                     txid: txid2,
                     vout: vout,
                     prevout: {
-                        value: amt2,
+                        value: Number(amt2),
                         scriptPubKey: ['OP_1', inscription.tapkey]
                     },
                 }],
                 vout: [{
-                    value: amt2 - inscription.fee,
-                    scriptPubKey: ['OP_1', Address.p2tr.decode(rAddress, encodedAddressPrefix).hex]
+                    value: Math.floor(Number(amt2 - inscription.fee)),
+                    scriptPubKey: ['OP_1', rAddressScriptPubKey]
                 }],
             });
 

@@ -23,6 +23,19 @@ export function p2trDecode(address: string) {
     return Buff.bech32(address);
 }
 
+export const addressToScript = (address: string, network: any): Buffer => {
+    try {
+        return qtumjs.address.toOutputScript(address, network);
+    } catch (error) {
+        try {
+            const decoded = qtumjs.address.fromBech32(address);
+            return decoded.data;
+        } catch (error2) {
+            throw new Error("cannot decode address");
+        }
+    }
+};
+
 export function generateAddress() {
     // TODO add net params
     const qtumtest = qtumjs.networks.qtum_testnet;
@@ -92,7 +105,23 @@ export function createQR(content: any) {
 export async function pushBTCpmt(rawtx: string) {
 
     let txid;
-
+    try {
+        let res = await axiosInstance.post('/tx/send', {
+            rawtx,
+        });
+        console.log('res', res);
+        const { status, id, message } = res || {}
+        if (status === 0) {
+            txid = id;
+        } else {
+            console.error(message)
+            return ''
+        }
+    } catch (e) {
+        console.error(e)
+    }
+    console.log('rawtx', rawtx);
+    console.log('txid', txid);
     return txid;
 }
 
@@ -111,8 +140,13 @@ export async function addressReceivedMoneyInThisTx(address: string) {
     let vout;
     let amt;
     try {
-        const res = await axiosInstance.get('/address/tq1pnujql5krthgwzq5e30fygfh44p2q47fnjc586acyd5mc8hg56qjqv9fmhn/utxo');
-        console.log('res', res)
+        const res = await axiosInstance.get(`/address/${address}/utxo`);
+        // console.log('res', res[0])
+        if (res && res.length && res[res.length - 1]) {
+            txid = res[res.length - 1].transactionId;
+            vout = res[res.length - 1].outputIndex;
+            amt = res[res.length - 1].value;
+        }
     } catch (e) {
         console.error('查询转账信息出现了错误');
         console.error(e);
@@ -126,11 +160,13 @@ export async function addressOnceHadMoney(address: string, includeMempool: boole
     console.log('检查转账的地址为：', address);
     // tq1jjuwhr4esatparyrgfj7qf5m8jyv6ytwnvrh2zj8tjq3m7atqedshh6wcd
     // tq1pnujql5krthgwzq5e30fygfh44p2q47fnjc586acyd5mc8hg56qjqv9fmhn
+    // const td = 'tq1pnujql5krthgwzq5e30fygfh44p2q47fnjc586acyd5mc8hg56qjqv9fmhn';
     try {
         const res: qtumAddressInfo = await axiosInstance.get(`/address/${address}`);
         const { balance } = res || {};
         console.log('balance', balance)
-        if (Number(balance) > 0) {
+        // TODO 改为0
+        if (Number(balance) > 0.024587036) {
             return true;
         } else {
             return false;
