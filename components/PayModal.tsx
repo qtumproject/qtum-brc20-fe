@@ -3,13 +3,11 @@ import {
     ModalOverlay,
     ModalContent,
     ModalHeader,
-    ModalFooter,
     ModalBody,
     ModalCloseButton,
-    Button,
-    Input,
 } from '@chakra-ui/react'
 import { useEffect, useState } from 'react';
+import { satsToQtum } from '@/utils';
 
 interface IProps {
     isShow: boolean,
@@ -37,7 +35,7 @@ export default function PayModal({ isShow, children, fundingAddress, totalPay, c
                     <ModalBody pb={6}>
                         <div className='m-auto flex justify-center w-[170px] h-[170px]' ref={(node) => { node && node.appendChild(children) }}></div>
                         <div className='mb-4 text-center'>
-                            Payment amount: {totalPay} sats
+                            Payment amount: {totalPay.toFixed(3)} sats  = {satsToQtum(totalPay)} QTUM
                         </div>
                         <div className='mt-4 bg-[#F3F3F0] p-4 rounded-xl'>{fundingAddress} </div >
                         <div className='mt-4 text-[#D2311B] text-center'>

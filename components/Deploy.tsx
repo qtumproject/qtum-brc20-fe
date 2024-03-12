@@ -23,8 +23,8 @@ import {
     hexToBytes,
     bytesToHex,
     buf2hex,
-    createQR, loopTilAddressReceivesMoney,
-
+    createQR,
+    loopTilAddressReceivesMoney,
     waitSomeSeconds,
     addressReceivedMoneyInThisTx,
     pushBTCpmt,
@@ -32,13 +32,11 @@ import {
     p2trEncode,
     addressToScript,
 } from '@/utils';
+import { IQtumFeeRates } from '@/types';
 import FeeType from "./FeeType";
 import PayModal from "./PayModal";
 
 const qtumjs = require('@/lib/qtum');
-// console.log(qtumjs.networks.qtum_testnet);
-// console.log(qtumjs.address.toOutputScript('qWcjms4SZYgfFPxPh9itP6KsUfMmFGGonQ', qtumjs.networks.qtum_testnet))
-// console.log(addressToScript('qWcjms4SZYgfFPxPh9itP6KsUfMmFGGonQ', qtumjs.networks.qtum_testnet))
 
 const feeTypeMap: { [k: string]: string } = { // TODO add interface 
     'economy': '1005.316',
@@ -46,18 +44,20 @@ const feeTypeMap: { [k: string]: string } = { // TODO add interface
     'custom': '1005.316',
 };
 
-export default function Deploy() {
+interface IProps {
+    feeRates: IQtumFeeRates,
+}
+
+export default function Deploy({ feeRates }: IProps) {
     const encodedAddressPrefix = 'tq'; // qc for qtum | tq for qtum_testnet
-
     const [step, setStep] = useState(1);
-
     const [tick, setTick] = useState('')
     const [amount, setAmount] = useState('21000000');
     const [limit, setLimit] = useState('1');
     const [rAddress, setRAddress] = useState('');
     const [feeType, setFeeType] = useState('normal');
-    const [customFee, setCustomFee] = useState(feeTypeMap['custom']);
-    const [fee, setFee] = useState('1005.316');
+    const [customFee, setCustomFee] = useState(feeRates['custom']);
+    const [fee, setFee] = useState('400');
     const [isModalShow, setIsModalShow] = useState(false);
     const [isTickError, setIsTickError] = useState(false);
     const [isAmountError, setIsAmountError] = useState(false);
@@ -76,8 +76,8 @@ export default function Deploy() {
         max: '0',
         lim: '0'
 
-    })
-
+    });
+    useEffect(() => { setCustomFee(feeRates.custom) }, [feeRates]);
     useEffect(() => {
         setDeploy({
             p: 'brc-20',
@@ -86,11 +86,11 @@ export default function Deploy() {
             max: amount,
             lim: limit,
         })
-    }, [tick, amount])
+    }, [tick, amount, limit])
 
     useEffect(() => {
-        setFee(feeTypeMap[feeType]);
-    }, [feeType])
+        setFee(feeRates[feeType]);
+    }, [feeType, feeRates])
 
     const calcTotalFees = async (customFee: string, fee: string, mint: object) => {
         let totalFee = 0;
@@ -444,8 +444,8 @@ export default function Deploy() {
                         <FormControl>
                             <FormLabel htmlFor='amount'>Network Fee</FormLabel>
                             <div className="mb-4 flex justify-between">
-                                <div><FeeType type="Economy" amount={Number(feeTypeMap['economy'])} focus={feeType === 'economy'} onClick={() => setFeeType('economy')} /></div>
-                                <div><FeeType type="Normal" amount={Number(feeTypeMap['normal'])} focus={feeType === 'normal'} onClick={() => setFeeType('normal')} /></div>
+                                <div><FeeType type="Economy" amount={Number(feeRates['economy'])} focus={feeType === 'economy'} onClick={() => setFeeType('economy')} /></div>
+                                <div><FeeType type="Normal" amount={Number(feeRates['normal'])} focus={feeType === 'normal'} onClick={() => setFeeType('normal')} /></div>
                                 <div><FeeType type="Custom" amount={Number(customFee)} focus={feeType === 'custom'} onClick={() => setFeeType('custom')} /></div>
                             </div>
                             {
@@ -475,7 +475,7 @@ export default function Deploy() {
                     <div className="mb-4">
                         <div className="mb-4 flex justify-between">
                             <div className="">Network Fee</div>
-                            <div>{totalFees} sats = {satsToQtum(totalFees)} QTUM</div>
+                            <div>{totalFees.toFixed(3)} sats = {satsToQtum(totalFees)} QTUM</div>
                         </div>
                     </div>
 

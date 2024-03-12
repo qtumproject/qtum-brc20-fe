@@ -1,15 +1,24 @@
-import {
-    qtumAddressInfo
-} from "@/types";
-import BIP32Factory from 'bip32';
-import * as ecc from 'tiny-secp256k1';
-import { axiosInstance } from '@/utils';
 import { Buff } from '@cmdcode/buff-utils';
+import {
+    qtumAddressInfo,
+    IPushBTCpmtRes,
+    TUtxoRes,
+    TQtumFeeRatesRes
+} from "@/types";
+import { axiosInstance } from '@/utils';
 
-const rng = require('randombytes');
 const qtumjs = require('@/lib/qtum');
 
-const toXOnly = (pubKey: any) => (pubKey.length === 32 ? pubKey : pubKey.slice(1, 33));
+
+export async function getQtumFee() {
+    try {
+        let res: TQtumFeeRatesRes = await axiosInstance.get('https://qtum.info/api/feerates');
+        return res;
+    } catch (e) {
+        console.error(e);
+        return [];
+    }
+}
 
 export function p2trEncode(input: string, prefix = 'qc') {
     const bytes = Buff.bytes(input)
@@ -36,36 +45,11 @@ export const addressToScript = (address: string, network: any): Buffer => {
     }
 };
 
-export function generateAddress() {
-    // TODO add net params
-    const qtumtest = qtumjs.networks.qtum_testnet;
-    qtumjs.initEccLib(ecc);
-    const bip32 = BIP32Factory(ecc);
-    const { publicKey } = bip32.fromSeed(rng(64), qtumtest);
-    const { address } = qtumjs.payments.p2tr({
-        internalPubkey: toXOnly(publicKey),
-        network: qtumtest,
-    });
-
-    return {
-        address,
-        publicKey,
-    }
-}
-
 export function textToHex(text: string) {
     var encoder = new TextEncoder().encode(text);
     return [...new Uint8Array(encoder)]
         .map(x => x.toString(16).padStart(2, "0"))
         .join("");
-}
-
-export async function satsToDollars(sats: number, bitcoinPrice: number) {
-    if (sats >= 100000000) sats = sats * 10;
-    let bitcoin_price = bitcoinPrice;
-    console.log('mint comp bitcoinprice is', bitcoinPrice)
-    let value_in_dollars = Number(String(sats).padStart(8, "0").slice(0, -9) + "." + String(sats).padStart(8, "0").slice(-9)) * bitcoin_price;
-    return value_in_dollars;
 }
 
 export function buf2hex(buffer: any) { // buffer is an ArrayBuffer
@@ -84,7 +68,7 @@ export function hexToBytes(hex: any) {
 }
 
 export function satsToQtum(sats: number) {
-    return sats / Math.pow(10, 8);
+    return (sats / Math.pow(10, 8)).toFixed(8);
 }
 
 export function createQR(content: any) {
@@ -103,13 +87,11 @@ export function createQR(content: any) {
 }
 
 export async function pushBTCpmt(rawtx: string) {
-
     let txid;
     try {
-        let res = await axiosInstance.post('/tx/send', {
+        let res: IPushBTCpmtRes = await axiosInstance.post('/tx/send', {
             rawtx,
         });
-        console.log('res', res);
         const { status, id, message } = res || {}
         if (status === 0) {
             txid = id;
@@ -140,8 +122,7 @@ export async function addressReceivedMoneyInThisTx(address: string) {
     let vout;
     let amt;
     try {
-        const res = await axiosInstance.get(`/address/${address}/utxo`);
-        // console.log('res', res[0])
+        const res: TUtxoRes = await axiosInstance.get(`/address/${address}/utxo`);
         if (res && res.length && res[res.length - 1]) {
             txid = res[res.length - 1].transactionId;
             vout = res[res.length - 1].outputIndex;
@@ -164,9 +145,7 @@ export async function addressOnceHadMoney(address: string, includeMempool: boole
     try {
         const res: qtumAddressInfo = await axiosInstance.get(`/address/${address}`);
         const { balance } = res || {};
-        console.log('balance', balance)
-        // TODO 改为0
-        if (Number(balance) > 0.024587036) {
+        if (Number(balance) > 0) {
             return true;
         } else {
             return false;
@@ -183,7 +162,7 @@ export async function loopTilAddressReceivesMoney(address: string, includeMempoo
     let itReceivedMoney = false;
 
     async function isDataSetYet(data_i_seek: boolean) {
-        return new Promise(function (resolve, reject) {
+        return new Promise(function (resolve) {
             if (!data_i_seek) {
                 setTimeout(async function () {
                     console.log("waiting for address to receive money...");

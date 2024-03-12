@@ -1,16 +1,23 @@
 import { useEffect, useState } from "react";
 import { useRouter } from 'next/router'
+import qs from 'qs';
 import Mint from '@/components/Mint';
 import Deploy from '@/components/Deploy';
-import RadioGroup from "../components/RadioGroup";
-import qs from 'qs';
+import RadioGroup from "@/components/RadioGroup";
+import {
+    getQtumFee
+} from '@/utils';
+import { IQtumFeeRates, TQtumFeeRatesRes } from '@/types'
+
+
 
 export default function Inscribe() {
     const [value, setValue] = useState('Mint');
     const [defaultTick, setDefaultTick] = useState('');
+    const [feeRates, setFeeRates] = useState({});
     const router = useRouter();
 
-    useEffect(() => {
+    const setRouterParams = () => {
         const { tick, type } = qs.parse(router.asPath.slice(10));
         if (tick && type) {
             if (['Mint', 'Deploy'].includes(type)) {
@@ -18,6 +25,32 @@ export default function Inscribe() {
                 setDefaultTick(tick as string);
             }
         }
+    }
+
+    const setQtumFee = async () => {
+        const res = await getQtumFee();
+        console.log('res', res)
+        let feeRates = {} as IQtumFeeRates;
+        const qtum2satvb = (count: number) => String(count * Math.pow(10, 5));
+        if (res && res.length) {
+            res.forEach(item => {
+                if (item.blocks === 2) {
+                    feeRates.custom = qtum2satvb(item.feeRate);
+                }
+                if (item.blocks === 4) {
+                    feeRates.normal = qtum2satvb(item.feeRate);
+                }
+                if (item.blocks === 6) {
+                    feeRates.economy = qtum2satvb(item.feeRate);
+                }
+            })
+        }
+        setFeeRates(feeRates);
+    }
+
+    useEffect(() => {
+        setRouterParams();
+        setQtumFee();
     }, [])
 
     return (
@@ -30,11 +63,11 @@ export default function Inscribe() {
                     </div>
 
                     {
-                        value === "Mint" && <Mint defaultTick={defaultTick} />
+                        value === "Mint" && <Mint defaultTick={defaultTick} feeRates={feeRates} />
                     }
 
                     {
-                        value === "Deploy" && <Deploy />
+                        value === "Deploy" && <Deploy feeRates={feeRates} />
                     }
                 </div>
             </div>

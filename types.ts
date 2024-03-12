@@ -1,12 +1,33 @@
-// Networks 
+// inscribe
 // https://github.com/qtumproject/qtumjs-lib/blob/master/src/networks.js
-
 export type Networks = 'qtum' | 'qtum_testnet';
-
 export type NetworksPrefix = 'qc' | 'tq';
-
 export interface qtumAddressInfo {
     balance: number
+}
+export interface IPushBTCpmtRes {
+    status: number,
+    id?: string,
+    message?: string,
+
+}
+
+export interface IUtxoResItem {
+    transactionId: string,
+    outputIndex: number,
+    value: string,
+}
+
+export type TUtxoRes = [IUtxoResItem] | [];
+export interface IQtumFeeRatesItem {
+    blocks: number,
+    feeRate: number,
+}
+export type TQtumFeeRatesRes = [IQtumFeeRatesItem] | [];
+export interface IQtumFeeRates {
+    custom: string,
+    economy: string,
+    normal: string,
 }
 
 

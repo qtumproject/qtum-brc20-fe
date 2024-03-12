@@ -30,23 +30,18 @@ import {
     bytesToHex,
     addressToScript,
 } from '@/utils';
+import { IQtumFeeRates } from '@/types';
 import { Script, Signer, Tap, Tx } from '@cmdcode/tapscript';
 import FeeType from "./FeeType";
 import PayModal from "./PayModal";
 
 const qtumjs = require('@/lib/qtum');
-
-const feeTypeMap: { [k: string]: string } = {// TODO add interface
-    'economy': '1005.316',
-    'normal': '1005.316',
-    'custom': '1005.316',
-}
-
 interface IProps {
     defaultTick: string,
+    feeRates: IQtumFeeRates,
 }
 
-export default function Mint({ defaultTick }: IProps) {
+export default function Mint({ defaultTick, feeRates }: IProps) {
     const encodedAddressPrefix = 'tq'; // qc for qtum | tq for qtum_testnet
     const [step, setStep] = useState(1);
 
@@ -54,8 +49,8 @@ export default function Mint({ defaultTick }: IProps) {
     const [amount, setAmount] = useState("1");
     const [rAddress, setRAddress] = useState('');
     const [feeType, setFeeType] = useState('normal');
-    const [customFee, setCustomFee] = useState(feeTypeMap['custom']);
-    const [fee, setFee] = useState('1005.316');
+    const [customFee, setCustomFee] = useState(feeRates['custom']);
+    const [fee, setFee] = useState('400');
 
     const [inscriptionFees, setInscriptionFees] = useState(0);
     const [totalFees, setTotalFees] = useState(0);
@@ -74,7 +69,7 @@ export default function Mint({ defaultTick }: IProps) {
         tick: '',
         amt: '0',
     })
-
+    useEffect(() => { setCustomFee(feeRates.custom) }, [feeRates]);
     useEffect(() => { setTick(defaultTick) }, [defaultTick])
 
     useEffect(() => {
@@ -88,8 +83,8 @@ export default function Mint({ defaultTick }: IProps) {
 
 
     useEffect(() => {
-        setFee(feeTypeMap[feeType]);
-    }, [feeType])
+        setFee(feeRates[feeType]);
+    }, [feeType, feeRates])
 
     const calcTotalFees = async (customFee: string, fee: string, mint: object) => {
         let totalFee = 0;
@@ -423,8 +418,8 @@ export default function Mint({ defaultTick }: IProps) {
                         <FormControl>
                             <FormLabel htmlFor='amount'>Network Fee</FormLabel>
                             <div className="mb-4 flex justify-between">
-                                <div><FeeType type="Economy" amount={Number(feeTypeMap['economy'])} focus={feeType === 'economy'} onClick={() => setFeeType('economy')} /></div>
-                                <div><FeeType type="Normal" amount={Number(feeTypeMap['normal'])} focus={feeType === 'normal'} onClick={() => setFeeType('normal')} /></div>
+                                <div><FeeType type="Economy" amount={Number(feeRates['economy'])} focus={feeType === 'economy'} onClick={() => setFeeType('economy')} /></div>
+                                <div><FeeType type="Normal" amount={Number(feeRates['normal'])} focus={feeType === 'normal'} onClick={() => setFeeType('normal')} /></div>
                                 <div><FeeType type="Custom" amount={Number(customFee)} focus={feeType === 'custom'} onClick={() => setFeeType('custom')} /></div>
                             </div>
                             {
@@ -454,7 +449,7 @@ export default function Mint({ defaultTick }: IProps) {
                     <div className="mb-4">
                         <div className="mb-4 flex justify-between bg-[#F3F3F0] p-4 rounded-[12px]">
                             <div className="">Network Fee</div>
-                            <div>{totalFees} sats = {satsToQtum(totalFees)} QTUM</div>
+                            <div>{totalFees.toFixed(3)} sats = {satsToQtum(totalFees)} QTUM</div>
                         </div>
                     </div>
 
