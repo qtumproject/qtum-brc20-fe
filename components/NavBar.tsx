@@ -1,5 +1,6 @@
 import { Tabs, TabList, TabIndicator, Tab } from '@chakra-ui/react';
 import Link from 'next/link';
+import Image from 'next/image'
 import { useRouter } from 'next/router';
 
 const navList = [
@@ -16,7 +17,7 @@ export default function NavBar() {
 
     return <div className={`header-wrap flex items-center h-[5.5625rem] px-10`} style={{ borderBottom: "1px solid hsla(0,0%,100%,.06)" }}>
         <div className={`text-x font-bold mr-[10.75rem]`}>
-            <img src="./logo.svg" alt="logo" />
+            <Image src="/logo.svg" alt="logo" width={240} height={38} />
         </div>
         <div className={`tab-nav px-8`}>
             <Tabs position="relative" variant="unstyled" index={tabIndex}>

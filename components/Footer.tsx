@@ -1,19 +1,32 @@
 
+import Image from 'next/image'
+
 export default function Footer() {
     return (
         <>
             <div className={`h-24 bg-[#E7E7E1] text-white flex items-center justify-between px-[7.5rem] py-[1.875rem]`}>
                 <div>
-                    <img src="./logo.svg" alt="logo" />
+                    <Image src="/logo.svg" alt="logo" width={240} height={38} />
                     <div className="text-black	">Contact us: QBRC20@qtum.info</div>
                 </div>
 
                 <div className="flex">
-                    <div className="rounded-full bg-black h-12 w-12 flex justify-center items-center mr-1.5">1</div>
-                    <div className="rounded-full bg-black h-12 w-12 flex justify-center items-center mr-1.5">2</div>
-                    <div className="rounded-full bg-black h-12 w-12 flex justify-center items-center mr-1.5">3</div>
-                    <div className="rounded-full bg-black h-12 w-12 flex justify-center items-center mr-1.5">4</div>
-                    <div className="rounded-full bg-black h-12 w-12 flex justify-center items-center">5</div>
+                    <div className="rounded-full h-12 w-12 flex justify-center items-center mr-6">
+                        <Image src="/img/discord.png" alt="discord" width={48} height={48} />
+                    </div>
+                    <div className="rounded-full h-12 w-12 flex justify-center items-center mr-6">
+                        <Image src="/img/telegram.png" alt="telegram" width={48} height={48} />
+                    </div>
+                    <div className="rounded-full h-12 w-12 flex justify-center items-center mr-6">
+                        <Image src="/img/x.png" alt="x" width={48} height={48} />
+                    </div>
+                    <div className="rounded-full h-12 w-12 flex justify-center items-center mr-6">
+                        <Image src="/img/youtube.png" alt="youtube" width={48} height={48} />
+                    </div>
+                    <div className="rounded-full h-12 w-12 flex justify-center items-center mr-6">
+                        <Image src="/img/medium.png" alt="medium" width={48} height={48} />
+                    </div>
+
                 </div>
             </div>
         </>
