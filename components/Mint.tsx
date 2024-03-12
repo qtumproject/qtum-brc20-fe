@@ -4,7 +4,6 @@ import {
     SliderTrack,
     SliderFilledTrack,
     SliderThumb,
-    SliderMark,
     Divider,
     FormControl,
     FormLabel,
@@ -43,11 +42,15 @@ const feeTypeMap: { [k: string]: string } = {// TODO add interface
     'custom': '1005.316',
 }
 
-export default function Mint() {
+interface IProps {
+    defaultTick: string,
+}
+
+export default function Mint({ defaultTick }: IProps) {
     const encodedAddressPrefix = 'tq'; // qc for qtum | tq for qtum_testnet
     const [step, setStep] = useState(1);
 
-    const [tick, setTick] = useState('')
+    const [tick, setTick] = useState(defaultTick)
     const [amount, setAmount] = useState("1");
     const [rAddress, setRAddress] = useState('');
     const [feeType, setFeeType] = useState('normal');
@@ -71,6 +74,8 @@ export default function Mint() {
         tick: '',
         amt: '0',
     })
+
+    useEffect(() => { setTick(defaultTick) }, [defaultTick])
 
     useEffect(() => {
         setMint({

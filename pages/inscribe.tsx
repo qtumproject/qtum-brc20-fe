@@ -1,11 +1,24 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from 'next/router'
 import Mint from '@/components/Mint';
 import Deploy from '@/components/Deploy';
 import RadioGroup from "../components/RadioGroup";
-
+import qs from 'qs';
 
 export default function Inscribe() {
     const [value, setValue] = useState('Mint');
+    const [defaultTick, setDefaultTick] = useState('');
+    const router = useRouter();
+
+    useEffect(() => {
+        const { tick, type } = qs.parse(router.asPath.slice(10));
+        if (tick && type) {
+            if (['Mint', 'Deploy'].includes(type)) {
+                setValue(type as string);
+                setDefaultTick(tick as string);
+            }
+        }
+    }, [])
 
     return (
         <div className={`flex flex-col items-center`}>
@@ -17,7 +30,7 @@ export default function Inscribe() {
                     </div>
 
                     {
-                        value === "Mint" && <Mint />
+                        value === "Mint" && <Mint defaultTick={defaultTick} />
                     }
 
                     {

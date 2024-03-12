@@ -2,15 +2,20 @@ import {
     Table,
     Thead,
     Tbody,
-    Tfoot,
     Tr,
     Th,
     Td,
     TableContainer,
     Button,
 } from '@chakra-ui/react'
+import Link from 'next/link';
+import { IBrc20ListItem, TBrc20List } from '@/types';
 
-export default function CustomTable() {
+interface IProps {
+    dataList: TBrc20List
+}
+
+export default function CustomTable({ dataList }: IProps) {
     return (
         <TableContainer>
             <Table variant='simple'>
@@ -25,49 +30,28 @@ export default function CustomTable() {
                     </Tr>
                 </Thead>
                 <Tbody>
-                    <Tr>
-                        <Td>Ordi</Td>
-                        <Td>2023/11/24 12:34:08</Td>
-                        <Td>100%</Td>
-                        <Td>48,273</Td>
-                        <Td>563,863</Td>
-                        <Td>
-                            <Button variant="brandPrimary" size="sm">Mint</Button>
-                        </Td>
-                    </Tr>
-                    <Tr>
-                        <Td>Meme</Td>
-                        <Td>2023/11/24 12:34:08</Td>
-                        <Td>100%</Td>
-                        <Td>48,273</Td>
-                        <Td>563,863</Td>
-                        <Td>
-                            <Button variant="brandPrimary" size="sm">Mint</Button>
-                        </Td>
-                    </Tr>
-                    <Tr>
-                        <Td>Punk</Td>
-                        <Td>2023/11/24 12:34:08</Td>
-                        <Td>100%</Td>
-                        <Td>48,273</Td>
-                        <Td>563,863</Td>
-                        <Td>
-                            <Button variant="brandPrimary" size="sm">Mint</Button>
-                        </Td>
-                    </Tr>
+                    {dataList.map((data: IBrc20ListItem) => {
+                        return (<Tr key={data.token_name}>
+                            <Td>{data.token_name}</Td>
+                            <Td>{data.deploy_time}</Td>
+                            <Td>{data.progress}</Td>
+                            <Td>{data.holders || 0}</Td>
+                            <Td>{data.mint_times || 0}</Td>
+                            <Td>
+                                <Link href={{
+                                    pathname: '/inscribe',
+                                    query: {
+                                        type: 'Mint',
+                                        tick: data.token_name,
+                                    }
+                                }}>
+                                    <Button variant="brandPrimary" size="sm">Mint</Button>
+                                </Link>
+
+                            </Td>
+                        </Tr>)
+                    })}
                 </Tbody>
-                <Tfoot>
-                    <Tr>
-                        <Td>Ordi</Td>
-                        <Td>2023/11/24 12:34:08</Td>
-                        <Td>100%</Td>
-                        <Td>48,273</Td>
-                        <Td>563,863</Td>
-                        <Td>
-                            <Button variant="brandPrimary" size="sm">Mint</Button>
-                        </Td>
-                    </Tr>
-                </Tfoot>
             </Table>
         </TableContainer>
     )
