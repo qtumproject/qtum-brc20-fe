@@ -21,6 +21,19 @@ const theme = extendTheme({
     NumberInput: numberInputTheme,
     Modal: modalTheme,
   },
+  colors: {
+    brand: {
+      100: '#2D73FF',
+      200: '#2D73FF',
+      300: '#2D73FF',
+      400: '#2D73FF',
+      500: '#2D73FF',
+      600: '#2D73FF',
+      700: '#2D73FF',
+      800: '#2D73FF',
+      900: '#2D73FF',
+    }
+  }
 })
 
 export default theme

@@ -7,7 +7,7 @@ import {
     Td,
     TableContainer,
     Button,
-    Skeleton,
+    Progress,
     SkeletonText
 } from '@chakra-ui/react'
 import Link from 'next/link';
@@ -22,11 +22,14 @@ export default function CustomTable({ dataList, isLoading }: IProps) {
 
     const renderData = () => dataList.map((data: IBrc20ListItem) => {
         return (<Tr key={data.token_name}>
-            <Td>{data.token_name}</Td>
-            <Td>{data.deploy_time}</Td>
-            <Td>{data.progress}</Td>
-            <Td>{data.holders || 0}</Td>
-            <Td>{data.mint_times || 0}</Td>
+            <Td className='font-medium text-sm'>{data.token_name}</Td>
+            <Td className='text-[#7f8596]'>{data.deploy_time}</Td>
+            <Td className='text-sm'>
+                {data.progress}
+                <Progress value={Number(data.progress.slice(0, 5))} size='xs' colorScheme='brand' />
+            </Td>
+            <Td className='text-sm font-medium'>{data.holders || 0}</Td>
+            <Td className='text-sm'>{data.mint_times || 0}</Td>
             <Td>
                 <Link href={{
                     pathname: '/inscribe',
