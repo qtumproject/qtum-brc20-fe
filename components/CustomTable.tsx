@@ -7,15 +7,119 @@ import {
     Td,
     TableContainer,
     Button,
+    Skeleton,
+    SkeletonText
 } from '@chakra-ui/react'
 import Link from 'next/link';
 import { IBrc20ListItem, TBrc20List } from '@/types';
 
 interface IProps {
-    dataList: TBrc20List
+    dataList: TBrc20List,
+    isLoading: boolean,
 }
 
-export default function CustomTable({ dataList }: IProps) {
+export default function CustomTable({ dataList, isLoading }: IProps) {
+
+    const renderData = () => dataList.map((data: IBrc20ListItem) => {
+        return (<Tr key={data.token_name}>
+            <Td>{data.token_name}</Td>
+            <Td>{data.deploy_time}</Td>
+            <Td>{data.progress}</Td>
+            <Td>{data.holders || 0}</Td>
+            <Td>{data.mint_times || 0}</Td>
+            <Td>
+                <Link href={{
+                    pathname: '/inscribe',
+                    query: {
+                        type: 'Mint',
+                        tick: data.token_name,
+                    }
+                }}>
+                    <Button variant="brandPrimary" size="sm">Mint</Button>
+                </Link>
+
+            </Td>
+        </Tr>)
+    });
+
+    const renderLoading = () => {
+        return (
+            <>
+                <Tr>
+                    <Td>
+                        <SkeletonText noOfLines={1} spacing='1' skeletonHeight='4' />
+                    </Td>
+                    <Td>
+                        <SkeletonText noOfLines={1} spacing='1' skeletonHeight='4' />
+                    </Td>
+                    <Td>
+                        <SkeletonText noOfLines={1} spacing='1' skeletonHeight='4' />
+                    </Td>
+                    <Td>
+                        <SkeletonText noOfLines={1} spacing='1' skeletonHeight='4' />
+                    </Td>
+                    <Td>
+                        <SkeletonText noOfLines={1} spacing='1' skeletonHeight='4' />
+                    </Td>
+                    <Td>
+                        <SkeletonText noOfLines={1} spacing='1' skeletonHeight='4' />
+                    </Td>
+                </Tr>
+                <Tr>
+                    <Td>
+                        <SkeletonText noOfLines={1} spacing='1' skeletonHeight='4' />
+                    </Td>
+                    <Td>
+                        <SkeletonText noOfLines={1} spacing='1' skeletonHeight='4' />
+                    </Td>
+                    <Td>
+                        <SkeletonText noOfLines={1} spacing='1' skeletonHeight='4' />
+                    </Td>
+                    <Td>
+                        <SkeletonText noOfLines={1} spacing='1' skeletonHeight='4' />
+                    </Td>
+                    <Td>
+                        <SkeletonText noOfLines={1} spacing='1' skeletonHeight='4' />
+                    </Td>
+                    <Td>
+                        <SkeletonText noOfLines={1} spacing='1' skeletonHeight='4' />
+                    </Td>
+                </Tr>
+                <Tr>
+                    <Td>
+                        <SkeletonText noOfLines={1} spacing='1' skeletonHeight='4' />
+                    </Td>
+                    <Td>
+                        <SkeletonText noOfLines={1} spacing='1' skeletonHeight='4' />
+                    </Td>
+                    <Td>
+                        <SkeletonText noOfLines={1} spacing='1' skeletonHeight='4' />
+                    </Td>
+                    <Td>
+                        <SkeletonText noOfLines={1} spacing='1' skeletonHeight='4' />
+                    </Td>
+                    <Td>
+                        <SkeletonText noOfLines={1} spacing='1' skeletonHeight='4' />
+                    </Td>
+                    <Td>
+                        <SkeletonText noOfLines={1} spacing='1' skeletonHeight='4' />
+                    </Td>
+                </Tr>
+            </>
+        )
+    }
+
+    const renderList = () => {
+        if (dataList.length) {
+            return renderData();
+        } else {
+            return renderPlaceholder();
+        }
+    }
+
+    const renderPlaceholder = () => {
+        return <Tr><Td></Td><Td></Td><Td></Td><Td>No Data</Td><Td></Td><Td></Td></Tr>
+    }
     return (
         <TableContainer>
             <Table variant='simple'>
@@ -30,27 +134,9 @@ export default function CustomTable({ dataList }: IProps) {
                     </Tr>
                 </Thead>
                 <Tbody>
-                    {dataList.map((data: IBrc20ListItem) => {
-                        return (<Tr key={data.token_name}>
-                            <Td>{data.token_name}</Td>
-                            <Td>{data.deploy_time}</Td>
-                            <Td>{data.progress}</Td>
-                            <Td>{data.holders || 0}</Td>
-                            <Td>{data.mint_times || 0}</Td>
-                            <Td>
-                                <Link href={{
-                                    pathname: '/inscribe',
-                                    query: {
-                                        type: 'Mint',
-                                        tick: data.token_name,
-                                    }
-                                }}>
-                                    <Button variant="brandPrimary" size="sm">Mint</Button>
-                                </Link>
-
-                            </Td>
-                        </Tr>)
-                    })}
+                    {
+                        isLoading ? renderLoading() : renderList()
+                    }
                 </Tbody>
             </Table>
         </TableContainer>

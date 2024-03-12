@@ -125,6 +125,7 @@ const Pagination = ({
                 }}
                 isDisabled={!(pageIndex > 0)}
                 variant="link"
+                key='prev'
             >
                 Atras
             </IconButton>
@@ -143,6 +144,7 @@ const Pagination = ({
                 }}
                 isDisabled={!(pageIndex + 1 < TOTAL_INDEX)}
                 variant="link"
+                key='next'
             >
                 Atras
             </IconButton>

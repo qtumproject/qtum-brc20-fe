@@ -26,6 +26,8 @@ export default function Indexer() {
         total: 1,
     });
 
+    const [isLoading, setIsLoading] = useState(false);
+
     const [tokenName, setTokenName] = useState('');
 
     const [dataList, setDataList] = useState<[IBrc20ListItem] | []>([]);
@@ -45,7 +47,9 @@ export default function Indexer() {
             if (tick) {
                 params.tick = tick;
             }
+            setIsLoading(true);
             const { status: resStatus, data, statusText } = await axios.get('/api/v1/getCollectionList?chain_id=qtum', { params });
+            setIsLoading(false);
             if (resStatus === 200) {
                 const { code, data: resData, msg } = data || {};
                 if (code === 0) {
@@ -63,7 +67,7 @@ export default function Indexer() {
                 console.error(statusText);
             }
         } catch (e) {
-
+            setIsLoading(false);
         }
 
     }
@@ -82,7 +86,7 @@ export default function Indexer() {
     }
 
     const onQueryChange = () => {
-        getData({ tick: tokenName })
+        getData({ tick: tokenName.replace(/\s*/g, "") })
     }
 
     useEffect(() => {
@@ -115,15 +119,17 @@ export default function Indexer() {
                 </div>
 
                 <div className='w-full'>
-                    <CustomTable dataList={dataList} />
-                    <div className='mt-4'>
-                        <Pagination
-                            pageSize={10}
-                            pageIndex={pageInfo.page - 1}
-                            setPageIndex={(page: number) => setCurrPage(page + 1)}
-                            totalItemsCount={pageInfo.total}
-                        />
-                    </div>
+                    <CustomTable dataList={dataList} isLoading={isLoading} />
+                    {
+                        pageInfo.total > 0 && <div className='mt-4'>
+                            <Pagination
+                                pageSize={10}
+                                pageIndex={pageInfo.page - 1}
+                                setPageIndex={(page: number) => setCurrPage(page + 1)}
+                                totalItemsCount={pageInfo.total}
+                            />
+                        </div>
+                    }
 
                 </div>
             </div>
