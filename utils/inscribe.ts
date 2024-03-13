@@ -1,5 +1,5 @@
 import { Buff } from '@cmdcode/buff-utils';
-import { Address, Script, Signer, Tap, Tx } from '@cmdcode/tapscript';
+import { Script, Signer, Tap, Tx } from '@cmdcode/tapscript';
 import { Noble, KeyPair } from '@cmdcode/crypto-utils';
 import QRCode from 'qrcode'
 import {
@@ -13,6 +13,7 @@ import {
 import { axiosInstance } from '@/utils';
 
 const encodedAddressPrefix = 'tq'; // qc for qtum | tq for qtum_testnet
+var debug = require('debug')('[inscribe]');
 
 export async function mintOrDeploy({
     scriptObj,
@@ -22,11 +23,11 @@ export async function mintOrDeploy({
     setFundingAddress,
     setQrImg
 }: IMintOrDeployParams) {
-    console.log('================mint or deploy begin=================');
+    debug('inscribe begin')
     let inscriptions = [];
 
     let privkey = bytesToHex(Noble.utils.randomPrivateKey());
-    console.log('privkey', privkey);
+    debug('privkey %o', privkey)
 
     let seckey = new KeyPair(privkey);
     let pubkey = seckey.pub.rawX;
@@ -73,11 +74,10 @@ export async function mintOrDeploy({
 
     let inscriptionAddress = p2trEncode(tapkey, encodedAddressPrefix);
 
-    console.log('Inscription address: ', inscriptionAddress);
-    console.log('Tapkey:', tapkey);
+    debug('Inscription address: %o', inscriptionAddress);
+    debug('Inscription Tapkey: %o', tapkey);
     let prefix = 160;
     let txsize = prefix + Math.floor(data.length / 4);
-    console.log("TXSIZE", txsize);
     inscriptions.push(
         {
             leaf: leaf,
@@ -90,21 +90,21 @@ export async function mintOrDeploy({
             script_orig: script
         }
     );
-    console.log('inscriptions', inscriptions)
 
     let fundingAddress = p2trEncode(init_tapkey, encodedAddressPrefix);
-    console.log('Funding address: ', fundingAddress, 'based on', init_tapkey);
+    debug('Funding address: %o', fundingAddress);
+    debug('Funding Tapkey: %o', init_tapkey);
     setFundingAddress(fundingAddress)
 
-    console.log('Address that will receive the inscription:', rAddress);
+    debug('Address that will receive the inscription: %o', rAddress);
+    debug('Total transfer amount: %o', satsToQtum(totalFees), 'QTUM');
 
     let qr_value = "qtum:" + fundingAddress + "?amount=" + satsToQtum(totalFees);
-    console.log("qr:", qr_value);
+    debug("Qrcode value is: %o", qr_value);
 
     const qrimg = createQR(qr_value);
     setQrImg(qrimg as any);
 
-    // 检查转账是否完成
     await loopTilAddressReceivesMoney(fundingAddress, true);
     await waitSomeSeconds(2);
     let txinfo = await addressReceivedMoneyInThisTx(fundingAddress);
@@ -112,10 +112,9 @@ export async function mintOrDeploy({
     let txid = txinfo[0];
     let vout = txinfo[1];
     let amt = txinfo[2];
+    debug('Funding Address receive the money, the txid, vout, amount is: %o %o %o', txid, vout, amt);
 
-    console.log("yay! txid:", txid, "vout:", vout, "amount:", amt);
-
-    // 转账到inscription address
+    // 1. to inscription address
     let outputs = [];
     for (let i = 0; i < inscriptions.length; i++) {
         outputs.push(
@@ -139,39 +138,27 @@ export async function mintOrDeploy({
         vout: outputs
     })
 
-    console.log('outputs', outputs)
-
     const init_sig = await Signer.taproot.sign(seckey.raw, init_redeemtx, 0, { extension: init_leaf });
     init_redeemtx.vin[0].witness = [init_sig.hex, init_script, init_cblock];
 
     console.dir(init_redeemtx, { depth: null });
-    console.log('YOUR SECKEY', seckey);
-    // "non-mandatory-script-verify-flag (Invalid Schnorr signature)"
     let rawtx = Tx.encode(init_redeemtx).hex;
     let _txid = await pushBTCpmt(rawtx);
 
-    console.log('Init TX', _txid);
-
     if (!_txid) {
-        alert('广播交易失败')
+        debug('[Error]: pushBTCpmt error')
         return;
     }
+    debug('Inscription address receive the money, the txid is: %o', _txid);
 
     const inscribe = async (inscription: any, vout: any) => {
-        // we are running into an issue with 25 child transactions for unconfirmed parents.
-        // so once the limit is reached, we wait for the parent tx to confirm.
-
         await loopTilAddressReceivesMoney(inscription.inscriptionAddress, true);
         await waitSomeSeconds(2);
         let txinfo2 = await addressReceivedMoneyInThisTx(inscription.inscriptionAddress);
-
         let txid2 = txinfo2[0];
         let amt2 = txinfo2[2] || 0;
-
         const pubKey = addressToScriptPubKey(rAddress);
-        console.log('receive address scriptpubkey is: ', pubKey);
-
-        // 转账到receive address
+        // 2. to receive address
         const redeemtx = Tx.create({
             vin: [{
                 txid: txid2,
@@ -189,26 +176,21 @@ export async function mintOrDeploy({
 
         const sig = await Signer.taproot.sign(seckey.raw, redeemtx, 0, { extension: inscription.leaf });
         redeemtx.vin[0].witness = [sig.hex, inscription.script_orig, inscription.cblock];
-
-        console.dir(redeemtx, { depth: null });
-
         let rawtx2 = Tx.encode(redeemtx).hex;
         let _txid2;
-
         _txid2 = await pushBTCpmt(rawtx2) || '';
-
-        // TODO replace
-        if (_txid2.includes('descendant')) {
+        if (!_txid2) {
             inscribe(inscription, vout);
             return;
         }
+        debug('Receive address receive the money, the txid is: %o', _txid2);
+        debug('Success!')
     }
 
     for (let i = 0; i < inscriptions.length; i++) {
         inscribe(inscriptions[i], i);
     }
 }
-
 
 export async function calcTotalFees({
     scriptObj,
@@ -231,7 +213,6 @@ export async function calcTotalFees({
         let feeTemp = Number(fee) * txsize;
         totalFee += feeTemp;
         setInscriptionFees(totalFee);
-        console.log('转账给B的金额为', totalFee)
 
         let baseSize = 160;
         let padding = 546;
@@ -240,7 +221,6 @@ export async function calcTotalFees({
         totalFees += baseSize * repeat;
         totalFees += padding * repeat;
     }
-    console.log('一共收费', totalFees)
     setTotalFees(totalFees);
 }
 
@@ -337,8 +317,7 @@ export async function pushBTCpmt(rawtx: string) {
         const { status, id, message } = res || {}
         if (status === 0) {
             txid = id;
-            console.log('txid', txid);
-            console.log('yah! all transication done, wait 2-5 minutes to check your mint or deploy!')
+            debug('pushBTCpmt success, txid is %o', txid);
         } else {
             console.error(message)
             return ''
@@ -359,7 +338,6 @@ export function waitSomeSeconds(number: number) {
     });
 }
 
-// 拿收到转账的信息
 export async function addressReceivedMoneyInThisTx(address: string) {
     let txid;
     let vout;
@@ -372,19 +350,14 @@ export async function addressReceivedMoneyInThisTx(address: string) {
             amt = res[res.length - 1].value;
         }
     } catch (e) {
-        console.error('查询转账信息出现了错误');
+        debug('[Error] get tx info error');
         console.error(e);
     }
     // let nonjson;
     return [txid, vout, amt];
 }
 
-// 检查有没有收到转账
 export async function addressOnceHadMoney(address: string, includeMempool: boolean) {
-    console.log('检查转账的地址为：', address);
-    // tq1jjuwhr4esatparyrgfj7qf5m8jyv6ytwnvrh2zj8tjq3m7atqedshh6wcd
-    // tq1pnujql5krthgwzq5e30fygfh44p2q47fnjc586acyd5mc8hg56qjqv9fmhn
-    // const td = 'tq1pnujql5krthgwzq5e30fygfh44p2q47fnjc586acyd5mc8hg56qjqv9fmhn';
     try {
         const res: qtumAddressInfo = await axiosInstance.get(`/address/${address}`);
         const { balance } = res || {};
@@ -394,13 +367,12 @@ export async function addressOnceHadMoney(address: string, includeMempool: boole
             return false;
         }
     } catch (e) {
-        console.error('请求发生了错误')
+        debug('[Error] get address info error')
         console.error(e);
         return false;
     }
 }
 
-// 轮询是否有收到转账
 export async function loopTilAddressReceivesMoney(address: string, includeMempool: boolean) {
     let itReceivedMoney = false;
 
@@ -408,11 +380,11 @@ export async function loopTilAddressReceivesMoney(address: string, includeMempoo
         return new Promise(function (resolve) {
             if (!data_i_seek) {
                 setTimeout(async function () {
-                    console.log("waiting for address to receive money...");
+                    debug("waiting for address to receive money...");
                     try {
                         itReceivedMoney = await addressOnceHadMoney(address, includeMempool);
                         if (itReceivedMoney) {
-                            console.log('收到了转账！！！！！')
+                            debug('receive money success!')
                         }
                     } catch (e) { }
                     let msg = await isDataSetYet(itReceivedMoney);

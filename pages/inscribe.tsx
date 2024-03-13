@@ -32,7 +32,6 @@ export default function Inscribe() {
 
     const setQtumFee = async () => {
         const res = await getQtumFee();
-        console.log('res', res)
         let feeRates = {
             custom: '',
             economy: '',

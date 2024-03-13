@@ -20,6 +20,7 @@
     "bignumber.js": "^9.1.2",
     "bip32": "^4.0.0",
     "bitcoinjs-lib": "^6.1.5",
+    "debug": "^4.3.4",
     "framer-motion": "^6.5.1",
     "next": "14.0.4",
     "qrcode": "^1.5.3",
