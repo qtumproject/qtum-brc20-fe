@@ -1,5 +1,5 @@
 import { Buff } from '@cmdcode/buff-utils';
-import { Script, Signer, Tap, Tx } from '@cmdcode/tapscript';
+import { Address, Script, Signer, Tap, Tx } from '@cmdcode/tapscript';
 import { Noble, KeyPair } from '@cmdcode/crypto-utils';
 import QRCode from 'qrcode'
 import {
@@ -12,7 +12,6 @@ import {
 } from "@/types";
 import { axiosInstance } from '@/utils';
 
-const qtumjs = require('@/lib/qtum');
 const encodedAddressPrefix = 'tq'; // qc for qtum | tq for qtum_testnet
 
 export async function mintOrDeploy({
@@ -169,9 +168,8 @@ export async function mintOrDeploy({
         let txid2 = txinfo2[0];
         let amt2 = txinfo2[2] || 0;
 
-        const data = addressToScript(rAddress, qtumjs.networks.qtum_testnet);
-        const rAddressScriptPubKey = buf2hex(data);
-        console.log('receive address scriptpubkey is: ', rAddressScriptPubKey);
+        const pubKey = addressToScriptPubKey(rAddress);
+        console.log('receive address scriptpubkey is: ', pubKey);
 
         // 转账到receive address
         const redeemtx = Tx.create({
@@ -185,7 +183,7 @@ export async function mintOrDeploy({
             }],
             vout: [{
                 value: Math.floor(Number(amt2) - Number(inscription.fee)),
-                scriptPubKey: ['OP_1', rAddressScriptPubKey]
+                scriptPubKey: pubKey,
             }],
         });
 
@@ -199,6 +197,7 @@ export async function mintOrDeploy({
 
         _txid2 = await pushBTCpmt(rawtx2) || '';
 
+        // TODO replace
         if (_txid2.includes('descendant')) {
             inscribe(inscription, vout);
             return;
@@ -268,13 +267,17 @@ export function p2trDecode(address: string) {
     return Buff.bech32(address);
 }
 
-export const addressToScript = (address: string, network: any): Buffer => {
+export const addressToScriptPubKey = (address: string): Array<string> => {
     try {
-        return qtumjs.address.toOutputScript(address, network);
+        // p2pkh
+        const hex = Buff.b58chk(address).slice(1).hex;
+        return ['OP_DUP', 'OP_HASH160', hex, 'OP_EQUALVERIFY', 'OP_CHECKSIG']
     } catch (error) {
         try {
-            const decoded = qtumjs.address.fromBech32(address);
-            return decoded.data;
+            // p2tr
+
+            const hex = Buff.bech32(address).hex;
+            return ['OP_1', hex]
         } catch (error2) {
             throw new Error("cannot decode address");
         }
@@ -334,6 +337,8 @@ export async function pushBTCpmt(rawtx: string) {
         const { status, id, message } = res || {}
         if (status === 0) {
             txid = id;
+            console.log('txid', txid);
+            console.log('yah! all transication done, wait 2-5 minutes to check your mint or deploy!')
         } else {
             console.error(message)
             return ''
@@ -341,8 +346,7 @@ export async function pushBTCpmt(rawtx: string) {
     } catch (e) {
         console.error(e)
     }
-    console.log('rawtx', rawtx);
-    console.log('txid', txid);
+
     return txid;
 }
 

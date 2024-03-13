@@ -33,19 +33,25 @@ export default function Indexer() {
     const [dataList, setDataList] = useState<[IBrc20ListItem] | []>([]);
 
     const setCurrPage = (page: number) => {
+        console.log('page', page);
         setPageInfo({
             ...pageInfo,
             page,
         })
+        getData({ status: '', tick: '', page: page })
     }
     const getData = async ({
         status,
         tick,
+        page
     }: IBrc20ListParams) => {
         try {
             const params: IBrc20ListParams = { status };
             if (tick) {
                 params.tick = tick;
+            }
+            if (page) {
+                params.page = page;
             }
             setIsLoading(true);
             const { status: resStatus, data, statusText } = await axios.get('/api/v1/getCollectionList?chain_id=qtum', { params });

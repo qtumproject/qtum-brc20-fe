@@ -7,8 +7,7 @@ import RadioGroup from "@/components/RadioGroup";
 import {
     getQtumFee
 } from '@/utils';
-import { IQtumFeeRates, TQtumFeeRatesRes } from '@/types'
-
+import { IQtumFeeRates } from '@/types'
 
 
 export default function Inscribe() {
@@ -39,7 +38,7 @@ export default function Inscribe() {
             economy: '',
             normal: ''
         } as IQtumFeeRates;
-        const qtum2satvb = (count: number) => String(count * Math.pow(10, 5));
+        const qtum2satvb = (count: number) => String((count * Math.pow(10, 5)).toFixed(3));
         if (res && res.length) {
             res.forEach(item => {
                 if (item.blocks === 2) {

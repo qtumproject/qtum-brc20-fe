@@ -50,7 +50,7 @@ const Pagination = ({
     const showButtons = () => {
         let buttons = [];
 
-        const TOTAL_INDEX = Math.floor(totalItemsCount / pageSize);
+        const TOTAL_INDEX = Math.ceil(totalItemsCount / pageSize);
 
         if (TOTAL_INDEX < 5) {
             for (let index = 0; index < TOTAL_INDEX; index++) {
@@ -110,7 +110,6 @@ const Pagination = ({
             }
         }
 
-        // Si en el indice que está es mayor a cero muestra el boton para volver atrás
         buttons.unshift(
             <IconButton
                 aria-label='prev'

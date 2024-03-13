@@ -1,5 +1,6 @@
 
 import Image from 'next/image'
+import Link from 'next/link';
 
 export default function Footer() {
     return (
@@ -12,19 +13,19 @@ export default function Footer() {
 
                 <div className="flex">
                     <div className="rounded-full h-12 w-12 flex justify-center items-center mr-6">
-                        <Image src="/img/discord.png" alt="discord" width={48} height={48} />
+                        <Link href="https://discord.com/invite/DCPGvUCms5">
+                            <Image src="/img/discord.png" alt="discord" width={48} height={48} />
+                        </Link>
                     </div>
                     <div className="rounded-full h-12 w-12 flex justify-center items-center mr-6">
-                        <Image src="/img/telegram.png" alt="telegram" width={48} height={48} />
+                        <Link href="https://twitter.com/qtum">
+                            <Image src="/img/x.png" alt="x" width={48} height={48} />
+                        </Link>
                     </div>
                     <div className="rounded-full h-12 w-12 flex justify-center items-center mr-6">
-                        <Image src="/img/x.png" alt="x" width={48} height={48} />
-                    </div>
-                    <div className="rounded-full h-12 w-12 flex justify-center items-center mr-6">
-                        <Image src="/img/youtube.png" alt="youtube" width={48} height={48} />
-                    </div>
-                    <div className="rounded-full h-12 w-12 flex justify-center items-center mr-6">
-                        <Image src="/img/medium.png" alt="medium" width={48} height={48} />
+                        <Link href="https://coinmarketcap.com/community/profile/Qtum_Foundation/">
+                            <Image src="/img/coinmarketcap.png" alt="coinmarketcap" width={48} height={48} />
+                        </Link>
                     </div>
 
                 </div>
