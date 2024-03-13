@@ -22,6 +22,7 @@
     "bitcoinjs-lib": "^6.1.5",
     "framer-motion": "^6.5.1",
     "next": "14.0.4",
+    "qrcode": "^1.5.3",
     "qs": "^6.12.0",
     "qtum-opcodes": "^1.0.0",
     "randombytes": "^2.1.0",

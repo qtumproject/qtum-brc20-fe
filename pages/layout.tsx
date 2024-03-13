@@ -12,13 +12,6 @@ export default function Layout({ children }: {
             <Head>
                 <title>QBRC20</title>
                 <meta property="og:title" content="QBRC20" key="title" />
-                <script src="lib/indexeddb.js" defer></script>
-                <script src="lib/wif.js" defer></script>
-                <script src="lib/buffer.6.0.3.js" defer></script>
-                <script src="lib/tapscript.1.2.7.js" defer></script>
-                <script src="lib/crypto-utils.1.5.11.js" defer></script>
-                <script src="lib/bech32.2.0.0.js" defer></script>
-                <script src="lib/qrcode.js" defer></script>
             </Head>
             <NavBar></NavBar>
             <div className='bg-[#F7F7F0] pt-[80px] min-h-[calc(100vh_-_185px)] pb-20'>{children}</div >
