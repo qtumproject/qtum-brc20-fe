@@ -9,7 +9,6 @@ import {
     SliderTrack,
     SliderFilledTrack,
     SliderThumb,
-    SliderMark,
     NumberInput,
     NumberInputField,
     NumberInputStepper,
@@ -243,38 +242,18 @@ export default function Deploy({ feeRates }: IProps) {
                         <FormControl>
                             <FormLabel htmlFor='amount'>Network Fee</FormLabel>
                             <div className="mb-4 flex justify-between">
-                                <div><FeeType type="Economy" amount={Number(feeRates['economy'])} focus={feeType === 'economy'} onClick={() => setFeeType('economy')} /></div>
-                                <div><FeeType type="Normal" amount={Number(feeRates['normal'])} focus={feeType === 'normal'} onClick={() => setFeeType('normal')} /></div>
-                                <div><FeeType type="Custom" amount={Number(customFee)} focus={feeType === 'custom'} onClick={() => setFeeType('custom')} /></div>
+                                <div><FeeType title="Economy" type="solid" amount={Number(feeRates['economy'])} focus={feeType === 'economy'} onClick={() => setFeeType('economy')} /></div>
+                                <div><FeeType title="Normal" type="solid" amount={Number(feeRates['normal'])} focus={feeType === 'normal'} onClick={() => setFeeType('normal')} /></div>
+                                <div><FeeType title="Custom" type="input" setValue={setCustomFee} amount={Number(customFee)} focus={feeType === 'custom'} onClick={() => setFeeType('custom')} /></div>
                             </div>
-                            {
-                                feeType === 'custom' && <div className="mb-4 flex">
-                                    <Slider className="flex-auto" aria-label='slider-ex-1' focusThumbOnChange={false} value={Number(customFee)} onChange={(val) => setCustomFee(val.toString())}>
-                                        <SliderTrack>
-                                            <SliderFilledTrack />
-                                        </SliderTrack>
-                                        <SliderThumb />
-                                    </Slider>
-                                    <div className="w-24 ml-4">
-                                        <NumberInput defaultValue={1} min={1} value={customFee} onChange={(value) => setCustomFee(value)}>
-                                            <NumberInputField />
-                                            <NumberInputStepper>
-                                                <NumberIncrementStepper />
-                                                <NumberDecrementStepper />
-                                            </NumberInputStepper>
-                                        </NumberInput>
-                                    </div>
-
-                                </div>
-                            }
                         </FormControl>
                     </div>
 
                     <Divider className="mb-4" />
                     <div className="mb-4">
-                        <div className="mb-4 flex justify-between">
-                            <div className="">Network Fee</div>
-                            <div>{totalFees.toFixed(3)} sats = {satsToQtum(totalFees)} QTUM</div>
+                        <div className="mb-4 flex justify-between bg-[#F3F3F0] p-4 rounded-[12px] text-sm">
+                            <div className="font-semibold">Network Fee</div>
+                            <div><span className="font-semibold">{totalFees.toFixed(3)} sats</span> <span className="text-[#7F8596]">{satsToQtum(totalFees)} QTUM</span> </div>
                         </div>
                     </div>
 

@@ -9,7 +9,6 @@ import {
 } from '@/utils';
 import { IQtumFeeRates } from '@/types'
 
-
 export default function Inscribe() {
     const [value, setValue] = useState('Mint');
     const [defaultTick, setDefaultTick] = useState('');

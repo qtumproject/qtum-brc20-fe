@@ -22,18 +22,16 @@ interface IProps {
 
 export default function PayModal({ isShow, children, fundingAddress, totalPay, close }: IProps) {
     const toast = useToast();
-    const { onCopy, hasCopied } = useClipboard(fundingAddress);
+    const { onCopy } = useClipboard(fundingAddress);
     const [isOpen, setIsOpen] = useState(false);
     useEffect(() => { setIsOpen(isShow) }, [isShow])
     const onCopyClick = () => {
         onCopy();
         toast({
-            title: 'Copied!',
-            description: "The address has copied.",
+            title: 'The address has been copied!',
             position: 'top',
             status: 'success',
             duration: 2000,
-            isClosable: true,
         })
     }
     const onClose = () => {
