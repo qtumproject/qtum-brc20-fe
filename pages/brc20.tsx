@@ -30,15 +30,16 @@ export default function Indexer() {
 
     const [tokenName, setTokenName] = useState('');
 
+    const [status, setStatus] = useState<TBrc20StatusParams>('');
+
     const [dataList, setDataList] = useState<[IBrc20ListItem] | []>([]);
 
     const setCurrPage = (page: number) => {
-        console.log('page', page);
         setPageInfo({
             ...pageInfo,
             page,
         })
-        getData({ status: '', tick: '', page: page })
+        getData({ status: status, tick: '', page: page })
     }
     const getData = async ({
         status,
@@ -46,7 +47,10 @@ export default function Indexer() {
         page
     }: IBrc20ListParams) => {
         try {
-            const params: IBrc20ListParams = { status };
+            const params: IBrc20ListParams = {};
+            if (status) {
+                params.status = status
+            }
             if (tick) {
                 params.tick = tick;
             }
@@ -84,9 +88,9 @@ export default function Indexer() {
             'Completed': 'completed',
             'All': '',
         }
-        const params = {
-            status: paramsMap[status] as TBrc20StatusParams,
-        };
+        const statusInParams = paramsMap[status] as TBrc20StatusParams;
+        setStatus(statusInParams)
+        const params = { status: statusInParams };
         getData(params);
 
     }
@@ -96,7 +100,7 @@ export default function Indexer() {
     }
 
     useEffect(() => {
-        getData({ status: '' });
+        getData({ status: '', page: pageInfo.page });
     }, [])
 
 

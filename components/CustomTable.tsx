@@ -31,7 +31,7 @@ export default function CustomTable({ dataList, isLoading }: IProps) {
             <Td className='text-sm font-medium'>{data.holders || 0}</Td>
             <Td className='text-sm'>{data.mint_times || 0}</Td>
             <Td>
-                <Link href={{
+                {data.progress === '100.000%' ? '-' : <Link href={{
                     pathname: '/inscribe',
                     query: {
                         type: 'Mint',
@@ -39,7 +39,7 @@ export default function CustomTable({ dataList, isLoading }: IProps) {
                     }
                 }}>
                     <Button variant="brandPrimary" size="sm">Mint</Button>
-                </Link>
+                </Link>}
 
             </Td>
         </Tr>)

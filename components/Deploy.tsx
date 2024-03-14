@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, ChangeEvent } from "react"
 import {
     Divider,
     FormControl,
@@ -99,6 +99,13 @@ export default function Deploy({ feeRates }: IProps) {
         } else {
             setIsAmountError(false);
         }
+
+        if (!limit) {
+            setIsLimitError(true);
+            valid = false;
+        } else {
+            setIsLimitError(false);
+        }
         return valid;
     }
 
@@ -117,6 +124,21 @@ export default function Deploy({ feeRates }: IProps) {
         }
         return valid;
     }
+
+
+    const onRAddressChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setRAddress(e.target.value);
+        if (e.target.value) {
+            setisRAddressError(false);
+        }
+    }
+
+    const onTickChange = (e: ChangeEvent<HTMLInputElement>) => {
+        let value = e.target.value;
+        value = value.slice(0, 4);
+        setTick(value);
+    }
+
 
     const handleSubmit = () => {
         const valid = validSecondForm();
@@ -147,7 +169,8 @@ export default function Deploy({ feeRates }: IProps) {
                                 id='tick'
                                 placeholder='4 characters like &quot;abcd&quot;...'
                                 value={tick}
-                                onChange={(e) => setTick(e.target.value)} />
+                                focusBorderColor="#2D73FF"
+                                onChange={onTickChange} />
                             {isTickError && <FormErrorMessage>
                                 invalid input tick name
                             </FormErrorMessage>}
@@ -156,7 +179,7 @@ export default function Deploy({ feeRates }: IProps) {
                     <div className='mb-4'>
                         <FormControl isRequired isInvalid={isAmountError}>
                             <FormLabel htmlFor='amount'>Total Supply</FormLabel>
-                            <NumberInput id='amount' defaultValue={1} min={1} value={amount} onChange={(value) => setAmount(value)}>
+                            <NumberInput id='amount' focusBorderColor="#2D73FF" defaultValue={1} min={1} value={amount} onChange={(value) => setAmount(value)}>
                                 <NumberInputField />
                                 <NumberInputStepper>
                                     <NumberIncrementStepper />
@@ -171,7 +194,7 @@ export default function Deploy({ feeRates }: IProps) {
                     <div className='mb-4'>
                         <FormControl isRequired isInvalid={isLimitError}>
                             <FormLabel htmlFor='limit'>Limit Per Mint</FormLabel>
-                            <NumberInput id='limit' defaultValue={1} min={1} value={limit} onChange={(value) => setLimit(value)}>
+                            <NumberInput id='limit' focusBorderColor="#2D73FF" defaultValue={1} min={1} value={limit} onChange={(value) => setLimit(value)}>
                                 <NumberInputField />
                                 <NumberInputStepper>
                                     <NumberIncrementStepper />
@@ -211,7 +234,8 @@ export default function Deploy({ feeRates }: IProps) {
                                 id='raddress'
                                 placeholder='input your receiving address'
                                 value={rAddress}
-                                onChange={(e) => setRAddress(e.target.value)} />
+                                focusBorderColor="#2D73FF"
+                                onChange={onRAddressChange} />
                             {isRAddressError && <FormErrorMessage>invalid receive address</FormErrorMessage>}
                         </FormControl>
                     </div>
@@ -270,7 +294,7 @@ export default function Deploy({ feeRates }: IProps) {
                             variant='brandPrimary'
                             onClick={() => handleSubmit()}
                         >
-                            Submit&Pay
+                            Submit & Pay
                         </Button>
                     </div>
                 </div>

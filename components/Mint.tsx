@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, ChangeEvent } from "react"
 import {
     Slider,
     SliderTrack,
@@ -117,6 +117,19 @@ export default function Mint({ defaultTick, feeRates }: IProps) {
         return valid;
     }
 
+    const onRAddressChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setRAddress(e.target.value);
+        if (e.target.value) {
+            setisRAddressError(false);
+        }
+    }
+
+    const onTickChange = (e: ChangeEvent<HTMLInputElement>) => {
+        let value = e.target.value;
+        value = value.slice(0, 4);
+        setTick(value);
+    }
+
     const handleSubmit = () => {
         const valid = validSecondForm();
         if (valid) {
@@ -145,9 +158,11 @@ export default function Mint({ defaultTick, feeRates }: IProps) {
                             <FormLabel htmlFor='tick'>Tick</FormLabel>
                             <Input
                                 id='tick'
+                                focusBorderColor="#2D73FF"
                                 placeholder='4 characters like &quot;abcd&quot;...'
                                 value={tick}
-                                onChange={(e) => setTick(e.target.value)} />
+                                htmlSize={4}
+                                onChange={onTickChange} />
                             {isTickError && <FormErrorMessage>
                                 invalid input tick name
                             </FormErrorMessage>}
@@ -156,7 +171,7 @@ export default function Mint({ defaultTick, feeRates }: IProps) {
                     <div className='mb-4'>
                         <FormControl isRequired isInvalid={isAmountError}>
                             <FormLabel htmlFor='amount'>Amount</FormLabel>
-                            <NumberInput id='amount' defaultValue={1} min={1} value={amount} onChange={(value) => setAmount(value)}>
+                            <NumberInput id='amount' focusBorderColor="#2D73FF" defaultValue={1} min={1} value={amount} onChange={(value) => setAmount(value)}>
                                 <NumberInputField />
                                 <NumberInputStepper>
                                     <NumberIncrementStepper />
@@ -197,7 +212,8 @@ export default function Mint({ defaultTick, feeRates }: IProps) {
                                 placeholder='input your receiving address'
                                 value={rAddress}
                                 variant='outline'
-                                onChange={(e) => setRAddress(e.target.value)} />
+                                focusBorderColor="#2D73FF"
+                                onChange={onRAddressChange} />
                             {isRAddressError && <FormErrorMessage>invalid receive address</FormErrorMessage>}
                         </FormControl>
                     </div>
@@ -218,7 +234,7 @@ export default function Mint({ defaultTick, feeRates }: IProps) {
                                         <SliderThumb />
                                     </Slider>
                                     <div className="w-24 ml-4">
-                                        <NumberInput defaultValue={1} min={1} value={customFee} onChange={(value) => setCustomFee(value)}>
+                                        <NumberInput focusBorderColor="#2D73FF" defaultValue={1} min={1} value={customFee} onChange={(value) => setCustomFee(value)}>
                                             <NumberInputField />
                                             <NumberInputStepper>
                                                 <NumberIncrementStepper />
@@ -256,7 +272,7 @@ export default function Mint({ defaultTick, feeRates }: IProps) {
                             variant='brandPrimary'
                             onClick={() => handleSubmit()}
                         >
-                            Submit&Pay
+                            Submit & Pay
                         </Button>
                     </div>
                 </div >

@@ -227,7 +227,7 @@ export async function calcTotalFees({
 
 export async function getQtumFee() {
     try {
-        let res: TQtumFeeRatesRes = await axiosInstance.get('https://qtum.info/api/feerates');
+        let res: TQtumFeeRatesRes = await axiosInstance.get('/feerates');
         return res;
     } catch (e) {
         console.error(e);
