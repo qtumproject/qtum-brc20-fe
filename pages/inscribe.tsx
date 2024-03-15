@@ -59,23 +59,44 @@ export default function Inscribe() {
     }, [])
 
     return (
-        <div className={`flex flex-col items-center`}>
-            <div className={`mb-[40px] text-[40px] mt-[-40px] font-[Outfit] font-medium`}>Inscribe  QBRC20</div>
-            <div className={`flex flex-col items-center py-10 px-8 bg-white w-[1024px] rounded-[12px] shadow-lg`}>
-                <div className='w-[680px]'>
-                    <div className='mb-4 text-center'>
-                        <RadioGroup options={['Mint', 'Deploy']} defaultValue='Mint' onChange={setValue} name='opType' />
+        <>
+            <div className={`flex-col items-center lg:flex hidden`}>
+                <div className={`mb-[40px] text-[40px] mt-[-40px] font-[Outfit] font-medium`}>Inscribe  QBRC20</div>
+                <div className={`flex flex-col items-center py-10 px-8 bg-white w-[1024px] rounded-[12px] shadow-lg`}>
+                    <div className='w-[680px]'>
+                        <div className='mb-4 text-center'>
+                            <RadioGroup options={['Mint', 'Deploy']} defaultValue='Mint' onChange={setValue} name='opType' />
+                        </div>
+
+                        {
+                            value === "Mint" && <Mint defaultTick={defaultTick} feeRates={feeRates} />
+                        }
+
+                        {
+                            value === "Deploy" && <Deploy feeRates={feeRates} />
+                        }
                     </div>
-
-                    {
-                        value === "Mint" && <Mint defaultTick={defaultTick} feeRates={feeRates} />
-                    }
-
-                    {
-                        value === "Deploy" && <Deploy feeRates={feeRates} />
-                    }
                 </div>
             </div>
-        </div>
+            <div className="lg:hidden flex flex-col items-center px-4">
+                <div className={`mb-4 text-[30px] mt-[-20px] font-[Outfit] font-medium`}>Inscribe  QBRC20</div>
+                <div className={`flex flex-col items-center py-[30px] px-2.5 bg-white rounded-[12px] shadow-lg w-full`}>
+                    <div className='w-full'>
+                        <div className='mb-8 text-center'>
+                            <RadioGroup options={['Mint', 'Deploy']} defaultValue='Mint' onChange={setValue} name='opType' />
+                        </div>
+
+                        {
+                            value === "Mint" && <Mint defaultTick={defaultTick} feeRates={feeRates} />
+                        }
+
+                        {
+                            value === "Deploy" && <Deploy feeRates={feeRates} />
+                        }
+                    </div>
+                </div>
+            </div>
+        </>
+
     )
 }

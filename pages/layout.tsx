@@ -22,7 +22,7 @@ export default function Layout({ children }: {
             </div>
             <div className='block lg:hidden overflow-hidden'>
                 <NavBar></NavBar>
-                <div className='bg-[#F7F7F0] pt-[36px] min-h-[calc(100vh_-_185px)] pb-20'>{children}</div >
+                <div className='bg-[#F7F7F0] pt-[36px] min-h-[calc(100vh_-_185px)] pb-8'>{children}</div >
                 <Footer />
             </div>
 

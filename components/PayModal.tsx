@@ -1,3 +1,4 @@
+
 import {
     Modal,
     ModalOverlay,
@@ -132,16 +133,30 @@ export default function PayModal({
 
     return (
         <>
-            <Modal isOpen={isOpen} onClose={onClose} size="xl" closeOnOverlayClick={false}>
-                <ModalOverlay />
-                <ModalContent>
-                    <ModalHeader>{isProgress ? 'Inscription Process' : 'Scan QR code to pay'}</ModalHeader>
-                    <ModalCloseButton />
-                    <ModalBody pb={6}>
-                        {isProgress ? renderProgress() : renderPayCode()}
-                    </ModalBody>
-                </ModalContent>
-            </Modal>
+            <div className='hidden lg:block'>
+                <Modal isOpen={isOpen} onClose={onClose} size="xl" closeOnOverlayClick={false}>
+                    <ModalOverlay />
+                    <ModalContent>
+                        <ModalHeader>{isProgress ? 'Inscription Process' : 'Scan QR code to pay'}</ModalHeader>
+                        <ModalCloseButton />
+                        <ModalBody pb={6}>
+                            {isProgress ? renderProgress() : renderPayCode()}
+                        </ModalBody>
+                    </ModalContent>
+                </Modal>
+            </div>
+            <div className='lg:hidden'>
+                <Modal isOpen={isOpen} onClose={onClose} size="xl" closeOnOverlayClick={false}>
+                    <ModalOverlay />
+                    <ModalContent className='w-[calc(100vw_-_32px)] l-4'>
+                        <ModalHeader>{isProgress ? 'Inscription Process' : 'Scan QR code to pay'}</ModalHeader>
+                        <ModalCloseButton />
+                        <ModalBody pb={6}>
+                            {isProgress ? renderProgress() : renderPayCode()}
+                        </ModalBody>
+                    </ModalContent>
+                </Modal>
+            </div>
         </>
     )
 }

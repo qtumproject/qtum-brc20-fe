@@ -218,12 +218,24 @@ export default function Deploy({ feeRates }: IProps) {
                             </FormErrorMessage>}
                         </FormControl>
                     </div>
-                    <div className='mb-4 text-center'>
+                    <div className='mb-4 text-center lg:block hidden'>
                         <Button
                             mt={4}
                             width='400px'
+                            type="submit"
                             variant='brandPrimary'
-                            type='submit'
+                            onClick={() => { handleGoNext() }}
+                        >
+                            Next
+                        </Button>
+                    </div>
+
+                    <div className='mb-4 text-center lg:hidden'>
+                        <Button
+                            mt={4}
+                            width='full'
+                            type="submit"
+                            variant='brandPrimary'
                             onClick={() => { handleGoNext() }}
                         >
                             Next
@@ -254,28 +266,37 @@ export default function Deploy({ feeRates }: IProps) {
                     <div className='mb-4'>
                         <FormControl>
                             <FormLabel htmlFor='amount'>Network Fee</FormLabel>
-                            <div className="mb-4 flex justify-between">
+                            <div className="mb-4 justify-between lg:flex hidden">
                                 <div><FeeType title="Economy" type="solid" amount={Number(feeRates['economy'])} focus={feeType === 'economy'} onClick={() => setFeeType('economy')} /></div>
                                 <div><FeeType title="Normal" type="solid" amount={Number(feeRates['normal'])} focus={feeType === 'normal'} onClick={() => setFeeType('normal')} /></div>
                                 <div><FeeType title="Custom" type="input" setValue={setCustomFee} amount={Number(customFee)} focus={feeType === 'custom'} onClick={() => setFeeType('custom')} /></div>
+                            </div>
+                            <div className="mb-4 flex flex-col justify-between lg:hidden">
+                                <div className='mb-4'><FeeType title="Economy" type="solid" amount={Number(feeRates['economy'])} focus={feeType === 'economy'} onClick={() => setFeeType('economy')} /></div>
+                                <div className='mb-4'><FeeType title="Normal" type="solid" amount={Number(feeRates['normal'])} focus={feeType === 'normal'} onClick={() => setFeeType('normal')} /></div>
+                                <div className='mb-4'><FeeType title="Custom" type="input" setValue={setCustomFee} amount={Number(customFee)} focus={feeType === 'custom'} onClick={() => setFeeType('custom')} /></div>
                             </div>
                         </FormControl>
                     </div>
 
                     <Divider className="mb-4" />
                     <div className="mb-4">
-                        <div className="mb-4 flex justify-between bg-[#F3F3F0] p-4 rounded-[12px] text-sm">
+                        <div className="mb-4 hidden lg:flex justify-between bg-[#F3F3F0] p-4 rounded-[12px] text-sm">
                             <div className="font-semibold">Network Fee</div>
+                            <div><span className="font-semibold">{totalFees.toFixed(3)} sats</span> <span className="text-[#7F8596]">{satsToQtum(totalFees)} QTUM</span> </div>
+                        </div>
+                        <div className="mb-4 lg:hidden flex flex-col justify-between bg-[#F3F3F0] p-4 rounded-[12px] text-sm">
+                            <div className="font-semibold mb-2">Network Fee</div>
                             <div><span className="font-semibold">{totalFees.toFixed(3)} sats</span> <span className="text-[#7F8596]">{satsToQtum(totalFees)} QTUM</span> </div>
                         </div>
                     </div>
 
-                    <div className='mb-4 text-center'>
+                    <div className='mb-4 text-center hidden lg:block'>
                         <Button
                             mt={4}
                             width='236px'
                             variant='outline'
-                            className='mr-10'
+                            className='mr-8'
                             onClick={() => setStep(1)}
                         >
                             Back
@@ -283,6 +304,25 @@ export default function Deploy({ feeRates }: IProps) {
                         <Button
                             mt={4}
                             width='236px'
+                            variant='brandPrimary'
+                            onClick={() => handleSubmit()}
+                        >
+                            Submit & Pay
+                        </Button>
+                    </div>
+                    <div className='text-center lg:hidden flex'>
+                        <Button
+                            mt={4}
+                            width='50%'
+                            variant='outline'
+                            className='mr-8'
+                            onClick={() => setStep(1)}
+                        >
+                            Back
+                        </Button>
+                        <Button
+                            mt={4}
+                            width='50%'
                             variant='brandPrimary'
                             onClick={() => handleSubmit()}
                         >
