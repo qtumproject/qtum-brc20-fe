@@ -105,44 +105,85 @@ export default function Indexer() {
 
 
     return (
-        <div className={`flex flex-col items-center px-6`}>
-            <div className={`mb-[40px] text-[40px] mt-[-40px] font-[Outfit] font-medium`}>QBRC20 List</div>
-            <div className={`flex flex-col items-center py-10 px-8 bg-white w-[1024px] rounded-[12px] shadow-lg`}>
-                <div className='w-[680px] mb-8'>
-                    <InputGroup>
-                        <InputRightElement height='56px' className="cursor-pointer" onClick={onQueryChange}>
-                            <Search2Icon />
-                        </InputRightElement>
-                        <Input
-                            placeholder='Search BRC-20 token name'
-                            value={tokenName}
-                            onChange={(e) => setTokenName(e.target.value)}
-                            onKeyDown={e => {
-                                if (e.key === 'Enter') {
-                                    onQueryChange();
-                                }
-                            }} />
-                    </InputGroup>
-                </div>
-                <div className='w-[680px] mb-8'>
-                    <RadioGroup options={options} name="queryType" defaultValue='All' onChange={onStatusChange} />
-                </div>
+        <>
+            <div className={`lg:flex hidden flex-col items-center px-6`}>
+                <div className={`mb-[40px] text-[40px] mt-[-40px] font-[Outfit] font-medium`}>QBRC20 List</div>
+                <div className={`flex flex-col items-center py-10 px-8 bg-white w-[1024px] rounded-[12px] shadow-lg`}>
+                    <div className='w-[680px] mb-8'>
+                        <InputGroup>
+                            <InputRightElement height='56px' className="cursor-pointer" onClick={onQueryChange}>
+                                <Search2Icon />
+                            </InputRightElement>
+                            <Input
+                                placeholder='Search BRC-20 token name'
+                                value={tokenName}
+                                onChange={(e) => setTokenName(e.target.value)}
+                                onKeyDown={e => {
+                                    if (e.key === 'Enter') {
+                                        onQueryChange();
+                                    }
+                                }} />
+                        </InputGroup>
+                    </div>
+                    <div className='w-[680px] mb-8'>
+                        <RadioGroup options={options} name="queryType" defaultValue='All' onChange={onStatusChange} />
+                    </div>
 
-                <div className='w-full'>
-                    <CustomTable dataList={dataList} isLoading={isLoading} />
-                    {
-                        pageInfo.total > 0 && <div className='mt-4'>
-                            <Pagination
-                                pageSize={10}
-                                pageIndex={pageInfo.page - 1}
-                                setPageIndex={(page: number) => setCurrPage(page + 1)}
-                                totalItemsCount={pageInfo.total}
-                            />
-                        </div>
-                    }
+                    <div className='w-full'>
+                        <CustomTable dataList={dataList} isLoading={isLoading} />
+                        {
+                            pageInfo.total > 0 && <div className='mt-4'>
+                                <Pagination
+                                    pageSize={10}
+                                    pageIndex={pageInfo.page - 1}
+                                    setPageIndex={(page: number) => setCurrPage(page + 1)}
+                                    totalItemsCount={pageInfo.total}
+                                />
+                            </div>
+                        }
 
+                    </div>
                 </div>
             </div>
-        </div>
+            <div className={`lg:hidden flex flex-col items-center px-6`}>
+                <div className={`mb-4 text-[30px] mt-[-20px] font-[Outfit] font-medium`}>QBRC20 List</div>
+                <div className={`flex flex-col items-center py-[30px] px-2.5 bg-white w-full rounded-[12px] shadow-lg`}>
+                    <div className='mb-8 w-full'>
+                        <InputGroup>
+                            <InputRightElement height='56px' className="cursor-pointer" onClick={onQueryChange}>
+                                <Search2Icon />
+                            </InputRightElement>
+                            <Input
+                                placeholder='Search BRC-20 token name'
+                                value={tokenName}
+                                onChange={(e) => setTokenName(e.target.value)}
+                                onKeyDown={e => {
+                                    if (e.key === 'Enter') {
+                                        onQueryChange();
+                                    }
+                                }} />
+                        </InputGroup>
+                    </div>
+                    <div className='w-full mb-8'>
+                        <RadioGroup options={options} name="queryType" defaultValue='All' onChange={onStatusChange} />
+                    </div>
+
+                    <div className='w-full'>
+                        <CustomTable dataList={dataList} isLoading={isLoading} />
+                        {
+                            pageInfo.total > 0 && <div className='mt-4'>
+                                <Pagination
+                                    pageSize={10}
+                                    pageIndex={pageInfo.page - 1}
+                                    setPageIndex={(page: number) => setCurrPage(page + 1)}
+                                    totalItemsCount={pageInfo.total}
+                                />
+                            </div>
+                        }
+
+                    </div>
+                </div>
+            </div>
+        </>
     )
 }
