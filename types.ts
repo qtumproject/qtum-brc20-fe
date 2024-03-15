@@ -50,6 +50,7 @@ export interface IMintOrDeployParams {
     rAddress: string,
     setFundingAddress: Function,
     setQrImg: Function,
+    setProgress: Function,
 }
 
 export interface ICaclTotalFeesParams {
@@ -59,6 +60,11 @@ export interface ICaclTotalFeesParams {
     feeType: string,
     setInscriptionFees: Function,
     setTotalFees: Function,
+}
+
+export interface IProgressInfo {
+    step: number,
+    txid: string,
 }
 
 

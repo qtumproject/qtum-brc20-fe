@@ -29,6 +29,7 @@
     "randombytes": "^2.1.0",
     "react": "^18",
     "react-dom": "^18",
+    "react-usestateref": "^1.0.8",
     "tiny-secp256k1": "^2.2.3"
   },
   "devDependencies": {

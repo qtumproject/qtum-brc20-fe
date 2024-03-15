@@ -3,6 +3,7 @@ import { buttonTheme } from './components/Button'
 import { inputTheme } from './components/Input'
 import { numberInputTheme } from './components/NumberInput'
 import { modalTheme } from './components/Modal'
+import { stepperTheme } from './components/Stepper';
 
 
 const config: ThemeConfig = {
@@ -20,6 +21,7 @@ const theme = extendTheme({
     Input: inputTheme,
     NumberInput: numberInputTheme,
     Modal: modalTheme,
+    Stepper: stepperTheme,
   },
   colors: {
     brand: {

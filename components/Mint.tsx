@@ -1,4 +1,5 @@
-import { useState, useEffect, ChangeEvent } from "react"
+import { useEffect, ChangeEvent } from 'react';
+import useState from 'react-usestateref';
 import {
     Divider,
     FormControl,
@@ -11,13 +12,13 @@ import {
     NumberIncrementStepper,
     NumberDecrementStepper,
     Button,
-} from '@chakra-ui/react'
+} from '@chakra-ui/react';
 import {
     satsToQtum,
     mintOrDeploy,
     calcTotalFees,
 } from '@/utils';
-import { IQtumFeeRates, TFeeType } from '@/types';
+import { IQtumFeeRates, TFeeType, IProgressInfo } from '@/types';
 import FeeType from "./FeeType";
 import PayModal from "./PayModal";
 
@@ -39,11 +40,14 @@ export default function Mint({ defaultTick, feeRates }: IProps) {
     const [inscriptionFees, setInscriptionFees] = useState(0);
     const [totalFees, setTotalFees] = useState(0);
 
-    const [isModalShow, setIsModalShow] = useState(false);
     const [isTickError, setIsTickError] = useState(false);
     const [isAmountError, setIsAmountError] = useState(false);
     const [isRAddressError, setisRAddressError] = useState(false);
 
+    const [isModalShow, setIsModalShow] = useState(false);
+    const [isProgress, setIsProgress] = useState(false);
+    const [txids, setTxIds, txidsRef] = useState<Array<string>>([]);
+    const [activeStep, setActiveStep] = useState(1);
     const [qrImg, setQrImg] = useState('');
     const [fundingAddress, setFundingAddress] = useState('');
 
@@ -134,6 +138,15 @@ export default function Mint({ defaultTick, feeRates }: IProps) {
         }
     }
 
+    const setProgress = (progressInfo: IProgressInfo) => {
+        const { step, txid } = progressInfo;
+        setIsProgress(true);
+        setActiveStep(step);
+        const txidsTemp: Array<string> = txidsRef.current.slice();
+        txidsTemp.push(txid);
+        setTxIds(txidsTemp);
+    }
+
     const resolveMint = () => {
         mintOrDeploy({
             scriptObj: mint,
@@ -141,7 +154,8 @@ export default function Mint({ defaultTick, feeRates }: IProps) {
             totalFees,
             rAddress,
             setFundingAddress,
-            setQrImg
+            setQrImg,
+            setProgress,
         })
     }
 
@@ -258,6 +272,9 @@ export default function Mint({ defaultTick, feeRates }: IProps) {
                 isShow={isModalShow}
                 fundingAddress={fundingAddress}
                 totalPay={totalFees}
+                isProgress={isProgress}
+                activeStep={activeStep}
+                txids={txids}
                 close={() => setIsModalShow(false)}>
                 {qrImg}
             </PayModal>

@@ -21,7 +21,8 @@ export async function mintOrDeploy({
     totalFees,
     rAddress,
     setFundingAddress,
-    setQrImg
+    setQrImg,
+    setProgress,
 }: IMintOrDeployParams) {
     debug('inscribe begin')
     let inscriptions = [];
@@ -113,6 +114,7 @@ export async function mintOrDeploy({
     let vout = txinfo[1];
     let amt = txinfo[2];
     debug('Funding Address receive the money, the txid, vout, amount is: %o %o %o', txid, vout, amt);
+    setProgress({ step: 1, txid });
 
     // 1. to inscription address
     let outputs = [];
@@ -150,6 +152,7 @@ export async function mintOrDeploy({
         return;
     }
     debug('Inscription address receive the money, the txid is: %o', _txid);
+    setProgress({ step: 2, txid: _txid });
 
     const inscribe = async (inscription: any, vout: any) => {
         await loopTilAddressReceivesMoney(inscription.inscriptionAddress, true);
@@ -184,6 +187,7 @@ export async function mintOrDeploy({
             return;
         }
         debug('Receive address receive the money, the txid is: %o', _txid2);
+        setProgress({ step: 3, txid: _txid2 });
         debug('Success!')
     }
 

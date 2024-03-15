@@ -1,27 +1,24 @@
-import { useState, useEffect, ChangeEvent } from "react"
+import { useEffect, ChangeEvent } from 'react';
+import useState from 'react-usestateref';
 import {
     Divider,
     FormControl,
     FormLabel,
     FormErrorMessage,
     Input,
-    Slider,
-    SliderTrack,
-    SliderFilledTrack,
-    SliderThumb,
     NumberInput,
     NumberInputField,
     NumberInputStepper,
     NumberIncrementStepper,
     NumberDecrementStepper,
     Button,
-} from '@chakra-ui/react'
+} from '@chakra-ui/react';
 import {
     satsToQtum,
     mintOrDeploy,
     calcTotalFees,
 } from '@/utils';
-import { IQtumFeeRates, TFeeType } from '@/types';
+import { IQtumFeeRates, TFeeType, IProgressInfo } from '@/types';
 import FeeType from "./FeeType";
 import PayModal from "./PayModal";
 
@@ -38,7 +35,7 @@ export default function Deploy({ feeRates }: IProps) {
     const [feeType, setFeeType] = useState<TFeeType>('normal');
     const [customFee, setCustomFee] = useState(feeRates['custom']);
     const [fee, setFee] = useState('400');
-    const [isModalShow, setIsModalShow] = useState(false);
+
     const [isTickError, setIsTickError] = useState(false);
     const [isAmountError, setIsAmountError] = useState(false);
     const [isLimitError, setIsLimitError] = useState(false);
@@ -46,6 +43,11 @@ export default function Deploy({ feeRates }: IProps) {
 
     const [inscriptionFees, setInscriptionFees] = useState(0);
     const [totalFees, setTotalFees] = useState(0);
+
+    const [isModalShow, setIsModalShow] = useState(false);
+    const [isProgress, setIsProgress] = useState(false);
+    const [txids, setTxIds, txidsRef] = useState<Array<string>>([]);
+    const [activeStep, setActiveStep] = useState(1);
     const [qrImg, setQrImg] = useState('');
     const [fundingAddress, setFundingAddress] = useState('');
 
@@ -146,6 +148,16 @@ export default function Deploy({ feeRates }: IProps) {
             setIsModalShow(true);
         }
     }
+
+    const setProgress = (progressInfo: IProgressInfo) => {
+        const { step, txid } = progressInfo;
+        setIsProgress(true);
+        setActiveStep(step);
+        const txidsTemp: Array<string> = txidsRef.current.slice();
+        txidsTemp.push(txid);
+        setTxIds(txidsTemp);
+    }
+
     const resolveDeploy = () => {
         mintOrDeploy({
             scriptObj: deploy,
@@ -153,7 +165,8 @@ export default function Deploy({ feeRates }: IProps) {
             totalFees,
             rAddress,
             setFundingAddress,
-            setQrImg
+            setQrImg,
+            setProgress
         })
     }
 
@@ -283,6 +296,9 @@ export default function Deploy({ feeRates }: IProps) {
                 isShow={isModalShow}
                 fundingAddress={fundingAddress}
                 totalPay={totalFees}
+                isProgress={isProgress}
+                activeStep={activeStep}
+                txids={txids}
                 close={() => setIsModalShow(false)}>
                 {qrImg}
             </PayModal>
