@@ -132,10 +132,10 @@ export default function PayModal({
 
     return (
         <>
-            <Modal isOpen={isOpen} onClose={onClose} size="xl">
+            <Modal isOpen={isOpen} onClose={onClose} size="xl" closeOnOverlayClick={false}>
                 <ModalOverlay />
                 <ModalContent>
-                    <ModalHeader>{isProgress ? 'Inscribe Step' : 'Scan QR code to pay'}</ModalHeader>
+                    <ModalHeader>{isProgress ? 'Inscription Process' : 'Scan QR code to pay'}</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody pb={6}>
                         {isProgress ? renderProgress() : renderPayCode()}

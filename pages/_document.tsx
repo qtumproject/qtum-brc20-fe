@@ -7,7 +7,7 @@ export default function Document() {
       <Head>
         <Script src='/lib/debug/index.js'></Script>
       </Head>
-      <body>
+      <body className='min-w-[1200px] overflow-auto'>
         {/* <ColorModeScript initialColorMode={theme.config.initialColorMode} /> */}
         <Main />
         <NextScript />
