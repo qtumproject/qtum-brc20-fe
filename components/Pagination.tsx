@@ -7,6 +7,7 @@ import {
     Button,
     HStack,
     IconButton,
+    useColorMode,
 } from "@chakra-ui/react";
 
 const ButtonPagination = ({
@@ -46,6 +47,8 @@ const Pagination = ({
     setPageIndex,
     totalItemsCount,
 }: IProps) => {
+    const { colorMode } = useColorMode()
+
 
     const showButtons = () => {
         let buttons = [];
@@ -114,8 +117,8 @@ const Pagination = ({
             <IconButton
                 aria-label='prev'
                 icon={
-                    <div className="border rounded-full w-10 h-10 flex items-center justify-center">
-                        <ChevronLeftIcon boxSize={6} color="black" />
+                    <div className="border dark:border-white rounded-full w-10 h-10 flex items-center justify-center">
+                        <ChevronLeftIcon boxSize={6} color={colorMode === 'light' ? 'black' : 'white'} />
                     </div>
                 }
                 size="sm"
@@ -134,8 +137,8 @@ const Pagination = ({
             <IconButton
                 aria-label='next'
                 icon={
-                    <div className="border rounded-full w-10 h-10 flex items-center justify-center">
-                        <ChevronRightIcon boxSize={6} color="black" />
+                    <div className="border dark:border-white rounded-full w-10 h-10 flex items-center justify-center">
+                        <ChevronRightIcon boxSize={6} color={colorMode === 'light' ? 'black' : 'white'} />
                     </div>}
                 size="sm"
                 onClick={() => {

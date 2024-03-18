@@ -30,7 +30,7 @@ export default function RadioGroup({
   const group = getRootProps()
 
   return (
-    <HStack {...group} className='bg-[#F3F3F0] flex h-12 rounded-xl p-1.5'>
+    <HStack {...group} className='bg-[#F3F3F0] dark:bg-[#282A33] flex h-12 rounded-xl p-1.5'>
       {options.map((value) => {
         const radio = getRadioProps({ value })
         return (

@@ -217,7 +217,7 @@ export default function Mint({ defaultTick, feeRates }: IProps) {
                 step === 2 && <div>
                     <div className='mb-4'>
                         <FormControl>
-                            <pre className="font-medium	py-[16px] rounded-[12px] pl-[16px] bg-[#F3F3F0] break-all whitespace-break-spaces">{JSON.stringify(mint)} </pre>
+                            <pre className="font-medium	py-[16px] rounded-[12px] pl-[16px] dark:bg-[#282A33] bg-[#F3F3F0] break-all whitespace-break-spaces">{JSON.stringify(mint)} </pre>
                         </FormControl>
                     </div>
                     <div className='mb-4'>
@@ -250,11 +250,11 @@ export default function Mint({ defaultTick, feeRates }: IProps) {
                     </div >
                     <Divider className="mb-4" />
                     <div className="mb-4">
-                        <div className="mb-4 hidden lg:flex justify-between bg-[#F3F3F0] p-4 rounded-[12px] text-sm">
+                        <div className="mb-4 hidden lg:flex justify-between bg-[#F3F3F0] dark:bg-[#282A33] p-4 rounded-[12px] text-sm">
                             <div className="font-semibold">Network Fee</div>
                             <div><span className="font-semibold">{totalFees.toFixed(3)} sats</span> <span className="text-[#7F8596]">{satsToQtum(totalFees)} QTUM</span> </div>
                         </div>
-                        <div className="mb-4 lg:hidden flex flex-col justify-between bg-[#F3F3F0] p-4 rounded-[12px] text-sm">
+                        <div className="mb-4 lg:hidden flex flex-col justify-between bg-[#F3F3F0] dark:bg-[#282A33] p-4 rounded-[12px] text-sm">
                             <div className="font-semibold mb-2">Network Fee</div>
                             <div><span className="font-semibold">{totalFees.toFixed(3)} sats</span> <span className="text-[#7F8596]">{satsToQtum(totalFees)} QTUM</span> </div>
                         </div>

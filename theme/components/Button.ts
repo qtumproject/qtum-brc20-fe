@@ -7,34 +7,37 @@ const outline = defineStyle({
 
 // custom theme
 const brandPrimary = defineStyle({
+  background: '#2D73FF',
+  color: 'white',
+  borderRadius: '12px',
+
+  // let's also provide dark mode alternatives
+  _dark: {
     background: '#2D73FF',
     color: 'white',
-    borderRadius: '12px',
-  
-    // let's also provide dark mode alternatives
-    _dark: {
-      background: '#2D73FF',
-      color: 'white',
-    }
-  })
+  }
+})
 
-  const round = defineStyle({
+const round = defineStyle({
+  background: '#2D73FF',
+  color: 'white',
+  borderRadius: 'full',
+
+  // let's also provide dark mode alternatives
+  _dark: {
     background: '#2D73FF',
     color: 'white',
-    borderRadius: 'full',
-  
-    // let's also provide dark mode alternatives
-    _dark: {
-      background: '#2D73FF',
-      color: 'white',
-    }
-  })
+  }
+})
 
-  const link = defineStyle({
-    color: 'black',
-  })
+const link = defineStyle({
+  color: 'black',
+  _dark: {
+    color: 'white'
+  }
+})
 
-  
+
 
 export const buttonTheme = defineStyleConfig({
   variants: { brandPrimary, outline, round, link },

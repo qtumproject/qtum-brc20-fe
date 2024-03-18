@@ -10,6 +10,9 @@ const baseStyle = definePartsStyle({
     borderColor: '#E7E7E1',
     h: '56px',
     borderRadius: '12px',
+    _dark: {
+      borderColor: 'rgba(73, 78, 91, 0.50)',
+    }
   },
 })
 

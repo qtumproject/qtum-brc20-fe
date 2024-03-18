@@ -17,7 +17,7 @@ export default function Layout({ children }: {
             </Head>
             <div className='hidden lg:block min-w-[1200px] overflow-auto'>
                 <NavBar></NavBar>
-                <div className='bg-[#F7F7F0] pt-[80px] min-h-[calc(100vh_-_185px)] pb-20'>{children}</div >
+                <div className='bg-[#F7F7F0] dark:bg-black pt-[80px] min-h-[calc(100vh_-_185px)] pb-20'>{children}</div >
                 <Footer />
             </div>
             <div className='block lg:hidden overflow-hidden'>

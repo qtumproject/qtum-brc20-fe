@@ -76,13 +76,13 @@ export default function PayModal({
         <div className='mb-4 text-center'>
             Payment amount: {satsToQtum(totalPay)} QTUM
         </div>
-        <div className='mt-4 bg-[#F3F3F0] p-4 rounded-xl text-[#7F8596] font-medium text-base	leading-[20px] pr-[40px] relative'>
+        <div className='mt-4 bg-[#F3F3F0] dark:bg-[#282A33] p-4 rounded-xl text-[#7F8596] font-medium text-base	leading-[20px] pr-[40px] relative'>
             {fundingAddress}
             <Image width={24} height={24} alt="copy" src='/img/copy.png' className='absolute right-3 top-7 cursor-pointer' onClick={onCopyClick} />
 
         </div >
 
-        <div className='hidden lg:flex mt-4 bg-[#F3F3F0] p-4 rounded-xl justify-between'>
+        <div className='hidden lg:flex mt-4 bg-[#F3F3F0] dark:bg-[#282A33] p-4 rounded-xl justify-between'>
             <div className='font-semibold text-sm'>Network Fee</div>
             <div>
                 <span className='font-semibold text-sm'>
@@ -92,7 +92,7 @@ export default function PayModal({
             </div>
         </div >
 
-        <div className='lg:hidden mt-4 bg-[#F3F3F0] p-4 rounded-xl flex flex-col justify-between'>
+        <div className='lg:hidden mt-4 bg-[#F3F3F0] dark:bg-[#282A33] p-4 rounded-xl flex flex-col justify-between'>
             <div className='font-semibold text-sm'>Network Fee</div>
             <div>
                 <span className='font-semibold text-sm'>

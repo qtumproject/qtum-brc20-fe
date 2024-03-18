@@ -5,10 +5,10 @@ import Link from 'next/link';
 export default function Footer() {
     return (
         <>
-            <div className={`h-24 bg-[#E7E7E1] text-white lg:flex hidden items-center justify-between px-[7.5rem] py-[1.875rem]`}>
+            <div className={`h-24 bg-[#E7E7E1] text-black dark:text-white dark:bg-black lg:flex hidden items-center justify-between px-[7.5rem] py-[1.875rem]`}>
                 <div>
                     <Image src="/logo.svg" alt="logo" width={240} height={38} />
-                    <div className="text-black	">Contact us: QBRC20@qtum.info</div>
+                    <div>Contact us: QBRC20@qtum.info</div>
                 </div>
 
                 <div className="flex">

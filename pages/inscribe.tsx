@@ -60,9 +60,9 @@ export default function Inscribe() {
 
     return (
         <>
-            <div className={`flex-col items-center lg:flex hidden`}>
+            <div className={`flex-col items-center lg:flex hidden dark:text-white`}>
                 <div className={`mb-[40px] text-[40px] mt-[-40px] font-[Outfit] font-medium`}>Inscribe  QBRC20</div>
-                <div className={`flex flex-col items-center py-10 px-8 bg-white w-[1024px] rounded-[12px] shadow-lg`}>
+                <div className={`flex flex-col items-center py-10 px-8 dark:bg-black bg-white w-[1024px] rounded-[12px] shadow-lg`}>
                     <div className='w-[680px]'>
                         <div className='mb-4 text-center'>
                             <RadioGroup options={['Mint', 'Deploy']} defaultValue='Mint' onChange={setValue} name='opType' />

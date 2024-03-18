@@ -121,8 +121,8 @@ export default function CustomTable({ dataList, isLoading }: IProps) {
         <TableContainer>
             <Table variant='simple'>
                 <Thead>
-                    <Tr className='bg-[#F3F3F0] text-[#7F8596]'>
-                        <Th className='text-[#7F8596]'>Token Name</Th>
+                    <Tr>
+                        <Th>Token Name</Th>
                         <Th>Deploy Time</Th>
                         <Th>Progress</Th>
                         <Th>Holders</Th>
