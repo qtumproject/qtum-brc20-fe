@@ -88,7 +88,7 @@ export default function NavBar() {
                                 {navList.map((nav) => {
                                     return (<div key={nav.name}>
                                         <Link href={nav.path} onClick={() => setIsOpen(false)}>
-                                            <div className='py-12px text-sm leading-[42px] font-medium'>{nav.name}</div>
+                                            <div className='py-12px text-sm leading-[66px] font-medium'>{nav.name}</div>
                                         </Link>
                                         <Divider />
                                     </div>)

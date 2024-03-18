@@ -28,7 +28,7 @@ export default function FeeType({ title, type = 'solid', setValue, amount, focus
             </div>
         </div>
 
-        <div className={`lg:hiddn flex flex-col items-center border-2 rounded-[12px] border-[#e7e7e1] px-6 py-2 cursor-pointer w-full h-[79px] ${focus ? 'border-black' : 'border-[#e7e7e1]'} `} onClick={onClick}>
+        <div className={`lg:hidden flex flex-col items-center border-2 rounded-[12px] border-[#e7e7e1] px-6 py-2 cursor-pointer w-full h-[79px] ${focus ? 'border-black' : 'border-[#e7e7e1]'} `} onClick={onClick}>
             <div className="mb-2 font-bold">{title}</div>
             <div className='flex'>
                 {
