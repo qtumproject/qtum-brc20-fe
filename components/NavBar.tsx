@@ -86,12 +86,12 @@ export default function NavBar() {
                         <DrawerContent>
                             <DrawerBody>
                                 {navList.map((nav) => {
-                                    return (<>
-                                        <Link key={nav.name} href={nav.path} onClick={() => setIsOpen(false)}>
+                                    return (<div key={nav.name}>
+                                        <Link href={nav.path} onClick={() => setIsOpen(false)}>
                                             <div className='py-12px text-sm leading-[42px] font-medium'>{nav.name}</div>
                                         </Link>
                                         <Divider />
-                                    </>)
+                                    </div>)
                                 })}
                             </DrawerBody>
                         </DrawerContent>

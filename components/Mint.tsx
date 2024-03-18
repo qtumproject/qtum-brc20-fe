@@ -9,8 +9,6 @@ import {
     NumberInput,
     NumberInputField,
     NumberInputStepper,
-    NumberIncrementStepper,
-    NumberDecrementStepper,
     Button,
 } from '@chakra-ui/react';
 import {
@@ -183,10 +181,6 @@ export default function Mint({ defaultTick, feeRates }: IProps) {
                             <FormLabel htmlFor='amount'>Amount</FormLabel>
                             <NumberInput id='amount' focusBorderColor="#2D73FF" defaultValue={1} min={1} value={amount} onChange={(value) => setAmount(value)}>
                                 <NumberInputField />
-                                <NumberInputStepper>
-                                    <NumberIncrementStepper />
-                                    <NumberDecrementStepper />
-                                </NumberInputStepper>
                             </NumberInput>
                             {isAmountError && <FormErrorMessage>
                                 invalid input amount

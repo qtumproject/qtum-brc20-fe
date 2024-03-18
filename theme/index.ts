@@ -4,7 +4,7 @@ import { inputTheme } from './components/Input'
 import { numberInputTheme } from './components/NumberInput'
 import { modalTheme } from './components/Modal'
 import { stepperTheme } from './components/Stepper';
-
+import { tableTheme } from './components/Table';
 
 const config: ThemeConfig = {
   initialColorMode: 'light',
@@ -22,6 +22,7 @@ const theme = extendTheme({
     NumberInput: numberInputTheme,
     Modal: modalTheme,
     Stepper: stepperTheme,
+    Table: tableTheme,
   },
   colors: {
     brand: {

@@ -9,6 +9,7 @@ import axios from 'axios'
 import { Search2Icon } from '@chakra-ui/icons'
 import RadioGroup from '@/components/RadioGroup'
 import CustomTable from '@/components/CustomTable'
+import MobileList from '@/components/MobileList';
 import Pagination from '@/components/Pagination';
 import { TBrc20Status, TBrc20StatusParams, IBrc20ListParams, IBrc20ListItem } from '@/types';
 
@@ -24,6 +25,7 @@ export default function Indexer() {
     const [pageInfo, setPageInfo] = useState({
         page: 1,
         total: 1,
+        total_page: 1,
     });
 
     const [isLoading, setIsLoading] = useState(false);
@@ -67,6 +69,7 @@ export default function Indexer() {
                     setPageInfo({
                         page: pagination_info.page,
                         total: pagination_info.total,
+                        total_page: pagination_info.total_page,
                     });
                     setDataList(collection_list)
 
@@ -132,7 +135,7 @@ export default function Indexer() {
                     <div className='w-full'>
                         <CustomTable dataList={dataList} isLoading={isLoading} />
                         {
-                            pageInfo.total > 0 && <div className='mt-4'>
+                            pageInfo.total > 0 && pageInfo.total_page > 1 && <div className='mt-4'>
                                 <Pagination
                                     pageSize={10}
                                     pageIndex={pageInfo.page - 1}
@@ -148,7 +151,7 @@ export default function Indexer() {
             <div className={`lg:hidden flex flex-col items-center px-6`}>
                 <div className={`mb-4 text-[30px] mt-[-20px] font-[Outfit] font-medium`}>QBRC20 List</div>
                 <div className={`flex flex-col items-center py-[30px] px-2.5 bg-white w-full rounded-[12px] shadow-lg`}>
-                    <div className='mb-8 w-full'>
+                    <div className='mb-6 w-full'>
                         <InputGroup>
                             <InputRightElement height='56px' className="cursor-pointer" onClick={onQueryChange}>
                                 <Search2Icon />
@@ -164,14 +167,14 @@ export default function Indexer() {
                                 }} />
                         </InputGroup>
                     </div>
-                    <div className='w-full mb-8'>
+                    <div className='w-full mb-6'>
                         <RadioGroup options={options} name="queryType" defaultValue='All' onChange={onStatusChange} />
                     </div>
 
                     <div className='w-full'>
-                        <CustomTable dataList={dataList} isLoading={isLoading} />
+                        <MobileList dataList={dataList} isLoading={isLoading} />
                         {
-                            pageInfo.total > 0 && <div className='mt-4'>
+                            pageInfo.total > 0 && pageInfo.total_page > 1 && <div className='mt-4'>
                                 <Pagination
                                     pageSize={10}
                                     pageIndex={pageInfo.page - 1}

@@ -26,19 +26,13 @@ export default function CustomTable({ dataList, isLoading }: IProps) {
             <Td className='text-[#7f8596]'>{data.deploy_time}</Td>
             <Td className='text-sm'>
                 {data.progress}
-                <Progress value={Number(data.progress.slice(0, 5))} size='xs' colorScheme='brand' />
+                <Progress height={0.5} value={Number(data.progress.slice(0, 5))} size='xs' colorScheme='brand' />
             </Td>
             <Td className='text-sm font-medium'>{data.holders || 0}</Td>
             <Td className='text-sm'>{data.mint_times || 0}</Td>
             <Td>
-                {data.progress === '100.000%' ? '-' : <Link href={{
-                    pathname: '/inscribe',
-                    query: {
-                        type: 'Mint',
-                        tick: data.token_name,
-                    }
-                }}>
-                    <Button variant="brandPrimary" size="sm">Mint</Button>
+                {data.progress === '100.000%' ? '-' : <Link href={`/inscribe?type=Mint&tick=${data.token_name}`}>
+                    <Button variant="brandPrimary" borderRadius='8px' size='xs' width='79px' height='32px' >Mint</Button>
                 </Link>}
 
             </Td>
@@ -127,8 +121,8 @@ export default function CustomTable({ dataList, isLoading }: IProps) {
         <TableContainer>
             <Table variant='simple'>
                 <Thead>
-                    <Tr>
-                        <Th>Token Name</Th>
+                    <Tr className='bg-[#F3F3F0] text-[#7F8596]'>
+                        <Th className='text-[#7F8596]'>Token Name</Th>
                         <Th>Deploy Time</Th>
                         <Th>Progress</Th>
                         <Th>Holders</Th>

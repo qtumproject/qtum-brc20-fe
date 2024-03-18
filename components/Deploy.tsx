@@ -8,9 +8,6 @@ import {
     Input,
     NumberInput,
     NumberInputField,
-    NumberInputStepper,
-    NumberIncrementStepper,
-    NumberDecrementStepper,
     Button,
 } from '@chakra-ui/react';
 import {
@@ -193,10 +190,6 @@ export default function Deploy({ feeRates }: IProps) {
                             <FormLabel htmlFor='amount'>Total Supply</FormLabel>
                             <NumberInput id='amount' focusBorderColor="#2D73FF" defaultValue={1} min={1} value={amount} onChange={(value) => setAmount(value)}>
                                 <NumberInputField />
-                                <NumberInputStepper>
-                                    <NumberIncrementStepper />
-                                    <NumberDecrementStepper />
-                                </NumberInputStepper>
                             </NumberInput>
                             {isAmountError && <FormErrorMessage>
                                 invalid input amount
@@ -208,10 +201,6 @@ export default function Deploy({ feeRates }: IProps) {
                             <FormLabel htmlFor='limit'>Limit Per Mint</FormLabel>
                             <NumberInput id='limit' focusBorderColor="#2D73FF" defaultValue={1} min={1} value={limit} onChange={(value) => setLimit(value)}>
                                 <NumberInputField />
-                                <NumberInputStepper>
-                                    <NumberIncrementStepper />
-                                    <NumberDecrementStepper />
-                                </NumberInputStepper>
                             </NumberInput>
                             {isLimitError && <FormErrorMessage>
                                 invalid input limit

@@ -4,7 +4,7 @@ import Image from 'next/image'
 export default function Home() {
     return (
         <>
-            <div className={`large:flex hidden min-h-screen flex-col mx-auto w-[1200px]`}>
+            <div className={`lg:flex hidden min-h-screen flex-col mx-auto w-[1200px]`}>
                 <div className="flex mb-[80px]">
                     <div className="relative inline-block">
                         <Image className="absolute top-[80px] left-[-105px]" src="/banner-l.png" alt="banner-left" width={230} height={230} />
