@@ -43,17 +43,20 @@ export default function Footer() {
                 <div className="flex mt-8">
                     <div className="rounded-full h-12 w-12 flex justify-center items-center mr-6">
                         <Link href="https://discord.com/invite/DCPGvUCms5">
-                            <Image src="/img/discord.png" alt="discord" width={48} height={48} />
+                            <Image className="block dark:hidden" src="/img/discord.png" alt="discord" width={48} height={48} />
+                            <Image className="hidden dark:block" src="/img/discord-d.png" alt="discord" width={48} height={48} />
                         </Link>
                     </div>
                     <div className="rounded-full h-12 w-12 flex justify-center items-center mr-6">
                         <Link href="https://twitter.com/qtum">
-                            <Image src="/img/x.png" alt="x" width={48} height={48} />
+                            <Image className="block dark:hidden" src="/img/x.png" alt="x" width={48} height={48} />
+                            <Image className="hidden dark:block" src="/img/x-d.png" alt="x" width={48} height={48} />
                         </Link>
                     </div>
                     <div className="rounded-full h-12 w-12 flex justify-center items-center">
                         <Link href="https://coinmarketcap.com/community/profile/Qtum_Foundation/">
-                            <Image src="/img/coinmarketcap.png" alt="coinmarketcap" width={48} height={48} />
+                            <Image className="block dark:hidden" src="/img/coinmarketcap.png" alt="coinmarketcap" width={48} height={48} />
+                            <Image className="hidden dark:block" src="/img/coinmarketcap-d.png" alt="coinmarketcap" width={48} height={48} />
                         </Link>
                     </div>
 
