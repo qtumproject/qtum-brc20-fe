@@ -109,7 +109,7 @@ export default function Indexer() {
 
     return (
         <>
-            <div className={`lg:flex hidden flex-col items-center px-6`}>
+            <div className={`lg:flex hidden flex-col items-center px-6 dark:text-white`}>
                 <div className={`mb-[40px] text-[40px] dark:text-white mt-[-40px] font-[Outfit] font-medium`}>QBRC20 List</div>
                 <div className={`flex flex-col items-center py-10 px-8 bg-white dark:bg-black w-[1024px] rounded-[12px] shadow-lg`}>
                     <div className='w-[680px] mb-8'>
@@ -148,9 +148,9 @@ export default function Indexer() {
                     </div>
                 </div>
             </div>
-            <div className={`lg:hidden flex flex-col items-center px-6`}>
+            <div className={`lg:hidden flex flex-col items-center px-6 dark:text-white`}>
                 <div className={`mb-4 text-[30px] mt-[-20px] font-[Outfit] font-medium`}>QBRC20 List</div>
-                <div className={`flex flex-col items-center py-[30px] px-2.5 bg-white w-full rounded-[12px] shadow-lg`}>
+                <div className={`flex flex-col items-center py-[30px] px-2.5 bg-white dark:bg-black w-full rounded-[12px] shadow-lg`}>
                     <div className='mb-6 w-full'>
                         <InputGroup>
                             <InputRightElement height='56px' className="cursor-pointer" onClick={onQueryChange}>
