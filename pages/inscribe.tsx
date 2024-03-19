@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from 'next/router'
 import qs from 'qs';
+import { useToast } from "@chakra-ui/react";
 import Mint from '@/components/Mint';
 import Deploy from '@/components/Deploy';
 import RadioGroup from "@/components/RadioGroup";
@@ -10,12 +11,13 @@ import {
 import { IQtumFeeRates } from '@/types'
 
 export default function Inscribe() {
+    const toast = useToast();
     const [value, setValue] = useState('Mint');
     const [defaultTick, setDefaultTick] = useState('');
     const [feeRates, setFeeRates] = useState<IQtumFeeRates>({
-        custom: '',
-        economy: '',
-        normal: ''
+        custom: '400',
+        economy: '400',
+        normal: '400'
     });
     const router = useRouter();
 
@@ -30,27 +32,37 @@ export default function Inscribe() {
     }
 
     const setQtumFee = async () => {
-        const res = await getQtumFee();
-        let feeRates = {
-            custom: '',
-            economy: '',
-            normal: ''
-        } as IQtumFeeRates;
-        const qtum2satvb = (count: number) => String((count * Math.pow(10, 5)).toFixed(3));
-        if (res && res.length) {
-            res.forEach(item => {
-                if (item.blocks === 2) {
-                    feeRates.custom = qtum2satvb(item.feeRate);
-                }
-                if (item.blocks === 4) {
-                    feeRates.normal = qtum2satvb(item.feeRate);
-                }
-                if (item.blocks === 6) {
-                    feeRates.economy = qtum2satvb(item.feeRate);
-                }
+        try {
+            const res = await getQtumFee();
+            let feeRates = {
+                custom: '',
+                economy: '',
+                normal: ''
+            } as IQtumFeeRates;
+            const qtum2satvb = (count: number) => String((count * Math.pow(10, 5)).toFixed(3));
+            if (res && res.length) {
+                res.forEach(item => {
+                    if (item.blocks === 2) {
+                        feeRates.custom = qtum2satvb(item.feeRate);
+                    }
+                    if (item.blocks === 4) {
+                        feeRates.normal = qtum2satvb(item.feeRate);
+                    }
+                    if (item.blocks === 6) {
+                        feeRates.economy = qtum2satvb(item.feeRate);
+                    }
+                })
+            }
+            setFeeRates(feeRates);
+        } catch (e: any) {
+            toast({
+                title: `[GetQtumFee] ${e.message}`,
+                position: 'top',
+                status: 'error',
+                duration: 2000,
             })
         }
-        setFeeRates(feeRates);
+
     }
 
     useEffect(() => {

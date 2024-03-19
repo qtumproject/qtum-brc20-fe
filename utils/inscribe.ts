@@ -235,7 +235,7 @@ export async function getQtumFee() {
         return res;
     } catch (e) {
         console.error(e);
-        return [];
+        throw (e);
     }
 }
 
@@ -259,7 +259,6 @@ export const addressToScriptPubKey = (address: string): Array<string> => {
     } catch (error) {
         try {
             // p2tr
-
             const hex = Buff.bech32(address).hex;
             return ['OP_1', hex]
         } catch (error2) {
@@ -324,10 +323,11 @@ export async function pushBTCpmt(rawtx: string) {
             debug('pushBTCpmt success, txid is %o', txid);
         } else {
             console.error(message)
-            return ''
+            throw new Error(message)
         }
     } catch (e) {
-        console.error(e)
+        console.error(e);
+        throw e;
     }
 
     return txid;
@@ -356,6 +356,7 @@ export async function addressReceivedMoneyInThisTx(address: string) {
     } catch (e) {
         debug('[Error] get tx info error');
         console.error(e);
+        throw e;
     }
     // let nonjson;
     return [txid, vout, amt];
@@ -373,7 +374,7 @@ export async function addressOnceHadMoney(address: string, includeMempool: boole
     } catch (e) {
         debug('[Error] get address info error')
         console.error(e);
-        return false;
+        throw e;
     }
 }
 

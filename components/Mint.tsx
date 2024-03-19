@@ -8,7 +8,7 @@ import {
     Input,
     NumberInput,
     NumberInputField,
-    NumberInputStepper,
+    useToast,
     Button,
 } from '@chakra-ui/react';
 import {
@@ -26,8 +26,8 @@ interface IProps {
 }
 
 export default function Mint({ defaultTick, feeRates }: IProps) {
+    const toast = useToast();
     const [step, setStep] = useState(1);
-
     const [tick, setTick] = useState(defaultTick)
     const [amount, setAmount] = useState("1");
     const [rAddress, setRAddress] = useState('');
@@ -146,15 +146,24 @@ export default function Mint({ defaultTick, feeRates }: IProps) {
     }
 
     const resolveMint = () => {
-        mintOrDeploy({
-            scriptObj: mint,
-            inscriptionFees,
-            totalFees,
-            rAddress,
-            setFundingAddress,
-            setQrImg,
-            setProgress,
-        })
+        try {
+            mintOrDeploy({
+                scriptObj: mint,
+                inscriptionFees,
+                totalFees,
+                rAddress,
+                setFundingAddress,
+                setQrImg,
+                setProgress,
+            });
+        } catch (e: any) {
+            toast({
+                title: `[Mint error] ${e.message}`,
+                position: 'top',
+                status: 'error',
+                duration: 2000,
+            })
+        }
     }
 
     return (
