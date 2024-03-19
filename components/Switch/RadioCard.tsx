@@ -17,7 +17,7 @@ export default function RadioCard(props: any) {
                 cursor='pointer'
                 borderWidth='0'
                 borderRadius='md'
-                className='text-center dark:hidden block'
+                className='text-center dark:hidden  flex justify-center items-center'
                 _checked={{
                     bg: 'white',
                     color: '#2d73ff',
@@ -32,7 +32,7 @@ export default function RadioCard(props: any) {
                 cursor='pointer'
                 borderWidth='0'
                 borderRadius='md'
-                className='text-center hidden dark:block'
+                className='text-center hidden dark:flex justify-center items-center'
                 _checked={{
                     bg: '#31343F',
                     color: '#2D73FF',

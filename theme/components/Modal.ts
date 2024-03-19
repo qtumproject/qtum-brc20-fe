@@ -8,6 +8,9 @@ const baseStyle = definePartsStyle({
   // define the part you're going to style
   overlay: {
     bg: 'rgba(247,247,240,0.84)', //change the background
+    _dark: {
+      bg: 'rgba(34, 37, 45, 0.97)'
+    }
   },
   dialog: {
     borderRadius: '24px',

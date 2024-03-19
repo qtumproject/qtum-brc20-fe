@@ -78,7 +78,8 @@ export default function PayModal({
         </div>
         <div className='mt-4 bg-[#F3F3F0] dark:bg-[#282A33] p-4 rounded-xl text-[#7F8596] font-medium text-base	leading-[20px] pr-[40px] relative'>
             {fundingAddress}
-            <Image width={24} height={24} alt="copy" src='/img/copy.png' className='absolute right-3 top-7 cursor-pointer' onClick={onCopyClick} />
+            <Image width={24} height={24} alt="copy" src='/img/copy.png' className='dark:hidden block absolute right-3 top-7 cursor-pointer' onClick={onCopyClick} />
+            <Image width={24} height={24} alt="copy" src='/img/copy-d.svg' className='dark:block hidden absolute right-3 top-7 cursor-pointer' onClick={onCopyClick} />
 
         </div >
 
