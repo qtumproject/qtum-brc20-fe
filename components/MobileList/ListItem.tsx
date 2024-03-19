@@ -5,7 +5,7 @@ import {
     Progress,
     Link,
 } from '@chakra-ui/react'
-import { IBrc20ListItem, TBrc20List } from '@/types';
+import { IBrc20ListItem } from '@/types';
 
 export default function ListItem({ data }: { data: IBrc20ListItem }) {
     return (<div className="px-6 py-3 border border-[#E7E7E1] dark:border-[#494e5b80] rounded-xl">
@@ -37,9 +37,9 @@ export default function ListItem({ data }: { data: IBrc20ListItem }) {
         <div className="flex justify-between items-center">
             <div className="text-[#7F8596] text-sm leading-[18px]">Operation</div>
             <div className='text-sm leading-[18px]'>
-                {data.progress === '100.000%' ? '-' : <Link href={`/inscribe?type=Mint&tick=${data.token_name}`}>
-                    <Button variant="brandPrimary" borderRadius='8px' size='xs' width='79px' height='32px' >Mint</Button>
-                </Link>}
+                <Link href={`/inscribe?type=Mint&tick=${data.token_name}`}>
+                    <Button colorScheme="brand" borderRadius='8px' size='xs' width='79px' height='32px' isDisabled={data.progress === '100.000%'}>Mint</Button>
+                </Link>
             </div>
         </div>
     </div>)

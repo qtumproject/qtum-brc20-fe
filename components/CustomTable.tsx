@@ -31,10 +31,9 @@ export default function CustomTable({ dataList, isLoading }: IProps) {
             <Td className='text-sm font-medium'>{data.holders || 0}</Td>
             <Td className='text-sm'>{data.mint_times || 0}</Td>
             <Td>
-                {data.progress === '100.000%' ? '-' : <Link href={`/inscribe?type=Mint&tick=${data.token_name}`}>
-                    <Button variant="brandPrimary" borderRadius='8px' size='xs' width='79px' height='32px' >Mint</Button>
-                </Link>}
-
+                <Link href={`/inscribe?type=Mint&tick=${data.token_name}`}>
+                    <Button colorScheme="brand" borderRadius='8px' size='xs' width='79px' height='32px' isDisabled={data.progress === '100.000%'}>Mint</Button>
+                </Link>
             </Td>
         </Tr>)
     });

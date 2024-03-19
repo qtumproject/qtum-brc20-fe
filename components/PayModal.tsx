@@ -19,7 +19,7 @@ import {
     Stepper,
     Box,
     Button,
-} from '@chakra-ui/react'
+} from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { satsToQtum } from '@/utils';
 import Image from 'next/image';
@@ -47,21 +47,32 @@ export default function PayModal({
 }: IProps) {
     const toast = useToast();
 
+    const { onCopy: onCopyAddress } = useClipboard(fundingAddress);
+    const count = JSON.stringify(satsToQtum(totalPay));
+    const { onCopy: onCopyCount } = useClipboard(count);
+
     const steps = [
         { title: 'Payment Confirmed', description: '' },
         { title: 'Inscribing(1/1)', description: '' },
         { title: 'Inscription Finished', description: '' },
     ];
 
-    const { onCopy } = useClipboard(fundingAddress);
     const [isOpen, setIsOpen] = useState(false);
-
     useEffect(() => { setIsOpen(isShow) }, [isShow])
 
-    const onCopyClick = () => {
-        onCopy();
+    const onAddressCopyClick = () => {
+        onCopyAddress();
         toast({
             title: 'The address has been copied!',
+            position: 'top',
+            status: 'success',
+            duration: 2000,
+        })
+    }
+    const onCountCopyClick = () => {
+        onCopyCount();
+        toast({
+            title: 'The count has been copied!',
             position: 'top',
             status: 'success',
             duration: 2000,
@@ -73,13 +84,16 @@ export default function PayModal({
 
     const renderPayCode = () => (<>
         <div className='m-auto flex justify-center w-[170px] h-[170px]' ref={(node) => { node && node.appendChild(children) }}></div>
-        <div className='mb-4 text-center'>
-            Payment amount: {satsToQtum(totalPay)} QTUM
+        <div className='mb-4 flex items-center justify-center'>
+            Payment amount: {satsToQtum(totalPay)} QTUM <span className='bg-[#F3F3F0] dark:bg-[#282A33] rounded-full p-1.5 ml-2.5'>
+                <Image width={18} height={18} alt="copy" src='/img/copy.png' className='dark:hidden block  cursor-pointer' onClick={onCountCopyClick} />
+                <Image width={18} height={18} alt="copy" src='/img/copy-d.svg' className='dark:block hidden cursor-pointer' onClick={onCountCopyClick} />
+            </span>
         </div>
         <div className='mt-4 bg-[#F3F3F0] dark:bg-[#282A33] p-4 rounded-xl text-[#7F8596] font-medium text-base	leading-[20px] pr-[40px] relative'>
             {fundingAddress}
-            <Image width={24} height={24} alt="copy" src='/img/copy.png' className='dark:hidden block absolute right-3 top-7 cursor-pointer' onClick={onCopyClick} />
-            <Image width={24} height={24} alt="copy" src='/img/copy-d.svg' className='dark:block hidden absolute right-3 top-7 cursor-pointer' onClick={onCopyClick} />
+            <Image width={24} height={24} alt="copy" src='/img/copy.png' className='dark:hidden block absolute right-3 top-7 cursor-pointer' onClick={onAddressCopyClick} />
+            <Image width={24} height={24} alt="copy" src='/img/copy-d.svg' className='dark:block hidden absolute right-3 top-7 cursor-pointer' onClick={onAddressCopyClick} />
 
         </div >
 

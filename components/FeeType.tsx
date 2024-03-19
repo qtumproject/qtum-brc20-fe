@@ -30,7 +30,7 @@ export default function FeeType({ title, type = 'solid', setValue, amount, focus
                 {
                     type === 'solid' ? <span>{amount}</span> : <span>
                         <NumberInput variant='flushed' value={amount} onChange={(value) => setValue?.(value)} focusBorderColor={colorMode === 'light' ? '#2D73FF' : 'rgba(73, 78, 91, 0.50)'} >
-                            <NumberInputField h={6} pr={2} />
+                            <NumberInputField h={6} pr={2} className='text-center' />
                         </NumberInput>
                     </span>
                 }
@@ -44,7 +44,7 @@ export default function FeeType({ title, type = 'solid', setValue, amount, focus
                 {
                     type === 'solid' ? <span>{amount}</span> : <span>
                         <NumberInput variant='flushed' value={amount} onChange={(value) => setValue?.(value)} focusBorderColor={colorMode === 'light' ? '#2D73FF' : 'rgba(73, 78, 91, 0.50)'} >
-                            <NumberInputField h={6} pr={2} />
+                            <NumberInputField h={6} pr={2} className='text-center' />
                         </NumberInput>
                     </span>
                 }

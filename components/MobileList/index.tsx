@@ -1,10 +1,6 @@
 
-import { IBrc20ListItem, TBrc20List } from '@/types';
-import Link from 'next/link';
+import { TBrc20List } from '@/types';
 import {
-    Button,
-    Divider,
-    Progress,
     Skeleton
 } from '@chakra-ui/react'
 import ListItem from './ListItem';
