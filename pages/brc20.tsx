@@ -60,18 +60,18 @@ export default function Indexer() {
                 params.page = page;
             }
             setIsLoading(true);
-            const { status: resStatus, data, statusText } = await axios.get('/api/v1/getCollectionList?chain_id=qtum', { params });
+            const { status: resStatus, data, statusText } = await axios.get('/api/v1/tickers?chain_id=qtum', { params });
             setIsLoading(false);
             if (resStatus === 200) {
                 const { code, data: resData, msg } = data || {};
                 if (code === 0) {
-                    const { pagination_info, collection_list = [] } = resData;
+                    const { pagination_info, ticker_list = [] } = resData;
                     setPageInfo({
                         page: pagination_info.page,
                         total: pagination_info.total,
                         total_page: pagination_info.total_page,
                     });
-                    setDataList(collection_list)
+                    setDataList(ticker_list)
 
                 } else {
                     console.error(msg);
