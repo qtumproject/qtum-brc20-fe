@@ -48,7 +48,7 @@ export default function PayModal({
     const toast = useToast();
 
     const { onCopy: onCopyAddress } = useClipboard(fundingAddress);
-    const count = JSON.stringify(satsToQtum(totalPay));
+    const count = satsToQtum(totalPay)
     const { onCopy: onCopyCount } = useClipboard(count);
 
     const steps = [
