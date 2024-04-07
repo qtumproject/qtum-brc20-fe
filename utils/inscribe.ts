@@ -428,7 +428,7 @@ export async function addressReceivedMoneyInThisTx(address: string) {
 
 export async function addressOnceHadMoney(address: string, includeMempool: boolean) {
     try {
-        const res: qtumAddressInfo = await axiosInstance.get(`/address/${address}`, { signal: controller.signal });
+        const res: qtumAddressInfo = await axiosInstance.get(`/address/${address}`, { signal: controller?.signal });
         const { balance } = res || {};
         if (Number(balance) > 0) {
             return true;

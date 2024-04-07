@@ -80,7 +80,7 @@ export interface IBrc20ListItem {
     holders?: number,
     mint_times?: number
 }
-export type TBrc20List = [IBrc20ListItem] | [];
+export type TBrc20List = IBrc20ListItem[] | [];
 export interface IBrc20ListParams {
     status?: TBrc20StatusParams,
     tick?: string,
