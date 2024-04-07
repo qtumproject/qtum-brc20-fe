@@ -34,7 +34,7 @@ export default function Indexer() {
 
     const [status, setStatus] = useState<TBrc20StatusParams>('');
 
-    const [dataList, setDataList] = useState<[IBrc20ListItem] | []>([]);
+    const [dataList, setDataList] = useState<IBrc20ListItem[] | []>([]);
 
     const setCurrPage = (page: number) => {
         setPageInfo({
