@@ -15,16 +15,18 @@ import {
     satsToQtum,
     mintOrDeploy,
     calcTotalFees,
+    abortRequest,
 } from '@/utils';
-import { IQtumFeeRates, TFeeType, IProgressInfo } from '@/types';
+import { IQtumFeeRates, TFeeType, IProgressInfo, IOrderItem } from '@/types';
 import FeeType from "./FeeType";
 import PayModal from "./PayModal";
 
 interface IProps {
     feeRates: IQtumFeeRates,
+    updateOrder: (orderItem: IOrderItem, opType: 'add' | 'update') => void,
 }
 
-export default function Deploy({ feeRates }: IProps) {
+export default function Deploy({ feeRates, updateOrder }: IProps) {
     const toast = useToast();
     const [step, setStep] = useState(1);
     const [tick, setTick] = useState('')
@@ -157,6 +159,11 @@ export default function Deploy({ feeRates }: IProps) {
         setTxIds(txidsTemp);
     }
 
+    const handleModalClose = () => {
+        setIsModalShow(false);
+        abortRequest();
+    }
+
     const resolveDeploy = () => {
         try {
             mintOrDeploy({
@@ -166,11 +173,12 @@ export default function Deploy({ feeRates }: IProps) {
                 rAddress,
                 setFundingAddress,
                 setQrImg,
-                setProgress
+                setProgress,
+                updateOrder
             });
         } catch (e: any) {
             toast({
-                title: `[Mint error] ${e.message}`,
+                title: `[Deploy error] ${e.message}`,
                 position: 'top',
                 status: 'error',
                 duration: 2000,
@@ -340,7 +348,7 @@ export default function Deploy({ feeRates }: IProps) {
                 isProgress={isProgress}
                 activeStep={activeStep}
                 txids={txids}
-                close={() => setIsModalShow(false)}>
+                close={handleModalClose}>
                 {qrImg}
             </PayModal>
 

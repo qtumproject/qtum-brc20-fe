@@ -8,12 +8,39 @@ import {
     TUtxoRes,
     TQtumFeeRatesRes,
     IMintOrDeployParams,
-    ICaclTotalFeesParams
+    ICaclTotalFeesParams,
+    TOrderList,
+    IOrderStatus,
+    TOperationType
 } from "@/types";
 import { axiosInstance } from '@/utils';
+import store from 'store2';
+import dayjs from 'dayjs';
 
+let controller: AbortController | null = null;
+const orderListKey = 'orderList';
 const encodedAddressPrefix = 'tq'; // qc for qtum | tq for qtum_testnet
-var debug = require('debug')('[inscribe]');
+const debug = require('debug')('[inscribe]');
+
+export function abortRequest() {
+    controller?.abort();
+}
+
+export function setLocalOrderList(orderList: TOrderList) {
+    try {
+        store.set(orderListKey, orderList);
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+export async function getLocalOrderList() {
+    return await store.get(orderListKey) || [];
+}
+
+const getNowTime = () => {
+    return dayjs().format('YYYY/MM/DD HH:mm:ss');
+}
 
 export async function mintOrDeploy({
     scriptObj,
@@ -23,12 +50,25 @@ export async function mintOrDeploy({
     setFundingAddress,
     setQrImg,
     setProgress,
+    updateOrder,
 }: IMintOrDeployParams) {
     debug('inscribe begin')
+    controller = new AbortController();
     let inscriptions = [];
 
     let privkey = bytesToHex(Noble.utils.randomPrivateKey());
-    debug('privkey %o', privkey)
+    debug('privkey %o', privkey);
+
+    const currentOrder = {
+        orderId: privkey.slice(0, 30) as string,
+        type: scriptObj.op as TOperationType,
+        tick: scriptObj.tick,
+        status: IOrderStatus.PENDING as string,
+        createTime: getNowTime(),
+        updateTime: getNowTime(),
+    };
+    updateOrder(currentOrder, 'add');
+
 
     let seckey = new KeyPair(privkey);
     let pubkey = seckey.pub.rawX;
@@ -106,14 +146,25 @@ export async function mintOrDeploy({
     const qrimg = createQR(qr_value);
     setQrImg(qrimg as any);
 
-    await loopTilAddressReceivesMoney(fundingAddress, true);
+
+    try {
+        await loopTilAddressReceivesMoney(fundingAddress, true);
+    } catch (e) {
+        debug(e);
+        currentOrder.status = IOrderStatus.CLOSED;
+        currentOrder.updateTime = getNowTime();
+        updateOrder(currentOrder, 'update');
+        return;
+    }
     await waitSomeSeconds(2);
     let txinfo = await addressReceivedMoneyInThisTx(fundingAddress);
-
     let txid = txinfo[0];
     let vout = txinfo[1];
     let amt = txinfo[2];
     debug('Funding Address receive the money, the txid, vout, amount is: %o %o %o', txid, vout, amt);
+    currentOrder.status = IOrderStatus.INSCRIBING;
+    currentOrder.updateTime = getNowTime();
+    updateOrder(currentOrder, 'update');
     setProgress({ step: 1, txid });
 
     // 1. to inscription address
@@ -155,7 +206,15 @@ export async function mintOrDeploy({
     setProgress({ step: 2, txid: _txid });
 
     const inscribe = async (inscription: any, vout: any) => {
-        await loopTilAddressReceivesMoney(inscription.inscriptionAddress, true);
+        try {
+            await loopTilAddressReceivesMoney(inscription.inscriptionAddress, true);
+        } catch (e) {
+            debug(e);
+            currentOrder.status = IOrderStatus.CLOSED;
+            currentOrder.updateTime = getNowTime();
+            updateOrder(currentOrder, 'update');
+            return;
+        }
         await waitSomeSeconds(2);
         let txinfo2 = await addressReceivedMoneyInThisTx(inscription.inscriptionAddress);
         let txid2 = txinfo2[0];
@@ -188,12 +247,17 @@ export async function mintOrDeploy({
         }
         debug('Receive address receive the money, the txid is: %o', _txid2);
         setProgress({ step: 3, txid: _txid2 });
+        currentOrder.status = IOrderStatus.SUCCESS;
+        currentOrder.updateTime = getNowTime();
+        updateOrder(currentOrder, 'update');
         debug('Success!')
     }
 
     for (let i = 0; i < inscriptions.length; i++) {
         inscribe(inscriptions[i], i);
-    }
+    };
+
+
 }
 
 export async function calcTotalFees({
@@ -364,7 +428,7 @@ export async function addressReceivedMoneyInThisTx(address: string) {
 
 export async function addressOnceHadMoney(address: string, includeMempool: boolean) {
     try {
-        const res: qtumAddressInfo = await axiosInstance.get(`/address/${address}`);
+        const res: qtumAddressInfo = await axiosInstance.get(`/address/${address}`, { signal: controller.signal });
         const { balance } = res || {};
         if (Number(balance) > 0) {
             return true;
@@ -373,7 +437,6 @@ export async function addressOnceHadMoney(address: string, includeMempool: boole
         }
     } catch (e) {
         debug('[Error] get address info error')
-        console.error(e);
         throw e;
     }
 }
@@ -382,18 +445,27 @@ export async function loopTilAddressReceivesMoney(address: string, includeMempoo
     let itReceivedMoney = false;
 
     async function isDataSetYet(data_i_seek: boolean) {
-        return new Promise(function (resolve) {
+        return new Promise(function (resolve, reject) {
             if (!data_i_seek) {
                 setTimeout(async function () {
                     debug("waiting for address to receive money...");
                     try {
                         itReceivedMoney = await addressOnceHadMoney(address, includeMempool);
-                        if (itReceivedMoney) {
-                            debug('receive money success!')
-                        }
-                    } catch (e) { }
-                    let msg = await isDataSetYet(itReceivedMoney);
-                    resolve(msg);
+                    } catch (e) {
+                        reject(e);
+                        return;
+                    }
+                    if (itReceivedMoney) {
+                        debug('receive money success!')
+                    }
+                    try {
+                        let msg = await isDataSetYet(itReceivedMoney);
+                        resolve(msg);
+                    } catch (e) {
+                        reject(e);
+                    }
+
+
                 }, 2000);
             } else {
                 resolve(data_i_seek);
@@ -402,12 +474,21 @@ export async function loopTilAddressReceivesMoney(address: string, includeMempoo
     }
 
     async function getTimeoutData() {
-        let data_i_seek = await isDataSetYet(itReceivedMoney);
-        return data_i_seek;
+        try {
+            let data_i_seek = await isDataSetYet(itReceivedMoney);
+            return data_i_seek;
+        } catch (e) {
+            throw e;
+        }
+
     }
 
-    let returnable = await getTimeoutData();
-    return returnable;
+    try {
+        let returnable = await getTimeoutData();
+        return returnable;
+    } catch (e) {
+        throw (e);
+    }
 }
 
 
