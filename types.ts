@@ -92,6 +92,7 @@ export type TOperationType = 'mint' | 'deploy';
 export interface IOrderItem {
     orderId: string,
     tick: string,
+    quantity: string,
     type: TOperationType,
     status: string,
     createTime: string,

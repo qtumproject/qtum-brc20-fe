@@ -11,6 +11,10 @@ export default function ListItem({ data }: { data: IOrderItem }) {
             <div className='text-sm leading-[18px]'>{data.tick}</div>
         </div>
         <div className="flex justify-between mb-4">
+            <div className="text-[#7F8596] text-sm leading-[18px]">Quantity</div>
+            <div className='text-sm leading-[18px]'>{data.quantity}</div>
+        </div>
+        <div className="flex justify-between mb-4">
             <div className="text-[#7F8596] text-sm leading-[18px]">Type</div>
             <div className='flex items-center text-sm leading-[18px]' >
                 <div className='ml-1'>{data.type}</div>
@@ -23,12 +27,6 @@ export default function ListItem({ data }: { data: IOrderItem }) {
         <div className="flex justify-between mb-4">
             <div className="text-[#7F8596] text-sm leading-[18px]">CreateTime</div>
             <div className='text-sm leading-[18px]'>{data.createTime}</div>
-        </div>
-        <div className="flex justify-between items-center">
-            <div className="text-[#7F8596] text-sm leading-[18px]">UpdateTime</div>
-            <div className='text-sm leading-[18px]'>
-                {data.updateTime}
-            </div>
         </div>
     </div>)
 }

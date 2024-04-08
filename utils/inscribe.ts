@@ -11,7 +11,9 @@ import {
     ICaclTotalFeesParams,
     TOrderList,
     IOrderStatus,
-    TOperationType
+    TOperationType,
+    IMintJson,
+    IDeployJson
 } from "@/types";
 import { axiosInstance } from '@/utils';
 import store from 'store2';
@@ -62,6 +64,7 @@ export async function mintOrDeploy({
     const currentOrder = {
         orderId: privkey.slice(0, 30) as string,
         type: scriptObj.op as TOperationType,
+        quantity: scriptObj.op === 'mint' ? (scriptObj as IMintJson).amt : (scriptObj as IDeployJson).max,
         tick: scriptObj.tick,
         status: IOrderStatus.PENDING as string,
         createTime: getNowTime(),
