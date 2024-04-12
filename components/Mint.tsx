@@ -15,17 +15,19 @@ import {
     satsToQtum,
     mintOrDeploy,
     calcTotalFees,
+    abortRequest,
 } from '@/utils';
-import { IQtumFeeRates, TFeeType, IProgressInfo } from '@/types';
+import { IQtumFeeRates, TFeeType, IProgressInfo, IOrderItem } from '@/types';
 import FeeType from "./FeeType";
 import PayModal from "./PayModal";
 
 interface IProps {
     defaultTick: string,
     feeRates: IQtumFeeRates,
+    updateOrder: (orderItem: IOrderItem, opType: 'add' | 'update') => void,
 }
 
-export default function Mint({ defaultTick, feeRates }: IProps) {
+export default function Mint({ defaultTick, feeRates, updateOrder }: IProps) {
     const toast = useToast();
     const [step, setStep] = useState(1);
     const [tick, setTick] = useState(defaultTick)
@@ -145,6 +147,11 @@ export default function Mint({ defaultTick, feeRates }: IProps) {
         setTxIds(txidsTemp);
     }
 
+    const handleModalClose = () => {
+        setIsModalShow(false);
+        abortRequest();
+    }
+
     const resolveMint = () => {
         try {
             mintOrDeploy({
@@ -155,6 +162,7 @@ export default function Mint({ defaultTick, feeRates }: IProps) {
                 setFundingAddress,
                 setQrImg,
                 setProgress,
+                updateOrder,
             });
         } catch (e: any) {
             toast({
@@ -317,7 +325,7 @@ export default function Mint({ defaultTick, feeRates }: IProps) {
                 isProgress={isProgress}
                 activeStep={activeStep}
                 txids={txids}
-                close={() => setIsModalShow(false)}>
+                close={handleModalClose}>
                 {qrImg}
             </PayModal>
 

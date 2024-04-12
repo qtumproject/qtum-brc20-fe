@@ -51,6 +51,7 @@ export interface IMintOrDeployParams {
     setFundingAddress: Function,
     setQrImg: Function,
     setProgress: Function,
+    updateOrder: (orderItem: IOrderItem, opType: 'add' | 'update') => void,
 }
 
 export interface ICaclTotalFeesParams {
@@ -79,9 +80,29 @@ export interface IBrc20ListItem {
     holders?: number,
     mint_times?: number
 }
-export type TBrc20List = [IBrc20ListItem] | [];
+export type TBrc20List = IBrc20ListItem[] | [];
 export interface IBrc20ListParams {
     status?: TBrc20StatusParams,
     tick?: string,
     page?: number,
+}
+
+// inscribe order
+export type TOperationType = 'mint' | 'deploy';
+export interface IOrderItem {
+    orderId: string,
+    tick: string,
+    quantity: string,
+    type: TOperationType,
+    status: string,
+    createTime: string,
+    updateTime: string,
+
+}
+export type TOrderList = IOrderItem[] | [];
+export enum IOrderStatus {
+    PENDING = 'Pending',
+    INSCRIBING = 'Inscribing',
+    SUCCESS = 'Inscribed',
+    CLOSED = 'Closed',
 }
