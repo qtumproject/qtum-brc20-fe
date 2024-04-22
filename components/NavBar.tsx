@@ -11,6 +11,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/router';
 import Switch from '@/components/Switch';
 import { useTheme } from 'next-themes'
+import ConnectWallet from './ConnectWallet';
 
 
 const navList = [
@@ -85,7 +86,10 @@ export default function NavBar() {
                     </div>
                 </div>
 
-                <div>
+                <div className='flex justify-center'>
+                    <div className='mr-4'>
+                        <ConnectWallet />
+                    </div>
                     <Switch onChange={onModeChange} defaultValue={colorMode} />
                 </div>
             </div >
