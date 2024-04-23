@@ -86,7 +86,7 @@ export default function NavBar() {
                     </div>
                 </div>
 
-                <div className='flex justify-center'>
+                <div className='flex justify-center items-center'>
                     <div className='mr-4'>
                         <ConnectWallet />
                     </div>
@@ -101,7 +101,11 @@ export default function NavBar() {
                         <Image className='dark:block hidden' src="/logo-d.png" alt="logo" width={139} height={22} />
                     </Link>
                 </div>
-                <div>
+
+                <div className='flex items-center justify-center'>
+                    <div className='mr-2'>
+                        <ConnectWallet />
+                    </div>
                     <Image className="block dark:hidden" src="/img/icon-menu.png" height={32} width={32} alt="menu" onClick={() => setIsOpen(true)}></Image>
                     <Image className="hidden dark:block" src="/img/icon-menu-d.png" height={32} width={32} alt="menu" onClick={() => setIsOpen(true)}></Image>
                     <Drawer placement='top' onClose={onClose} isOpen={isOpen} autoFocus={false}>
