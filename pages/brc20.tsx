@@ -118,7 +118,7 @@ export default function Indexer() {
                                 <Search2Icon />
                             </InputRightElement>
                             <Input
-                                placeholder='Search BRC-20 token name'
+                                placeholder='Search qbrc20 token name'
                                 value={tokenName}
                                 onChange={(e) => setTokenName(e.target.value)}
                                 onKeyDown={e => {
@@ -157,7 +157,7 @@ export default function Indexer() {
                                 <Search2Icon />
                             </InputRightElement>
                             <Input
-                                placeholder='Search BRC-20 token name'
+                                placeholder='Search qbrc20 token name'
                                 value={tokenName}
                                 onChange={(e) => setTokenName(e.target.value)}
                                 onKeyDown={e => {

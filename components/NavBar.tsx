@@ -17,6 +17,7 @@ const navList = [
     { name: 'Home', path: '/' },
     { name: 'Inscribe', path: '/inscribe' },
     { name: 'QBRC20', path: '/brc20' },
+    { name: 'Balance', path: '/balance' },
     { name: 'Marketplace', path: '/market', offline: true },
 ]
 

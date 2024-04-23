@@ -1,11 +1,11 @@
 {
-  "name": "next-demo",
+  "name": "qtum-brc20-fe",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "next start --port 8445",
     "lint": "next lint"
   },
   "dependencies": {
