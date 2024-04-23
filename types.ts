@@ -81,11 +81,24 @@ export interface IBrc20ListItem {
     mint_times?: number
 }
 export type TBrc20List = IBrc20ListItem[] | [];
+export type TBrc20BalanceList = IBrc20BalanceListItem[] | [];
 export interface IBrc20ListParams {
     status?: TBrc20StatusParams,
     tick?: string,
     page?: number,
 }
+
+export interface IBrc20BalanceListItem {
+    wallet_address: string,
+    token_name: string,
+    available: string,
+    balance?: number,
+}
+
+export interface IBrc20BalanceListParams {
+    address?: string,
+}
+
 
 // inscribe order
 export type TOperationType = 'mint' | 'deploy';
