@@ -20,6 +20,7 @@ import {
 import { IQtumFeeRates, TFeeType, IProgressInfo, IOrderItem } from '@/types';
 import FeeType from "./FeeType";
 import PayModal from "./PayModal";
+import PayMode from './PayMode';
 
 interface IProps {
     defaultTick: string,
@@ -29,6 +30,7 @@ interface IProps {
 
 export default function Mint({ defaultTick, feeRates, updateOrder }: IProps) {
     const toast = useToast();
+    const [mode, setMode] = useState('qtum');
     const [step, setStep] = useState(1);
     const [tick, setTick] = useState(defaultTick)
     const [amount, setAmount] = useState("1");
@@ -133,8 +135,15 @@ export default function Mint({ defaultTick, feeRates, updateOrder }: IProps) {
     const handleSubmit = () => {
         const valid = validSecondForm();
         if (valid) {
-            resolveMint();
-            setIsModalShow(true);
+            if (mode === 'qtum') {
+                resolveMint();
+                setIsModalShow(true);
+            } else {
+                // TODO add sendQtum
+                alert('use wallet to pay')
+                console.log('use wallet to pay')
+            }
+
         }
     }
 
@@ -275,6 +284,10 @@ export default function Mint({ defaultTick, feeRates, updateOrder }: IProps) {
                             <div className="font-semibold mb-2">Network Fee</div>
                             <div><span className="font-semibold">{totalFees.toFixed(3)} sats</span> <span className="text-[#7F8596]">{satsToQtum(totalFees)} QTUM</span> </div>
                         </div>
+                    </div>
+
+                    <div className='mb-4'>
+                        <PayMode initialMode={mode} onChange={(mode) => setMode(mode)} />
                     </div>
 
                     <div className='mb-4 text-center hidden lg:block'>
