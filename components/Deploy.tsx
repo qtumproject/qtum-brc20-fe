@@ -105,7 +105,6 @@ export default function Deploy({ feeRates, updateOrder }: IProps) {
         } else {
             setTickErrorText(data.reason);
             setIsTickError(true);
-            console.log(tickErrorText, data.reason)
             return false;
         }
     }
