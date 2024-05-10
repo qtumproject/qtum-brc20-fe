@@ -131,7 +131,7 @@ export interface IValidMintParams {
     protocol: string,
     chain_id: string,
     ticker: string,
-    amount: number,
+    amount: string,
 }
 
 export type TValidData = {
