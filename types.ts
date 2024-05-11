@@ -119,3 +119,27 @@ export enum IOrderStatus {
     SUCCESS = 'Inscribed',
     CLOSED = 'Closed',
 }
+
+// valid
+export interface IValidDeployParams {
+    protocol: string,
+    chain_id: string,
+    ticker: string,
+}
+
+export interface IValidMintParams {
+    protocol: string,
+    chain_id: string,
+    ticker: string,
+    amount: string,
+}
+
+export type TValidData = {
+    is_valid: boolean,
+    reason: string,
+}
+export interface IValidResult {
+    code: number,
+    msg: string,
+    data: TValidData,
+}

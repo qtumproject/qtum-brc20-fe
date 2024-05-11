@@ -16,6 +16,7 @@ import {
     mintOrDeploy,
     calcTotalFees,
     abortRequest,
+    validDeploy,
 } from '@/utils';
 import { IQtumFeeRates, TFeeType, IProgressInfo, IOrderItem } from '@/types';
 import FeeType from "./FeeType";
@@ -38,6 +39,7 @@ export default function Deploy({ feeRates, updateOrder }: IProps) {
     const [fee, setFee] = useState('400');
 
     const [isTickError, setIsTickError] = useState(false);
+    const [tickErrorText, setTickErrorText] = useState('');
     const [isAmountError, setIsAmountError] = useState(false);
     const [isLimitError, setIsLimitError] = useState(false);
     const [isRAddressError, setisRAddressError] = useState(false);
@@ -86,11 +88,31 @@ export default function Deploy({ feeRates, updateOrder }: IProps) {
         });
     }, [customFee, fee, deploy])
 
-
-    const validForm = () => {
-        let valid = true;
+    const validTick = async (tick: string) => {
         if (!tick) {
+            setTickErrorText('Tick is required.');
             setIsTickError(true);
+            return false;
+        }
+        const { code, data } = await validDeploy({
+            protocol: 'brc-20',
+            chain_id: 'qtum',
+            ticker: tick,
+        });
+        if (code === 0 && data.is_valid) {
+            setIsTickError(false);
+            return true;
+        } else {
+            setTickErrorText(data.reason);
+            setIsTickError(true);
+            return false;
+        }
+    }
+
+    const validForm = async () => {
+        let valid = true;
+        const isValidTick = await validTick(tick);
+        if (!isValidTick) {
             valid = false;
         } else {
             setIsTickError(false);
@@ -111,8 +133,8 @@ export default function Deploy({ feeRates, updateOrder }: IProps) {
         return valid;
     }
 
-    const handleGoNext = () => {
-        const res = validForm();
+    const handleGoNext = async () => {
+        const res = await validForm();
         if (res) {
             setStep(2);
         }
@@ -141,6 +163,10 @@ export default function Deploy({ feeRates, updateOrder }: IProps) {
         setTick(value);
     }
 
+    const onTickBlur = (e: ChangeEvent<HTMLInputElement>) => {
+        let value = e.target.value;
+        validTick(value);
+    }
 
     const handleSubmit = () => {
         const valid = validSecondForm();
@@ -199,9 +225,10 @@ export default function Deploy({ feeRates, updateOrder }: IProps) {
                                 placeholder='4 characters like &quot;abcd&quot;...'
                                 value={tick}
                                 focusBorderColor="#2D73FF"
-                                onChange={onTickChange} />
+                                onChange={onTickChange}
+                                onBlur={onTickBlur} />
                             {isTickError && <FormErrorMessage>
-                                invalid input tick name
+                                {tickErrorText}
                             </FormErrorMessage>}
                         </FormControl>
                     </div>
