@@ -4,7 +4,7 @@ const rewrites = () => {
   return [
     {
       source: "/api/:slug*",
-      destination: "http://indexer-dev.foxnb.net/:slug*",
+      destination: "https://indexer-dev.foxnb.net/:slug*",
     },
   ];
 };
