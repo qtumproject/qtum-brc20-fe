@@ -40,12 +40,14 @@ export default function ConnectWallet() {
         }
     }
     const getAccounts = async () => {
-        if (!(window as any).qtum) {
+        console.log('===========> getAccount')
+        if (typeof (window as any).qtum === 'undefined') {
             // uninstalled
             return;
         }
 
         const connectedWallet = store.has('connected_wallet');
+        console.log('>>>>>>>>>>>>>>', connectedWallet)
         if (!connectedWallet) {
             return;
         }
@@ -62,7 +64,7 @@ export default function ConnectWallet() {
         }
     }
 
-    // useEffect(() => { getAccounts() }, [])
+    useEffect(() => { getAccounts() }, [])
 
     const handleConnect = () => {
         setIsShow(true);

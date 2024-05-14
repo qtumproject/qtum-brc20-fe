@@ -183,6 +183,9 @@ export default function Mint({ defaultTick, feeRates, updateOrder }: IProps) {
     }
 
     const setProgress = (progressInfo: IProgressInfo) => {
+        if (!isModalShow) {
+            setIsModalShow(true);
+        }
         const { step, txid } = progressInfo;
         setIsProgress(true);
         setActiveStep(step);

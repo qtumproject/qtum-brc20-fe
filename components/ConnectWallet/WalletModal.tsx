@@ -27,9 +27,10 @@ export default function WalletModal({ isShow, close, connectCb }: IProps) {
         }
         console.log('Fox wallet has installed');
         try {
-            let accounts = await (window as any).unisat.requestAccounts();
+            let accounts = await (window as any).qtum.btc.requestAccounts();
             console.log('connect success', accounts);
-            store.set('connected_wallet', 'unisat');
+            store.set('connected_wallet', 'foxwallet');
+            console.log(store.get('connected_wallet'))
             if (accounts && accounts[0]) {
                 connectCb(accounts);
                 close();
@@ -49,7 +50,7 @@ export default function WalletModal({ isShow, close, connectCb }: IProps) {
                         <ModalCloseButton />
                         <ModalBody pb={6}>
                             <div className='flex items-center dark:bg-[#31343F] dark:hover:bg-[#282A33] hover:bg-[#F3F3F0] border rounded-lg p-4 cursor-pointer' onClick={handleConnectFoxwallet}>
-                                <Image src="https://next-cdn.unisat.io/_/187/logo/color.svg" alt='unisat' width={24} height={24} className='mr-3'></Image>
+                                <Image src="/foxwallet.jpg" alt='foxwallet' width={24} height={24} className='mr-3'></Image>
                                 Fox Wallet
                             </div>
                         </ModalBody>

@@ -161,9 +161,14 @@ export async function mintOrDeploy({
             qrImg,
         })
     } else {
-        // wallet transaction
-        const res = await sendByWallet({ address: fundingAddress, amount: totalFees });
-        console.log('res', res);
+        try {
+            // wallet transaction
+            const res = await sendByWallet({ address: fundingAddress, amount: totalFees });
+            console.log('wallet pay result', res);
+        } catch (e) {
+            console.error(e);
+            return;
+        }
     }
 
     try {
