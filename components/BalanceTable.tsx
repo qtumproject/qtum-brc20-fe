@@ -6,35 +6,23 @@ import {
     Th,
     Td,
     TableContainer,
-    Button,
-    Progress,
     SkeletonText
 } from '@chakra-ui/react'
-import Link from 'next/link';
-import { IBrc20ListItem, TBrc20List } from '@/types';
+import { IBrc20BalanceListItem, TBrc20BalanceList } from '@/types';
 
 interface IProps {
-    dataList: TBrc20List,
+    dataList: TBrc20BalanceList,
     isLoading: boolean,
 }
 
-export default function CustomTable({ dataList, isLoading }: IProps) {
+export default function BalanceTable({ dataList, isLoading }: IProps) {
 
-    const renderData = () => dataList.map((data: IBrc20ListItem) => {
+    const renderData = () => dataList.map((data: IBrc20BalanceListItem) => {
         return (<Tr key={data.token_name}>
+            <Td className='font-medium text-sm'>{data.wallet_address}</Td>
             <Td className='font-medium text-sm'>{data.token_name}</Td>
-            <Td className='text-[#7f8596]'>{data.deploy_time}</Td>
-            <Td className='text-sm'>
-                {data.progress}
-                <Progress height={0.5} value={Number(data.progress.slice(0, 5))} size='xs' colorScheme='brand' />
-            </Td>
-            <Td className='text-sm font-medium'>{data.holders || 0}</Td>
-            <Td className='text-sm'>{data.mint_times || 0}</Td>
-            <Td>
-                <Link href={`/inscribe?type=Mint&tick=${data.token_name}`}>
-                    <Button colorScheme="brand" borderRadius='8px' size='xs' width='79px' height='32px' isDisabled={data.progress === '100.000%'}>Mint</Button>
-                </Link>
-            </Td>
+            <Td className='text-sm font-medium'>{data.available || 0}</Td>
+            <Td className='text-sm font-medium'>{data.balance || 0}</Td>
         </Tr>)
     });
 
@@ -54,12 +42,6 @@ export default function CustomTable({ dataList, isLoading }: IProps) {
                     <Td>
                         <SkeletonText noOfLines={1} spacing='1' skeletonHeight='4' />
                     </Td>
-                    <Td>
-                        <SkeletonText noOfLines={1} spacing='1' skeletonHeight='4' />
-                    </Td>
-                    <Td>
-                        <SkeletonText noOfLines={1} spacing='1' skeletonHeight='4' />
-                    </Td>
                 </Tr>
                 <Tr>
                     <Td>
@@ -74,20 +56,8 @@ export default function CustomTable({ dataList, isLoading }: IProps) {
                     <Td>
                         <SkeletonText noOfLines={1} spacing='1' skeletonHeight='4' />
                     </Td>
-                    <Td>
-                        <SkeletonText noOfLines={1} spacing='1' skeletonHeight='4' />
-                    </Td>
-                    <Td>
-                        <SkeletonText noOfLines={1} spacing='1' skeletonHeight='4' />
-                    </Td>
                 </Tr>
                 <Tr>
-                    <Td>
-                        <SkeletonText noOfLines={1} spacing='1' skeletonHeight='4' />
-                    </Td>
-                    <Td>
-                        <SkeletonText noOfLines={1} spacing='1' skeletonHeight='4' />
-                    </Td>
                     <Td>
                         <SkeletonText noOfLines={1} spacing='1' skeletonHeight='4' />
                     </Td>
@@ -121,12 +91,10 @@ export default function CustomTable({ dataList, isLoading }: IProps) {
             <Table variant='simple'>
                 <Thead>
                     <Tr>
+                        <Th>Address</Th>
                         <Th>Token Name</Th>
-                        <Th>Deploy Time</Th>
-                        <Th>Progress</Th>
-                        <Th>Holders</Th>
-                        <Th>Mint Times</Th>
-                        <Th>Operation</Th>
+                        <Th>Available</Th>
+                        <Th>balance</Th>
                     </Tr>
                 </Thead>
                 <Tbody>

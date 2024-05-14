@@ -16,6 +16,7 @@ import {
     mintOrDeploy,
     calcTotalFees,
     abortRequest,
+    validMint
 } from '@/utils';
 import { IQtumFeeRates, TFeeType, IProgressInfo, IOrderItem } from '@/types';
 import FeeType from "./FeeType";
@@ -43,7 +44,9 @@ export default function Mint({ defaultTick, feeRates, updateOrder }: IProps) {
     const [totalFees, setTotalFees] = useState(0);
 
     const [isTickError, setIsTickError] = useState(false);
+    const [tickErrorText, setTickErrorText] = useState('');
     const [isAmountError, setIsAmountError] = useState(false);
+    const [amountErrorText, setAmountErrorText] = useState('');
     const [isRAddressError, setisRAddressError] = useState(false);
 
     const [isModalShow, setIsModalShow] = useState(false);
@@ -86,25 +89,55 @@ export default function Mint({ defaultTick, feeRates, updateOrder }: IProps) {
         });
     }, [customFee, fee, mint])
 
-    const validForm = () => {
-        let valid = true;
+    const validTickAndAmount = async (tick: string, amount: string) => {
         if (!tick) {
+            setTickErrorText('Tick is required.');
             setIsTickError(true);
+            return false;
+        }
+        if (!amount) {
+            setAmountErrorText('Amount is required.');
+            setIsAmountError(true);
+            return false;
+        }
+        const params = {
+            protocol: 'brc-20',
+            chain_id: 'qtum',
+            ticker: tick,
+            amount,
+        }
+        const { code, data, msg } = await validMint(params);
+        if (code === -1) {
+            setTickErrorText(msg);
+            setIsTickError(true);
+            return false;
+        } else if (code === 0 && data.is_valid) {
+            setIsTickError(false);
+            setIsAmountError(false);
+            return true;
+        } else {
+            setIsTickError(false);
+            setAmountErrorText(data.reason);
+            setIsAmountError(true);
+            return false;
+        }
+    }
+
+    const validForm = async () => {
+        let valid = true;
+        const isValidTickAndAmount = await validTickAndAmount(tick, amount);
+        if (!isValidTickAndAmount) {
             valid = false;
         } else {
             setIsTickError(false);
-        }
-        if (!amount) {
-            setIsAmountError(true);
-            valid = false;
-        } else {
             setIsAmountError(false);
         }
         return valid;
     }
 
-    const handleGoNext = () => {
-        const res = validForm();
+
+    const handleGoNext = async () => {
+        const res = await validForm();
         if (res) {
             setStep(2);
         }
@@ -130,6 +163,16 @@ export default function Mint({ defaultTick, feeRates, updateOrder }: IProps) {
         let value = e.target.value;
         value = value.slice(0, 4);
         setTick(value);
+    }
+
+    const onTickBlur = (e: ChangeEvent<HTMLInputElement>) => {
+        let value = e.target.value;
+        validTickAndAmount(value, amount);
+    }
+
+    const onAmountBlur = (e: ChangeEvent<HTMLInputElement>) => {
+        let value = e.target.value;
+        validTickAndAmount(tick, value);
     }
 
     const handleSubmit = () => {
@@ -196,20 +239,22 @@ export default function Mint({ defaultTick, feeRates, updateOrder }: IProps) {
                                 placeholder='4 characters like &quot;abcd&quot;...'
                                 value={tick}
                                 htmlSize={4}
-                                onChange={onTickChange} />
+                                onChange={onTickChange}
+                                onBlur={onTickBlur}
+                            />
                             {isTickError && <FormErrorMessage>
-                                invalid input tick name
+                                {tickErrorText}
                             </FormErrorMessage>}
                         </FormControl>
                     </div>
                     <div className='mb-4'>
                         <FormControl isRequired isInvalid={isAmountError}>
                             <FormLabel htmlFor='amount'>Amount</FormLabel>
-                            <NumberInput id='amount' focusBorderColor="#2D73FF" defaultValue={1} min={1} value={amount} onChange={(value) => setAmount(value)}>
+                            <NumberInput id='amount' focusBorderColor="#2D73FF" defaultValue={1} min={1} value={amount} onChange={(value) => setAmount(value)} onBlur={onAmountBlur}>
                                 <NumberInputField />
                             </NumberInput>
                             {isAmountError && <FormErrorMessage>
-                                invalid input amount
+                                {amountErrorText}
                             </FormErrorMessage>}
                         </FormControl>
                     </div>

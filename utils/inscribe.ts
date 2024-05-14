@@ -13,7 +13,10 @@ import {
     IOrderStatus,
     TOperationType,
     IMintJson,
-    IDeployJson
+    IDeployJson,
+    IValidDeployParams,
+    IValidMintParams,
+    IValidResult
 } from "@/types";
 import { axiosInstance } from '@/utils';
 import store from 'store2';
@@ -294,6 +297,37 @@ export async function calcTotalFees({
     }
     setTotalFees(totalFees);
 }
+
+/**
+ * valid deploy ticker name
+ * @param params 
+ * @returns
+ */
+export async function validDeploy(params: IValidDeployParams) {
+    try {
+        let res: IValidResult = await axiosInstance.get('/api/v1/verify/deploy', { params, baseURL: '/' });
+        return res;
+    } catch (e) {
+        console.error(e);
+        throw (e);
+    }
+}
+
+/**
+ * valid mint ticker name and amount
+ * @param params 
+ * @returns 
+ */
+export async function validMint(params: IValidMintParams) {
+    try {
+        let res: IValidResult = await axiosInstance.get('/api/v1/verify/mint', { params, baseURL: '/' });
+        return res;
+    } catch (e) {
+        console.error(e);
+        throw (e);
+    }
+}
+
 
 
 export async function getQtumFee() {
