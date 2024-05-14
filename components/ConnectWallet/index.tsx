@@ -40,7 +40,7 @@ export default function ConnectWallet() {
         }
     }
     const getAccounts = async () => {
-        if (!(window as any).unisat) {
+        if (!(window as any).qtum) {
             // uninstalled
             return;
         }
@@ -51,7 +51,7 @@ export default function ConnectWallet() {
         }
 
         try {
-            let accounts = await (window as any).unisat.getAccounts();
+            let accounts = await (window as any).qtum.btc.getAccounts();
             console.log('connect success', accounts);
             if (accounts && accounts[0]) {
                 setAccount(accounts[0])
@@ -62,7 +62,7 @@ export default function ConnectWallet() {
         }
     }
 
-    useEffect(() => { getAccounts() }, [])
+    // useEffect(() => { getAccounts() }, [])
 
     const handleConnect = () => {
         setIsShow(true);

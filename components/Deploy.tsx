@@ -18,7 +18,7 @@ import {
     abortRequest,
     validDeploy,
 } from '@/utils';
-import { IQtumFeeRates, TFeeType, IProgressInfo, IOrderItem } from '@/types';
+import { IQtumFeeRates, TFeeType, IProgressInfo, IOrderItem, IModalInfo } from '@/types';
 import FeeType from "./FeeType";
 import PayModal from "./PayModal";
 import PayMode from './PayMode';
@@ -173,15 +173,7 @@ export default function Deploy({ feeRates, updateOrder }: IProps) {
     const handleSubmit = () => {
         const valid = validSecondForm();
         if (valid) {
-            if (mode === 'qtum') {
-                resolveDeploy();
-                setIsModalShow(true);
-            } else {
-                // TODO add sendQtum
-                alert('use wallet to pay')
-                console.log('use wallet to pay')
-            }
-
+            resolveDeploy(mode);
         }
     }
 
@@ -199,17 +191,23 @@ export default function Deploy({ feeRates, updateOrder }: IProps) {
         abortRequest();
     }
 
-    const resolveDeploy = () => {
+    const setModalInfo = ({ fundingAddress, qrImg }: IModalInfo) => {
+        setFundingAddress(fundingAddress);
+        setQrImg(qrImg);
+        setIsModalShow(true);
+    }
+
+    const resolveDeploy = (mode: string) => {
         try {
             mintOrDeploy({
                 scriptObj: deploy,
                 inscriptionFees,
                 totalFees,
                 rAddress,
-                setFundingAddress,
-                setQrImg,
+                setModalInfo,
                 setProgress,
-                updateOrder
+                updateOrder,
+                mode
             });
         } catch (e: any) {
             toast({

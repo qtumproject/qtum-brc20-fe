@@ -1,4 +1,4 @@
-import { useEffect, ChangeEvent } from 'react';
+import { useEffect, ChangeEvent, cache } from 'react';
 import useState from 'react-usestateref';
 import {
     Divider,
@@ -18,7 +18,7 @@ import {
     abortRequest,
     validMint
 } from '@/utils';
-import { IQtumFeeRates, TFeeType, IProgressInfo, IOrderItem } from '@/types';
+import { IQtumFeeRates, TFeeType, IProgressInfo, IOrderItem, IModalInfo } from '@/types';
 import FeeType from "./FeeType";
 import PayModal from "./PayModal";
 import PayMode from './PayMode';
@@ -175,18 +175,10 @@ export default function Mint({ defaultTick, feeRates, updateOrder }: IProps) {
         validTickAndAmount(tick, value);
     }
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         const valid = validSecondForm();
         if (valid) {
-            if (mode === 'qtum') {
-                resolveMint();
-                setIsModalShow(true);
-            } else {
-                // TODO add sendQtum
-                alert('use wallet to pay')
-                console.log('use wallet to pay')
-            }
-
+            resolveMint(mode);
         }
     }
 
@@ -204,17 +196,23 @@ export default function Mint({ defaultTick, feeRates, updateOrder }: IProps) {
         abortRequest();
     }
 
-    const resolveMint = () => {
+    const setModalInfo = ({ fundingAddress, qrImg }: IModalInfo) => {
+        setFundingAddress(fundingAddress);
+        setQrImg(qrImg);
+        setIsModalShow(true);
+    }
+
+    const resolveMint = (mode: string) => {
         try {
             mintOrDeploy({
                 scriptObj: mint,
                 inscriptionFees,
                 totalFees,
                 rAddress,
-                setFundingAddress,
-                setQrImg,
+                setModalInfo,
                 setProgress,
                 updateOrder,
+                mode,
             });
         } catch (e: any) {
             toast({
