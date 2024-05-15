@@ -94,6 +94,11 @@ export default function Deploy({ feeRates, updateOrder }: IProps) {
             setIsTickError(true);
             return false;
         }
+        if (tick?.length !== 4) {
+            setTickErrorText('Tick is invalid.');
+            setIsTickError(true);
+            return false;
+        }
         const { code, data } = await validDeploy({
             protocol: 'brc-20',
             chain_id: 'qtum',
