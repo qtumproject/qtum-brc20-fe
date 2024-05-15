@@ -11,6 +11,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/router';
 import Switch from '@/components/Switch';
 import { useTheme } from 'next-themes'
+import ConnectWallet from './ConnectWallet';
 
 
 const navList = [
@@ -86,7 +87,10 @@ export default function NavBar() {
                     </div>
                 </div>
 
-                <div>
+                <div className='flex justify-center items-center'>
+                    <div className='mr-4'>
+                        <ConnectWallet />
+                    </div>
                     <Switch onChange={onModeChange} defaultValue={colorMode} />
                 </div>
             </div >
@@ -98,7 +102,11 @@ export default function NavBar() {
                         <Image className='dark:block hidden' src="/logo-d.png" alt="logo" width={139} height={22} />
                     </Link>
                 </div>
-                <div>
+
+                <div className='flex items-center justify-center'>
+                    <div className='mr-2'>
+                        <ConnectWallet />
+                    </div>
                     <Image className="block dark:hidden" src="/img/icon-menu.png" height={32} width={32} alt="menu" onClick={() => setIsOpen(true)}></Image>
                     <Image className="hidden dark:block" src="/img/icon-menu-d.png" height={32} width={32} alt="menu" onClick={() => setIsOpen(true)}></Image>
                     <Drawer placement='top' onClose={onClose} isOpen={isOpen} autoFocus={false}>

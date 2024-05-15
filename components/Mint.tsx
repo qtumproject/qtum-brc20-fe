@@ -1,4 +1,4 @@
-import { useEffect, ChangeEvent } from 'react';
+import { useEffect, ChangeEvent, cache } from 'react';
 import useState from 'react-usestateref';
 import {
     Divider,
@@ -18,9 +18,10 @@ import {
     abortRequest,
     validMint
 } from '@/utils';
-import { IQtumFeeRates, TFeeType, IProgressInfo, IOrderItem } from '@/types';
+import { IQtumFeeRates, TFeeType, IProgressInfo, IOrderItem, IModalInfo } from '@/types';
 import FeeType from "./FeeType";
 import PayModal from "./PayModal";
+import PayMode from './PayMode';
 
 interface IProps {
     defaultTick: string,
@@ -30,6 +31,7 @@ interface IProps {
 
 export default function Mint({ defaultTick, feeRates, updateOrder }: IProps) {
     const toast = useToast();
+    const [mode, setMode] = useState('qtum');
     const [step, setStep] = useState(1);
     const [tick, setTick] = useState(defaultTick)
     const [amount, setAmount] = useState("1");
@@ -173,15 +175,17 @@ export default function Mint({ defaultTick, feeRates, updateOrder }: IProps) {
         validTickAndAmount(tick, value);
     }
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         const valid = validSecondForm();
         if (valid) {
-            resolveMint();
-            setIsModalShow(true);
+            resolveMint(mode);
         }
     }
 
     const setProgress = (progressInfo: IProgressInfo) => {
+        if (!isModalShow) {
+            setIsModalShow(true);
+        }
         const { step, txid } = progressInfo;
         setIsProgress(true);
         setActiveStep(step);
@@ -195,17 +199,23 @@ export default function Mint({ defaultTick, feeRates, updateOrder }: IProps) {
         abortRequest();
     }
 
-    const resolveMint = () => {
+    const setModalInfo = ({ fundingAddress, qrImg }: IModalInfo) => {
+        setFundingAddress(fundingAddress);
+        setQrImg(qrImg);
+        setIsModalShow(true);
+    }
+
+    const resolveMint = (mode: string) => {
         try {
             mintOrDeploy({
                 scriptObj: mint,
                 inscriptionFees,
                 totalFees,
                 rAddress,
-                setFundingAddress,
-                setQrImg,
+                setModalInfo,
                 setProgress,
                 updateOrder,
+                mode,
             });
         } catch (e: any) {
             toast({
@@ -320,6 +330,10 @@ export default function Mint({ defaultTick, feeRates, updateOrder }: IProps) {
                             <div className="font-semibold mb-2">Network Fee</div>
                             <div><span className="font-semibold">{totalFees.toFixed(3)} sats</span> <span className="text-[#7F8596]">{satsToQtum(totalFees)} QTUM</span> </div>
                         </div>
+                    </div>
+
+                    <div className='mb-4'>
+                        <PayMode initialMode={mode} onChange={(mode) => setMode(mode)} />
                     </div>
 
                     <div className='mb-4 text-center hidden lg:block'>

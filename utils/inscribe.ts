@@ -16,7 +16,8 @@ import {
     IDeployJson,
     IValidDeployParams,
     IValidMintParams,
-    IValidResult
+    IValidResult,
+    ISendParams,
 } from "@/types";
 import { axiosInstance } from '@/utils';
 import store from 'store2';
@@ -47,15 +48,23 @@ const getNowTime = () => {
     return dayjs().format('YYYY/MM/DD HH:mm:ss');
 }
 
+const sendByWallet = ({ address, amount }: ISendParams) => {
+    if ((window as any)?.qtum) {
+        return (window as any).qtum.btc.sendBitcoin(address, amount);
+    } else {
+        alert('wallet not found, please install foxwallet');
+    }
+}
+
 export async function mintOrDeploy({
     scriptObj,
     inscriptionFees,
     totalFees,
     rAddress,
-    setFundingAddress,
-    setQrImg,
+    setModalInfo,
     setProgress,
     updateOrder,
+    mode,
 }: IMintOrDeployParams) {
     debug('inscribe begin')
     controller = new AbortController();
@@ -74,7 +83,6 @@ export async function mintOrDeploy({
         updateTime: getNowTime(),
     };
     updateOrder(currentOrder, 'add');
-
 
     let seckey = new KeyPair(privkey);
     let pubkey = seckey.pub.rawX;
@@ -137,21 +145,31 @@ export async function mintOrDeploy({
             script_orig: script
         }
     );
+    debug('Address that will receive the inscription: %o', rAddress);
+    debug('Total transfer amount: %o', satsToQtum(totalFees), 'QTUM');
 
     let fundingAddress = p2trEncode(init_tapkey, encodedAddressPrefix);
     debug('Funding address: %o', fundingAddress);
     debug('Funding Tapkey: %o', init_tapkey);
-    setFundingAddress(fundingAddress)
-
-    debug('Address that will receive the inscription: %o', rAddress);
-    debug('Total transfer amount: %o', satsToQtum(totalFees), 'QTUM');
-
-    let qr_value = "qtum:" + fundingAddress + "?amount=" + satsToQtum(totalFees);
-    debug("Qrcode value is: %o", qr_value);
-
-    const qrimg = createQR(qr_value);
-    setQrImg(qrimg as any);
-
+    if (mode === 'qtum') {
+        // web transaction
+        let qr_value = "qtum:" + fundingAddress + "?amount=" + satsToQtum(totalFees);
+        debug("Qrcode value is: %o", qr_value);
+        const qrImg = createQR(qr_value);
+        setModalInfo({
+            fundingAddress,
+            qrImg,
+        })
+    } else {
+        try {
+            // wallet transaction
+            const res = await sendByWallet({ address: fundingAddress, amount: totalFees });
+            console.log('wallet pay result', res);
+        } catch (e) {
+            console.error(e);
+            return;
+        }
+    }
 
     try {
         await loopTilAddressReceivesMoney(fundingAddress, true);
@@ -262,8 +280,6 @@ export async function mintOrDeploy({
     for (let i = 0; i < inscriptions.length; i++) {
         inscribe(inscriptions[i], i);
     };
-
-
 }
 
 export async function calcTotalFees({

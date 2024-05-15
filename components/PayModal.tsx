@@ -122,9 +122,9 @@ export default function PayModal({
 
     const renderProgress = () => {
         return <>
-            <Stepper index={activeStep} colorScheme='brand' orientation='vertical' width='480px' height='400px' gap='0'>
+            <Stepper index={activeStep} colorScheme='brand' orientation='vertical' height='400px' gap='0'>
                 {steps.map((step, index) => (
-                    <Step key={index}>
+                    <Step key={index} className="w-full">
                         <StepIndicator>
                             <StepStatus
                                 complete={<StepIcon />}
@@ -133,19 +133,19 @@ export default function PayModal({
                             />
                         </StepIndicator>
 
-                        <Box flexShrink='0'>
+                        <Box flexShrink='0' width="100%">
                             <StepTitle>{step.title}</StepTitle>
-                            <StepDescription className='w-[480px]'>{txids[index] ? `txid: ${txids[index]}` : ''}</StepDescription>
+                            <StepDescription className='w-[90%]'>{txids[index] ? `txid: ${txids[index]}` : ''}</StepDescription>
                         </Box>
 
                         <StepSeparator />
                     </Step>
                 ))}
-            </Stepper>
-            <div className='mb-4 text-center'>
+            </Stepper >
+            <div className='mt-4 text-center'>
                 <Button
                     mt={4}
-                    width='400px'
+                    width='90%'
                     type="submit"
                     variant='brandPrimary'
                     onClick={onClose}

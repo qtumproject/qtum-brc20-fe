@@ -18,9 +18,10 @@ import {
     abortRequest,
     validDeploy,
 } from '@/utils';
-import { IQtumFeeRates, TFeeType, IProgressInfo, IOrderItem } from '@/types';
+import { IQtumFeeRates, TFeeType, IProgressInfo, IOrderItem, IModalInfo } from '@/types';
 import FeeType from "./FeeType";
 import PayModal from "./PayModal";
+import PayMode from './PayMode';
 
 interface IProps {
     feeRates: IQtumFeeRates,
@@ -29,6 +30,7 @@ interface IProps {
 
 export default function Deploy({ feeRates, updateOrder }: IProps) {
     const toast = useToast();
+    const [mode, setMode] = useState('qtum');
     const [step, setStep] = useState(1);
     const [tick, setTick] = useState('')
     const [amount, setAmount] = useState('21000000');
@@ -171,8 +173,7 @@ export default function Deploy({ feeRates, updateOrder }: IProps) {
     const handleSubmit = () => {
         const valid = validSecondForm();
         if (valid) {
-            resolveDeploy();
-            setIsModalShow(true);
+            resolveDeploy(mode);
         }
     }
 
@@ -190,17 +191,23 @@ export default function Deploy({ feeRates, updateOrder }: IProps) {
         abortRequest();
     }
 
-    const resolveDeploy = () => {
+    const setModalInfo = ({ fundingAddress, qrImg }: IModalInfo) => {
+        setFundingAddress(fundingAddress);
+        setQrImg(qrImg);
+        setIsModalShow(true);
+    }
+
+    const resolveDeploy = (mode: string) => {
         try {
             mintOrDeploy({
                 scriptObj: deploy,
                 inscriptionFees,
                 totalFees,
                 rAddress,
-                setFundingAddress,
-                setQrImg,
+                setModalInfo,
                 setProgress,
-                updateOrder
+                updateOrder,
+                mode
             });
         } catch (e: any) {
             toast({
@@ -325,6 +332,10 @@ export default function Deploy({ feeRates, updateOrder }: IProps) {
                             <div className="font-semibold mb-2">Network Fee</div>
                             <div><span className="font-semibold">{totalFees.toFixed(3)} sats</span> <span className="text-[#7F8596]">{satsToQtum(totalFees)} QTUM</span> </div>
                         </div>
+                    </div>
+
+                    <div className='mb-4'>
+                        <PayMode initialMode={mode} onChange={(mode) => setMode(mode)} />
                     </div>
 
                     <div className='mb-4 text-center hidden lg:block'>
