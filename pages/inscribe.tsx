@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import useState from 'react-usestateref';
 import { useRouter } from 'next/router'
 import qs from 'qs';
-import { useToast, Button } from "@chakra-ui/react";
+import { useToast } from "@chakra-ui/react";
 import Mint from '@/components/Mint';
 import Deploy from '@/components/Deploy';
 import RadioGroup from "@/components/RadioGroup";
