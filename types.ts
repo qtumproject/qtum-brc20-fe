@@ -150,6 +150,7 @@ export interface ISendParams {
 }
 
 export interface IModalInfo {
-    fundingAddress: string,
-    qrImg: any,
+    fundingAddress?: string,
+    qrImg?: any,
+    isWalletLoading?: boolean,
 }

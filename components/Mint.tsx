@@ -1,4 +1,4 @@
-import { useEffect, ChangeEvent, cache } from 'react';
+import { useEffect, ChangeEvent } from 'react';
 import useState from 'react-usestateref';
 import {
     Divider,
@@ -55,6 +55,7 @@ export default function Mint({ defaultTick, feeRates, updateOrder }: IProps) {
     const [activeStep, setActiveStep] = useState(1);
     const [qrImg, setQrImg] = useState('');
     const [fundingAddress, setFundingAddress] = useState('');
+    const [walletLoading, setWalletLoading] = useState(false);
 
     const [mint, setMint] = useState({
         p: 'brc-20',
@@ -183,9 +184,6 @@ export default function Mint({ defaultTick, feeRates, updateOrder }: IProps) {
     }
 
     const setProgress = (progressInfo: IProgressInfo) => {
-        if (!isModalShow) {
-            setIsModalShow(true);
-        }
         const { step, txid } = progressInfo;
         setIsProgress(true);
         setActiveStep(step);
@@ -199,9 +197,16 @@ export default function Mint({ defaultTick, feeRates, updateOrder }: IProps) {
         abortRequest();
     }
 
-    const setModalInfo = ({ fundingAddress, qrImg }: IModalInfo) => {
-        setFundingAddress(fundingAddress);
-        setQrImg(qrImg);
+    const setModalInfo = ({ fundingAddress, qrImg, isWalletLoading }: IModalInfo) => {
+        if (fundingAddress) {
+            setFundingAddress(fundingAddress);
+        }
+        if (qrImg) {
+            setQrImg(qrImg);
+        }
+        setIsProgress(false);
+        setTxIds([]);
+        setWalletLoading(!!isWalletLoading);
         setIsModalShow(true);
     }
 
@@ -226,6 +231,7 @@ export default function Mint({ defaultTick, feeRates, updateOrder }: IProps) {
             })
         }
     }
+
 
     return (
         <>
@@ -376,11 +382,11 @@ export default function Mint({ defaultTick, feeRates, updateOrder }: IProps) {
                     </div>
                 </div >
             }
-
             <PayModal
                 isShow={isModalShow}
                 fundingAddress={fundingAddress}
                 totalPay={totalFees}
+                walletLoading={walletLoading}
                 isProgress={isProgress}
                 activeStep={activeStep}
                 txids={txids}

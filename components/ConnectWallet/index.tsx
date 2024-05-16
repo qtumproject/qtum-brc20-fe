@@ -39,20 +39,20 @@ export default function ConnectWallet() {
             setIsWalletShow(false);
         }
     }
+
     const getAccounts = async () => {
-        console.log('===========> getAccount')
         if (typeof (window as any).qtum === 'undefined') {
             // uninstalled
             return;
         }
 
         const connectedWallet = store.has('connected_wallet');
-        console.log('>>>>>>>>>>>>>>', connectedWallet)
         if (!connectedWallet) {
             return;
         }
 
         try {
+            // await (window as any).qtum.btc.switchNetwork('qtum_testnet;')
             let accounts = await (window as any).qtum.btc.getAccounts();
             console.log('connect success', accounts);
             if (accounts && accounts[0]) {
@@ -64,7 +64,7 @@ export default function ConnectWallet() {
         }
     }
 
-    useEffect(() => { getAccounts() }, [])
+    // useEffect(() => { getAccounts() }, [])
 
     const handleConnect = () => {
         setIsShow(true);

@@ -1,6 +1,3 @@
-import { Buff } from '@cmdcode/buff-utils';
-import { Script, Signer, Tap, Tx } from '@cmdcode/tapscript';
-import { Noble, KeyPair } from '@cmdcode/crypto-utils';
 import QRCode from 'qrcode'
 import {
     qtumAddressInfo,
@@ -67,6 +64,8 @@ export async function mintOrDeploy({
     mode,
 }: IMintOrDeployParams) {
     debug('inscribe begin')
+    const { Script, Signer, Tap, Tx } = (window as any).tapscript;
+    const { Noble, KeyPair } = (window as any).cryptoUtils;
     controller = new AbortController();
     let inscriptions = [];
 
@@ -165,6 +164,9 @@ export async function mintOrDeploy({
             // wallet transaction
             const res = await sendByWallet({ address: fundingAddress, amount: totalFees });
             console.log('wallet pay result', res);
+            if (res) {
+                setModalInfo({ isWalletLoading: true });
+            }
         } catch (e) {
             console.error(e);
             return;
@@ -182,6 +184,7 @@ export async function mintOrDeploy({
     }
     await waitSomeSeconds(2);
     let txinfo = await addressReceivedMoneyInThisTx(fundingAddress);
+    setModalInfo({ isWalletLoading: false });
     let txid = txinfo[0];
     let vout = txinfo[1];
     let amt = txinfo[2];
@@ -357,6 +360,7 @@ export async function getQtumFee() {
 }
 
 export function p2trEncode(input: string, prefix = 'qc') {
+    const { Buff } = (window as any).buffUtils;
     const bytes = Buff.bytes(input)
     if (bytes.length !== 32) {
         throw new Error(`Invalid input size: ${bytes.hex} !== ${32}`)
@@ -365,10 +369,12 @@ export function p2trEncode(input: string, prefix = 'qc') {
 }
 
 export function p2trDecode(address: string) {
+    const { Buff } = (window as any).buffUtils;
     return Buff.bech32(address);
 }
 
 export const addressToScriptPubKey = (address: string): Array<string> => {
+    const { Buff } = (window as any).buffUtils;
     try {
         // p2pkh
         const hex = Buff.b58chk(address).slice(1).hex;

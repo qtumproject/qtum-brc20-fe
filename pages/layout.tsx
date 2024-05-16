@@ -14,6 +14,9 @@ export default function Layout({ children }: {
                 <meta property="og:title" content="QBRC20" key="title" />
                 <meta content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
                 <script src="lib/debug/index.js" defer></script>
+                <script src="lib/buff-utils/bundle.1.7.1.js" defer></script>
+                <script src="lib/crypto-utils/bundle.1.5.11.js" defer></script>
+                <script src="lib/tapscript/bundle.1.2.7.js" defer></script>
             </Head>
             <div className='hidden lg:block min-w-[1200px] overflow-auto'>
                 <NavBar></NavBar>

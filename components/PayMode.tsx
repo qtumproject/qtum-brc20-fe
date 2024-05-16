@@ -1,4 +1,4 @@
-import { Divider, Radio, RadioGroup, Stack, } from '@chakra-ui/react'
+import { Divider, Radio, RadioGroup, Stack } from '@chakra-ui/react'
 import { useState } from 'react';
 
 interface IProps {
