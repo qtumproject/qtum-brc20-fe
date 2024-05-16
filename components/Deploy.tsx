@@ -55,6 +55,7 @@ export default function Deploy({ feeRates, updateOrder }: IProps) {
     const [activeStep, setActiveStep] = useState(1);
     const [qrImg, setQrImg] = useState('');
     const [fundingAddress, setFundingAddress] = useState('');
+    const [walletLoading, setWalletLoading] = useState(false);
 
     const [deploy, setDeploy] = useState({
         p: 'brc-20',
@@ -191,9 +192,16 @@ export default function Deploy({ feeRates, updateOrder }: IProps) {
         abortRequest();
     }
 
-    const setModalInfo = ({ fundingAddress, qrImg }: IModalInfo) => {
-        setFundingAddress(fundingAddress);
-        setQrImg(qrImg);
+    const setModalInfo = ({ fundingAddress, qrImg, isWalletLoading }: IModalInfo) => {
+        if (fundingAddress) {
+            setFundingAddress(fundingAddress);
+        }
+        if (qrImg) {
+            setQrImg(qrImg);
+        }
+        setIsProgress(false);
+        setTxIds([]);
+        setWalletLoading(!!isWalletLoading);
         setIsModalShow(true);
     }
 
@@ -384,6 +392,7 @@ export default function Deploy({ feeRates, updateOrder }: IProps) {
                 fundingAddress={fundingAddress}
                 totalPay={totalFees}
                 isProgress={isProgress}
+                walletLoading={walletLoading}
                 activeStep={activeStep}
                 txids={txids}
                 close={handleModalClose}>

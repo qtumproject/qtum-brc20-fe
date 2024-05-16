@@ -19,6 +19,7 @@ import {
     Stepper,
     Box,
     Button,
+    Spinner,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { satsToQtum } from '@/utils';
@@ -30,6 +31,7 @@ interface IProps {
     fundingAddress: string,
     totalPay: number,
     isProgress: boolean,
+    walletLoading: boolean,
     activeStep: number,
     txids: Array<string>
     close: Function,
@@ -41,6 +43,7 @@ export default function PayModal({
     fundingAddress,
     totalPay,
     isProgress,
+    walletLoading,
     activeStep,
     txids,
     close
@@ -80,6 +83,22 @@ export default function PayModal({
     }
     const onClose = () => {
         close()
+    }
+
+    const renderLoading = () => {
+        return (
+            <div className='flex flex-col items-center justify-center bg-white'>
+                <Spinner
+                    thickness='4px'
+                    speed='0.65s'
+                    emptyColor='gray.200'
+                    color='brand.100'
+                    size='xl'
+                />
+                <div className='text-black mt-4 text-center'>Do not leave this page, the inscription is in progress.</div>
+            </div>
+
+        )
     }
 
     const renderPayCode = () => (<>
@@ -158,30 +177,16 @@ export default function PayModal({
 
     return (
         <>
-            <div className='hidden lg:block'>
-                <Modal isOpen={isOpen} onClose={onClose} size="xl" closeOnOverlayClick={false}>
-                    <ModalOverlay />
-                    <ModalContent>
-                        <ModalHeader>{isProgress ? 'Inscription Process' : 'Scan QR code to pay'}</ModalHeader>
-                        <ModalCloseButton />
-                        <ModalBody pb={6}>
-                            {isProgress ? renderProgress() : renderPayCode()}
-                        </ModalBody>
-                    </ModalContent>
-                </Modal>
-            </div>
-            <div className='lg:hidden'>
-                <Modal isOpen={isOpen} onClose={onClose} size="xl" closeOnOverlayClick={false}>
-                    <ModalOverlay />
-                    <ModalContent className='w-[calc(100vw_-_32px)] l-4'>
-                        <ModalHeader>{isProgress ? 'Inscription Process' : 'Scan QR code to pay'}</ModalHeader>
-                        <ModalCloseButton />
-                        <ModalBody pb={6}>
-                            {isProgress ? renderProgress() : renderPayCode()}
-                        </ModalBody>
-                    </ModalContent>
-                </Modal>
-            </div>
+            <Modal isOpen={isOpen} onClose={onClose} size="xl" closeOnOverlayClick={false}>
+                <ModalOverlay />
+                <ModalContent>
+                    <ModalHeader>{walletLoading ? 'Inscription Process' : (isProgress ? 'Inscription Process' : 'Scan QR code to pay')}</ModalHeader>
+                    <ModalCloseButton />
+                    <ModalBody pb={6}>
+                        {walletLoading ? renderLoading() : (isProgress ? renderProgress() : renderPayCode())}
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
         </>
     )
 }

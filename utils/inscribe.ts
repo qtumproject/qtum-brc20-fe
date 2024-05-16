@@ -164,6 +164,9 @@ export async function mintOrDeploy({
             // wallet transaction
             const res = await sendByWallet({ address: fundingAddress, amount: totalFees });
             console.log('wallet pay result', res);
+            if (res) {
+                setModalInfo({ isWalletLoading: true });
+            }
         } catch (e) {
             console.error(e);
             return;
@@ -181,6 +184,7 @@ export async function mintOrDeploy({
     }
     await waitSomeSeconds(2);
     let txinfo = await addressReceivedMoneyInThisTx(fundingAddress);
+    setModalInfo({ isWalletLoading: false });
     let txid = txinfo[0];
     let vout = txinfo[1];
     let amt = txinfo[2];
