@@ -53,6 +53,7 @@ export default function ConnectWallet() {
         }
 
         try {
+            // await (window as any).qtum.btc.switchNetwork('qtum_testnet;')
             let accounts = await (window as any).qtum.btc.getAccounts();
             console.log('connect success', accounts);
             if (accounts && accounts[0]) {

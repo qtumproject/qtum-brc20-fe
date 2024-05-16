@@ -27,6 +27,7 @@ export default function WalletModal({ isShow, close, connectCb }: IProps) {
         }
         console.log('Fox wallet has installed');
         try {
+            await (window as any).qtum.btc.switchNetwork('testnet')
             let accounts = await (window as any).qtum.btc.requestAccounts();
             console.log('connect success', accounts);
             store.set('connected_wallet', 'foxwallet');
@@ -36,6 +37,7 @@ export default function WalletModal({ isShow, close, connectCb }: IProps) {
                 close();
             }
         } catch (e) {
+            console.error(e)
             console.log('connect failed');
         }
 
