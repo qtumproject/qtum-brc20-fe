@@ -95,7 +95,7 @@ export default function Deploy({ feeRates, updateOrder }: IProps) {
             return false;
         }
         if (tick?.length !== 4) {
-            setTickErrorText('Tick is invalid.');
+            setTickErrorText('Tick must be 4 bytes long.');
             setIsTickError(true);
             return false;
         }
