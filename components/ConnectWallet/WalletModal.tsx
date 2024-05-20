@@ -6,8 +6,8 @@ import {
     ModalBody,
     ModalCloseButton,
 } from '@chakra-ui/react';
-import { useState } from 'react';
-import AlertConfirm from '@/components/AlertConfirm';
+// import { useState } from 'react';
+// import AlertConfirm from '@/components/AlertConfirm';
 import store from 'store2';
 import Image from 'next/image'
 
@@ -18,7 +18,7 @@ interface IProps {
 }
 
 export default function WalletModal({ isShow, close, connectCb }: IProps) {
-    const [isShowAlert, setIsShowAlert] = useState(false);
+    // const [isShowAlert, setIsShowAlert] = useState(false);
 
     const onClose = () => {
         close()
@@ -35,7 +35,9 @@ export default function WalletModal({ isShow, close, connectCb }: IProps) {
         //     setIsShowAlert(true);
         //     return;
         // }
+
         try {
+            await (window as any).qtum.btc.switchNetwork('testnet'); // testnet | livenet
             let accounts = await (window as any).qtum.btc.requestAccounts();
             console.log('connect success', accounts);
             store.set('connected_wallet', 'foxwallet');
@@ -67,7 +69,7 @@ export default function WalletModal({ isShow, close, connectCb }: IProps) {
                     </ModalContent>
                 </Modal>
             </div>
-            <AlertConfirm isShowAlert={isShowAlert} />
+            {/* <AlertConfirm isShowAlert={isShowAlert} /> */}
         </>
     )
 }

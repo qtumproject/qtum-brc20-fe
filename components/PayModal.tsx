@@ -219,7 +219,7 @@ export default function PayModal({
 
 
     const renderMainBody = () => {
-        if (width <= 400) {
+        if (width <= 600) {
             return renderDrawer();
         } else {
             return renderModal();
