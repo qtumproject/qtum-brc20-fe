@@ -29,6 +29,7 @@ import {
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { satsToQtum } from '@/utils';
+import AlertConfirm from '@/components/AlertConfirm';
 import Image from 'next/image';
 
 interface IProps {
@@ -55,6 +56,7 @@ export default function PayModal({
     close
 }: IProps) {
     const toast = useToast();
+    const [isShowAlert, setIsShowAlert] = useState(false);
     const [width, setWidth] = useState(1024);
     const { onCopy: onCopyAddress } = useClipboard(fundingAddress);
     const count = satsToQtum(totalPay)
@@ -95,8 +97,17 @@ export default function PayModal({
             duration: 2000,
         })
     }
+
+    const handleCloseConfirm = () => {
+        close();
+    }
+
     const onClose = () => {
-        close()
+        if (txids.length === 3) {
+            close();
+            return;
+        }
+        setIsShowAlert(true);
     }
 
     const renderLoading = () => {
@@ -226,5 +237,10 @@ export default function PayModal({
         }
     }
 
-    return renderMainBody();
+    return (
+        <>
+            {renderMainBody()}
+            <AlertConfirm isShowAlert={isShowAlert} onConfirm={handleCloseConfirm} onClose={() => setIsShowAlert(false)} />
+        </>
+    )
 }

@@ -16,6 +16,9 @@ const baseStyle = definePartsStyle({
         borderTopLeftRadius: '24px',
         borderTopRightRadius: '24px',
     },
+    header: {
+        textAlign: 'center'
+    },
     body: {
         minHeight: '300px',
     }

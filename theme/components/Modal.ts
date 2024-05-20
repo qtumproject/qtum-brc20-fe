@@ -15,6 +15,9 @@ const baseStyle = definePartsStyle({
   dialog: {
     borderRadius: '24px',
   },
+  header: {
+    textAlign: 'center'
+  }
 })
 
 export const modalTheme = defineMultiStyleConfig({
