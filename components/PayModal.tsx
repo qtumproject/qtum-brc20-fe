@@ -112,7 +112,7 @@ export default function PayModal({
 
     const renderLoading = () => {
         return (
-            <div className='flex flex-col items-center justify-center bg-white'>
+            <div className='flex flex-col items-center justify-center bg-white min-h-80'>
                 <Spinner
                     thickness='4px'
                     speed='0.65s'
