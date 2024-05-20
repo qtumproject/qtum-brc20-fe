@@ -20,6 +20,12 @@ import {
     Box,
     Button,
     Spinner,
+    Drawer,
+    DrawerBody,
+    DrawerHeader,
+    DrawerOverlay,
+    DrawerContent,
+    DrawerCloseButton,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { satsToQtum } from '@/utils';
@@ -49,7 +55,7 @@ export default function PayModal({
     close
 }: IProps) {
     const toast = useToast();
-
+    const [width, setWidth] = useState(1024);
     const { onCopy: onCopyAddress } = useClipboard(fundingAddress);
     const count = satsToQtum(totalPay)
     const { onCopy: onCopyCount } = useClipboard(count);
@@ -62,6 +68,14 @@ export default function PayModal({
 
     const [isOpen, setIsOpen] = useState(false);
     useEffect(() => { setIsOpen(isShow) }, [isShow])
+    useEffect(() => {
+        setWidth(window.innerWidth);
+        const handleResize = () => setWidth(window.innerWidth);
+        window.addEventListener("resize", handleResize);
+        return () => {
+            window.removeEventListener("resize", handleResize);
+        };
+    }, []);
 
     const onAddressCopyClick = () => {
         onCopyAddress();
@@ -175,18 +189,42 @@ export default function PayModal({
         </>
     }
 
-    return (
-        <>
-            <Modal isOpen={isOpen} onClose={onClose} size="xl" closeOnOverlayClick={false}>
-                <ModalOverlay />
-                <ModalContent>
-                    <ModalHeader>{walletLoading ? 'Inscription Process' : (isProgress ? 'Inscription Process' : 'Scan QR code to pay')}</ModalHeader>
-                    <ModalCloseButton />
-                    <ModalBody pb={6}>
+    const renderModal = () => {
+        return (<Modal isOpen={isOpen} onClose={onClose} size="xl" closeOnOverlayClick={false}>
+            <ModalOverlay />
+            <ModalContent>
+                <ModalHeader>{walletLoading ? 'Inscription Process' : (isProgress ? 'Inscription Process' : 'Scan QR code to pay')}</ModalHeader>
+                <ModalCloseButton />
+                <ModalBody pb={6}>
+                    {walletLoading ? renderLoading() : (isProgress ? renderProgress() : renderPayCode())}
+                </ModalBody>
+            </ModalContent>
+        </Modal>)
+    }
+
+    const renderDrawer = () => {
+        return (
+            <Drawer placement='bottom' onClose={onClose} isOpen={isOpen}>
+                <DrawerOverlay />
+                <DrawerContent>
+                    <DrawerHeader>{walletLoading ? 'Inscription Process' : (isProgress ? 'Inscription Process' : 'Scan QR code to pay')}</DrawerHeader>
+                    <DrawerCloseButton />
+                    <DrawerBody>
                         {walletLoading ? renderLoading() : (isProgress ? renderProgress() : renderPayCode())}
-                    </ModalBody>
-                </ModalContent>
-            </Modal>
-        </>
-    )
+                    </DrawerBody>
+                </DrawerContent>
+            </Drawer>
+        )
+    }
+
+
+    const renderMainBody = () => {
+        if (width <= 400) {
+            return renderDrawer();
+        } else {
+            return renderModal();
+        }
+    }
+
+    return renderMainBody();
 }
