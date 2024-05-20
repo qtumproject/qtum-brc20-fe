@@ -5,34 +5,28 @@ import {
     AlertDialogHeader,
     AlertDialogContent,
     AlertDialogOverlay,
+    AlertDialogCloseButton,
     Button,
-    useDisclosure,
 } from '@chakra-ui/react'
 
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 
-export default function AlertConfirm({ isShowAlert }: {
+export default function AlertConfirm({ isShowAlert, onConfirm, onClose }: {
     isShowAlert: boolean
+    onConfirm: () => void,
+    onClose: () => void
 }) {
-    const { isOpen, onOpen, onClose } = useDisclosure()
     const cancelRef = useRef<HTMLButtonElement>(null)
 
-    useEffect(() => {
-        console.log('isShowAlert', isShowAlert)
-        if (isShowAlert) {
-            onOpen();
-        }
-    }, [isShowAlert, onOpen])
-
-    const onConfirm = async () => {
-        await (window as any).qtum.btc.switchNetwork('testnet');
+    const handleConfirm = async () => {
         onClose();
+        onConfirm();
     }
 
     return (
         <>
             <AlertDialog
-                isOpen={isOpen}
+                isOpen={isShowAlert}
                 leastDestructiveRef={cancelRef}
                 onClose={onClose}
                 isCentered
@@ -40,19 +34,18 @@ export default function AlertConfirm({ isShowAlert }: {
                 <AlertDialogOverlay>
                     <AlertDialogContent>
                         <AlertDialogHeader fontSize='lg' fontWeight='bold'>
-                            Change Network
                         </AlertDialogHeader>
-
+                        <AlertDialogCloseButton />
                         <AlertDialogBody>
-                            Are you sure? You will change to tQtum.
+                            Closing the pop-up window may result in inscription failure. Are you sure to continue?
                         </AlertDialogBody>
 
                         <AlertDialogFooter>
-                            <Button ref={cancelRef} onClick={onClose}>
+                            <Button ref={cancelRef} onClick={onClose} size='sm'>
                                 Cancel
                             </Button>
-                            <Button colorScheme='brand' onClick={onConfirm} ml={3}>
-                                Confirm
+                            <Button colorScheme='red' onClick={handleConfirm} ml={3} size='sm'>
+                                Yes, stop inscribing
                             </Button>
                         </AlertDialogFooter>
                     </AlertDialogContent>

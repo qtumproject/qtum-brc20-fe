@@ -37,6 +37,7 @@ export default function WalletModal({ isShow, close, connectCb }: IProps) {
         // }
 
         try {
+            // TODO change to livenet when switch to qtum
             await (window as any).qtum.btc.switchNetwork('testnet'); // testnet | livenet
             let accounts = await (window as any).qtum.btc.requestAccounts();
             console.log('connect success', accounts);

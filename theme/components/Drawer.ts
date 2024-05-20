@@ -16,9 +16,9 @@ const baseStyle = definePartsStyle({
         borderTopLeftRadius: '24px',
         borderTopRightRadius: '24px',
     },
-    body: {
-        minHeight: '300px',
-    }
+    header: {
+        textAlign: 'center'
+    },
 })
 
 export const drawerTheme = defineMultiStyleConfig({
