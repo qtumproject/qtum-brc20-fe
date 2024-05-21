@@ -19,6 +19,7 @@ import {
     validMint
 } from '@/utils';
 import { IQtumFeeRates, TFeeType, IProgressInfo, IOrderItem, IModalInfo } from '@/types';
+import { useShowConnect } from '@/hooks';
 import FeeType from "./FeeType";
 import PayModal from "./PayModal";
 import PayMode from './PayMode';
@@ -56,6 +57,7 @@ export default function Mint({ defaultTick, feeRates, updateOrder }: IProps) {
     const [qrImg, setQrImg] = useState('');
     const [fundingAddress, setFundingAddress] = useState('');
     const [walletLoading, setWalletLoading] = useState(false);
+    const [isShowConnect] = useShowConnect();
 
     const [mint, setMint] = useState({
         p: 'brc-20',
@@ -232,6 +234,9 @@ export default function Mint({ defaultTick, feeRates, updateOrder }: IProps) {
         }
     }
 
+    const renderPayMode = () => {
+        return isShowConnect ? <PayMode initialMode={mode} onChange={(mode) => setMode(mode)} /> : null;
+    }
 
     return (
         <>
@@ -339,7 +344,7 @@ export default function Mint({ defaultTick, feeRates, updateOrder }: IProps) {
                     </div>
 
                     <div className='mb-4'>
-                        <PayMode initialMode={mode} onChange={(mode) => setMode(mode)} />
+                        {renderPayMode()}
                     </div>
 
                     <div className='mb-4 text-center hidden lg:block'>
