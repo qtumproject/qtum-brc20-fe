@@ -6,10 +6,12 @@ import {
     Th,
     Td,
     TableContainer,
-    SkeletonText
-} from '@chakra-ui/react'
+    SkeletonText,
+    Button
+} from '@chakra-ui/react';
+import { useState } from 'react';
 import { IOrderItem, TOrderList } from '@/types';
-
+import OrderDetailModal from './OrderDetailModal';
 interface IProps {
     dataList: TOrderList,
     isLoading: boolean,
@@ -17,9 +19,32 @@ interface IProps {
 
 export default function OrderTable({ dataList, isLoading }: IProps) {
 
+    const [isOpen, setIsOpen] = useState(false);
+    const [currentOrder, setCurrentOrder] = useState<IOrderItem>({
+        orderId: '',
+        tick: '',
+        quantity: '',
+        type: 'mint',
+        inscribeInfo: { p: '', op: '', tick: '', amt: '' },
+        receiveAddress: '',
+        inscriptionFees: 0,
+        txinfos: [],
+        status: '',
+        createTime: '',
+        updateTime: '',
+    });
+
+    const handleOrderDetailShow = (orderDetail: IOrderItem) => {
+        setIsOpen(true);
+        setCurrentOrder(orderDetail);
+
+    }
+
     const renderData = () => dataList.map((data: IOrderItem) => {
         return (<Tr key={data.orderId}>
-            <Td className='font-medium text-sm w-[300px]'>{data.orderId}</Td>
+            <Td className='font-medium text-sm w-[300px]'>
+                <Button colorScheme="brand" variant='link' size='xs' onClick={() => handleOrderDetailShow(data)}>{data.orderId}</Button>
+            </Td>
             <Td className='font-medium text-sm'>{data.tick}</Td>
             <Td className='font-medium text-sm'>{data.quantity}</Td>
             <Td className='font-medium text-sm'>{data.type}</Td>
@@ -109,24 +134,27 @@ export default function OrderTable({ dataList, isLoading }: IProps) {
         return <Tr><Td></Td><Td></Td><Td></Td><Td>No Data</Td><Td></Td><Td></Td></Tr>
     }
     return (
-        <TableContainer className='w-[976px]'>
-            <Table variant='simple'>
-                <Thead>
-                    <Tr>
-                        <Th>OrderId</Th>
-                        <Th>Tick</Th>
-                        <Th>Quantity</Th>
-                        <Th>Type</Th>
-                        <Th>Status</Th>
-                        <Th>CreateTime</Th>
-                    </Tr>
-                </Thead>
-                <Tbody>
-                    {
-                        isLoading ? renderLoading() : renderList()
-                    }
-                </Tbody>
-            </Table>
-        </TableContainer>
+        <>
+            <TableContainer className='w-[976px]'>
+                <Table variant='simple'>
+                    <Thead>
+                        <Tr>
+                            <Th>OrderId</Th>
+                            <Th>Tick</Th>
+                            <Th>Quantity</Th>
+                            <Th>Type</Th>
+                            <Th>Status</Th>
+                            <Th>CreateTime</Th>
+                        </Tr>
+                    </Thead>
+                    <Tbody>
+                        {
+                            isLoading ? renderLoading() : renderList()
+                        }
+                    </Tbody>
+                </Table>
+            </TableContainer>
+            <OrderDetailModal isOpen={isOpen} onClose={() => setIsOpen(false)} orderDetail={currentOrder} />
+        </>
     )
 }

@@ -108,6 +108,10 @@ export interface IOrderItem {
     quantity: string,
     type: TOperationType,
     status: string,
+    inscribeInfo: IMintJson | IDeployJson,
+    receiveAddress: string,
+    inscriptionFees: number,
+    txinfos: Array<{ desp: string, txid: any }>,
     createTime: string,
     updateTime: string,
 

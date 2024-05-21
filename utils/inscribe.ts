@@ -70,6 +70,10 @@ export async function mintOrDeploy({
         quantity: scriptObj.op === 'mint' ? (scriptObj as IMintJson).amt : (scriptObj as IDeployJson).max,
         tick: scriptObj.tick,
         status: IOrderStatus.PENDING as string,
+        inscribeInfo: scriptObj,
+        receiveAddress: rAddress,
+        inscriptionFees: inscriptionFees,
+        txinfos: [] as Array<{ desp: string, txid: any }>,
         createTime: getNowTime(),
         updateTime: getNowTime(),
     };
@@ -170,6 +174,7 @@ export async function mintOrDeploy({
     debug('Funding Address receive the money, the txid, vout, amount is: %o %o %o', txid, vout, amt);
     currentOrder.status = IOrderStatus.INSCRIBING;
     currentOrder.updateTime = getNowTime();
+    currentOrder.txinfos[0] = { desp: 'To funding address transaction', txid: txid };
     updateOrder(currentOrder, 'update');
     setProgress({ step: 1, txid });
 
@@ -209,6 +214,8 @@ export async function mintOrDeploy({
         return;
     }
     debug('Inscription address receive the money, the txid is: %o', _txid);
+    currentOrder.txinfos[1] = { desp: 'To inscription address transaction', txid: _txid };
+    updateOrder(currentOrder, 'update');
     setProgress({ step: 2, txid: _txid });
 
     const inscribe = async (inscription: any, vout: any) => {
@@ -252,6 +259,8 @@ export async function mintOrDeploy({
             return;
         }
         debug('Receive address receive the money, the txid is: %o', _txid2);
+        currentOrder.txinfos[2] = { desp: 'To receive transaction', txid: _txid2 };
+        updateOrder(currentOrder, 'update');
         setProgress({ step: 3, txid: _txid2 });
         currentOrder.status = IOrderStatus.SUCCESS;
         currentOrder.updateTime = getNowTime();
