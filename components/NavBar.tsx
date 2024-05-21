@@ -10,6 +10,7 @@ import Link from 'next/link';
 import Image from 'next/image'
 import { useRouter } from 'next/router';
 import Switch from '@/components/Switch';
+import { useShowConnect } from '@/hooks';
 import { useTheme } from 'next-themes'
 import ConnectWallet from './ConnectWallet';
 
@@ -25,7 +26,7 @@ const navList = [
 export default function NavBar() {
     const { setTheme } = useTheme()
     const { colorMode, toggleColorMode } = useColorMode()
-
+    const [isShowConnect] = useShowConnect();
     const router = useRouter();
     const [isOpen, setIsOpen] = useState(false);
     const tabIndex = navList.findIndex((nav) => nav.path === router.pathname);
@@ -38,6 +39,10 @@ export default function NavBar() {
         toggleColorMode(); // change chakra-ui theme
         setTheme(value); // change next-theme
         onClose();
+    }
+
+    const renderConnect = () => {
+        return isShowConnect ? <ConnectWallet /> : null;
     }
 
     return (
@@ -89,7 +94,7 @@ export default function NavBar() {
 
                 <div className='flex justify-center items-center'>
                     <div className='mr-4'>
-                        <ConnectWallet />
+                        {renderConnect()}
                     </div>
                     <Switch onChange={onModeChange} defaultValue={colorMode} />
                 </div>
@@ -105,7 +110,7 @@ export default function NavBar() {
 
                 <div className='flex items-center justify-center'>
                     <div className='mr-2'>
-                        <ConnectWallet />
+                        {renderConnect()}
                     </div>
                     <Image className="block dark:hidden" src="/img/icon-menu.png" height={32} width={32} alt="menu" onClick={() => setIsOpen(true)}></Image>
                     <Image className="hidden dark:block" src="/img/icon-menu-d.png" height={32} width={32} alt="menu" onClick={() => setIsOpen(true)}></Image>
