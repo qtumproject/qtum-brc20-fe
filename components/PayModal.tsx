@@ -23,7 +23,6 @@ import {
 import { useEffect, useState } from 'react';
 import { satsToQtum } from '@/utils';
 import Image from 'next/image';
-
 interface IProps {
     isShow: boolean,
     children: any,

@@ -72,7 +72,7 @@ export async function mintOrDeploy({
         status: IOrderStatus.PENDING as string,
         inscribeInfo: scriptObj,
         receiveAddress: rAddress,
-        inscriptionFees: inscriptionFees,
+        inscriptionFees: totalFees,
         txinfos: [] as Array<{ desp: string, txid: any }>,
         createTime: getNowTime(),
         updateTime: getNowTime(),
