@@ -18,9 +18,11 @@ import {
     abortRequest,
     validDeploy,
 } from '@/utils';
-import { IQtumFeeRates, TFeeType, IProgressInfo, IOrderItem } from '@/types';
+import { IQtumFeeRates, TFeeType, IProgressInfo, IOrderItem, IModalInfo } from '@/types';
+import { useShowConnect } from '@/hooks';
 import FeeType from "./FeeType";
 import PayModal from "./PayModal";
+import PayMode from './PayMode';
 
 interface IProps {
     feeRates: IQtumFeeRates,
@@ -29,6 +31,7 @@ interface IProps {
 
 export default function Deploy({ feeRates, updateOrder }: IProps) {
     const toast = useToast();
+    const [mode, setMode] = useState('qtum');
     const [step, setStep] = useState(1);
     const [tick, setTick] = useState('')
     const [amount, setAmount] = useState('21000000');
@@ -53,6 +56,8 @@ export default function Deploy({ feeRates, updateOrder }: IProps) {
     const [activeStep, setActiveStep] = useState(1);
     const [qrImg, setQrImg] = useState('');
     const [fundingAddress, setFundingAddress] = useState('');
+    const [walletLoading, setWalletLoading] = useState(false);
+    const [isShowConnect] = useShowConnect();
 
     const [deploy, setDeploy] = useState({
         p: 'brc-20',
@@ -176,8 +181,7 @@ export default function Deploy({ feeRates, updateOrder }: IProps) {
     const handleSubmit = () => {
         const valid = validSecondForm();
         if (valid) {
-            resolveDeploy();
-            setIsModalShow(true);
+            resolveDeploy(mode);
         }
     }
 
@@ -195,17 +199,30 @@ export default function Deploy({ feeRates, updateOrder }: IProps) {
         abortRequest();
     }
 
-    const resolveDeploy = () => {
+    const setModalInfo = ({ fundingAddress, qrImg, isWalletLoading }: IModalInfo) => {
+        if (fundingAddress) {
+            setFundingAddress(fundingAddress);
+        }
+        if (qrImg) {
+            setQrImg(qrImg);
+        }
+        setIsProgress(false);
+        setTxIds([]);
+        setWalletLoading(!!isWalletLoading);
+        setIsModalShow(true);
+    }
+
+    const resolveDeploy = (mode: string) => {
         try {
             mintOrDeploy({
                 scriptObj: deploy,
                 inscriptionFees,
                 totalFees,
                 rAddress,
-                setFundingAddress,
-                setQrImg,
+                setModalInfo,
                 setProgress,
-                updateOrder
+                updateOrder,
+                mode
             });
         } catch (e: any) {
             toast({
@@ -216,6 +233,10 @@ export default function Deploy({ feeRates, updateOrder }: IProps) {
             })
         }
 
+    }
+
+    const renderPayMode = () => {
+        return isShowConnect ? <PayMode initialMode={mode} onChange={(mode) => setMode(mode)} /> : null;
     }
 
     return (
@@ -332,6 +353,10 @@ export default function Deploy({ feeRates, updateOrder }: IProps) {
                         </div>
                     </div>
 
+                    <div className='mb-4'>
+                        {renderPayMode()}
+                    </div>
+
                     <div className='mb-4 text-center hidden lg:block'>
                         <Button
                             mt={4}
@@ -378,6 +403,7 @@ export default function Deploy({ feeRates, updateOrder }: IProps) {
                 fundingAddress={fundingAddress}
                 totalPay={totalFees}
                 isProgress={isProgress}
+                walletLoading={walletLoading}
                 activeStep={activeStep}
                 txids={txids}
                 close={handleModalClose}>

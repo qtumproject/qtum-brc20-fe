@@ -48,10 +48,10 @@ export interface IMintOrDeployParams {
     inscriptionFees: number,
     totalFees: number,
     rAddress: string,
-    setFundingAddress: Function,
-    setQrImg: Function,
+    setModalInfo: Function,
     setProgress: Function,
     updateOrder: (orderItem: IOrderItem, opType: 'add' | 'update') => void,
+    mode: string,
 }
 
 export interface ICaclTotalFeesParams {
@@ -146,4 +146,15 @@ export interface IValidResult {
     code: number,
     msg: string,
     data: TValidData,
+}
+
+export interface ISendParams {
+    address: string,
+    amount: number,
+}
+
+export interface IModalInfo {
+    fundingAddress?: string,
+    qrImg?: any,
+    isWalletLoading?: boolean,
 }

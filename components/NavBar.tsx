@@ -10,7 +10,9 @@ import Link from 'next/link';
 import Image from 'next/image'
 import { useRouter } from 'next/router';
 import Switch from '@/components/Switch';
+import { useShowConnect } from '@/hooks';
 import { useTheme } from 'next-themes'
+import ConnectWallet from './ConnectWallet';
 
 
 const navList = [
@@ -24,7 +26,7 @@ const navList = [
 export default function NavBar() {
     const { setTheme } = useTheme()
     const { colorMode, toggleColorMode } = useColorMode()
-
+    const [isShowConnect] = useShowConnect();
     const router = useRouter();
     const [isOpen, setIsOpen] = useState(false);
     const tabIndex = navList.findIndex((nav) => nav.path === router.pathname);
@@ -37,6 +39,10 @@ export default function NavBar() {
         toggleColorMode(); // change chakra-ui theme
         setTheme(value); // change next-theme
         onClose();
+    }
+
+    const renderConnect = () => {
+        return isShowConnect ? <ConnectWallet /> : null;
     }
 
     return (
@@ -86,7 +92,10 @@ export default function NavBar() {
                     </div>
                 </div>
 
-                <div>
+                <div className='flex justify-center items-center'>
+                    <div className='mr-4'>
+                        {renderConnect()}
+                    </div>
                     <Switch onChange={onModeChange} defaultValue={colorMode} />
                 </div>
             </div >
@@ -98,7 +107,11 @@ export default function NavBar() {
                         <Image className='dark:block hidden' src="/logo-d.png" alt="logo" width={139} height={22} />
                     </Link>
                 </div>
-                <div>
+
+                <div className='flex items-center justify-center'>
+                    <div className='mr-2'>
+                        {renderConnect()}
+                    </div>
                     <Image className="block dark:hidden" src="/img/icon-menu.png" height={32} width={32} alt="menu" onClick={() => setIsOpen(true)}></Image>
                     <Image className="hidden dark:block" src="/img/icon-menu-d.png" height={32} width={32} alt="menu" onClick={() => setIsOpen(true)}></Image>
                     <Drawer placement='top' onClose={onClose} isOpen={isOpen} autoFocus={false}>

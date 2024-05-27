@@ -1,6 +1,3 @@
-import { Buff } from '@cmdcode/buff-utils';
-import { Script, Signer, Tap, Tx } from '@cmdcode/tapscript';
-import { Noble, KeyPair } from '@cmdcode/crypto-utils';
 import QRCode from 'qrcode'
 import {
     qtumAddressInfo,
@@ -16,7 +13,8 @@ import {
     IDeployJson,
     IValidDeployParams,
     IValidMintParams,
-    IValidResult
+    IValidResult,
+    ISendParams,
 } from "@/types";
 import { axiosInstance } from '@/utils';
 import store from 'store2';
@@ -47,17 +45,27 @@ const getNowTime = () => {
     return dayjs().format('YYYY/MM/DD HH:mm:ss');
 }
 
+const sendByWallet = ({ address, amount }: ISendParams) => {
+    if ((window as any)?.qtum) {
+        return (window as any).qtum.btc.sendBitcoin(address, amount);
+    } else {
+        alert('wallet not found, please install foxwallet');
+    }
+}
+
 export async function mintOrDeploy({
     scriptObj,
     inscriptionFees,
     totalFees,
     rAddress,
-    setFundingAddress,
-    setQrImg,
+    setModalInfo,
     setProgress,
     updateOrder,
+    mode,
 }: IMintOrDeployParams) {
     debug('inscribe begin')
+    const { Script, Signer, Tap, Tx } = (window as any).tapscript;
+    const { Noble, KeyPair } = (window as any).cryptoUtils;
     controller = new AbortController();
     let inscriptions = [];
 
@@ -78,7 +86,6 @@ export async function mintOrDeploy({
         updateTime: getNowTime(),
     };
     updateOrder(currentOrder, 'add');
-
 
     let seckey = new KeyPair(privkey);
     let pubkey = seckey.pub.rawX;
@@ -141,21 +148,34 @@ export async function mintOrDeploy({
             script_orig: script
         }
     );
+    debug('Address that will receive the inscription: %o', rAddress);
+    debug('Total transfer amount: %o', satsToQtum(totalFees), 'QTUM');
 
     let fundingAddress = p2trEncode(init_tapkey, encodedAddressPrefix);
     debug('Funding address: %o', fundingAddress);
     debug('Funding Tapkey: %o', init_tapkey);
-    setFundingAddress(fundingAddress)
-
-    debug('Address that will receive the inscription: %o', rAddress);
-    debug('Total transfer amount: %o', satsToQtum(totalFees), 'QTUM');
-
-    let qr_value = "qtum:" + fundingAddress + "?amount=" + satsToQtum(totalFees);
-    debug("Qrcode value is: %o", qr_value);
-
-    const qrimg = createQR(qr_value);
-    setQrImg(qrimg as any);
-
+    if (mode === 'qtum') {
+        // web transaction
+        let qr_value = "qtum:" + fundingAddress + "?amount=" + satsToQtum(totalFees);
+        debug("Qrcode value is: %o", qr_value);
+        const qrImg = createQR(qr_value);
+        setModalInfo({
+            fundingAddress,
+            qrImg,
+        })
+    } else {
+        try {
+            // wallet transaction
+            const res = await sendByWallet({ address: fundingAddress, amount: totalFees });
+            console.log('wallet pay result', res);
+            if (res) {
+                setModalInfo({ isWalletLoading: true });
+            }
+        } catch (e) {
+            console.error(e);
+            return;
+        }
+    }
 
     try {
         await loopTilAddressReceivesMoney(fundingAddress, true);
@@ -168,6 +188,7 @@ export async function mintOrDeploy({
     }
     await waitSomeSeconds(2);
     let txinfo = await addressReceivedMoneyInThisTx(fundingAddress);
+    setModalInfo({ isWalletLoading: false });
     let txid = txinfo[0];
     let vout = txinfo[1];
     let amt = txinfo[2];
@@ -271,8 +292,6 @@ export async function mintOrDeploy({
     for (let i = 0; i < inscriptions.length; i++) {
         inscribe(inscriptions[i], i);
     };
-
-
 }
 
 export async function calcTotalFees({
@@ -350,6 +369,7 @@ export async function getQtumFee() {
 }
 
 export function p2trEncode(input: string, prefix = 'qc') {
+    const { Buff } = (window as any).buffUtils;
     const bytes = Buff.bytes(input)
     if (bytes.length !== 32) {
         throw new Error(`Invalid input size: ${bytes.hex} !== ${32}`)
@@ -358,10 +378,12 @@ export function p2trEncode(input: string, prefix = 'qc') {
 }
 
 export function p2trDecode(address: string) {
+    const { Buff } = (window as any).buffUtils;
     return Buff.bech32(address);
 }
 
 export const addressToScriptPubKey = (address: string): Array<string> => {
+    const { Buff } = (window as any).buffUtils;
     try {
         // p2pkh
         const hex = Buff.b58chk(address).slice(1).hex;
