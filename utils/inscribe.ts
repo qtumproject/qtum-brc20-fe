@@ -280,7 +280,7 @@ export async function mintOrDeploy({
             return;
         }
         debug('Receive address receive the money, the txid is: %o', _txid2);
-        currentOrder.txinfos[2] = { desp: 'To receive transaction', txid: _txid2 };
+        currentOrder.txinfos[2] = { desp: 'To receive address transaction', txid: _txid2 };
         updateOrder(currentOrder, 'update');
         setProgress({ step: 3, txid: _txid2 });
         currentOrder.status = IOrderStatus.SUCCESS;

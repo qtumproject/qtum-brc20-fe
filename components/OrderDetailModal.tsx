@@ -8,6 +8,7 @@ import {
     ModalBody,
     ModalCloseButton,
     Divider,
+    Link,
 } from '@chakra-ui/react';
 import Image from 'next/image';
 import {
@@ -69,18 +70,22 @@ export default function OrderDetailModal({ isOpen, onClose, orderDetail }: IProp
                     </div>
 
                     {
-                        orderDetail.txinfos?.length ? <div className='mt-4'>
-                            <div className='mb-4 text-[#7F8596]'>Transaction Info</div>
+                        orderDetail.txinfos?.length ? <div>
+                            <div className='mb-4 text-[#7F8596] text-sm '>Transaction Info</div>
                             {orderDetail.txinfos.map(item => (
-                                <div className='mt-2 ' key={item.txid}>
-                                    <div className='font-normal'>{item.desp}</div>
-                                    <div className='font-medium	'>{item.txid}</div>
+                                <div className='text-sm mb-4' key={item.txid}>
+                                    <div className='font-medium'>{item.desp}</div>
+                                    <div>
+                                        <Link color='brand.100' href={`https://testnet.qtum.info/tx/${item.txid}`}>
+                                            {item.txid}
+                                        </Link>
+                                    </div>
                                 </div>
                             ))}
                         </div> : null
                     }
                 </ModalBody>
             </ModalContent>
-        </Modal>
+        </Modal >
     )
 }

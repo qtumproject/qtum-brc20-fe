@@ -2,7 +2,8 @@
 import { IOrderItem, TOrderList } from '@/types';
 import {
     Skeleton,
-    Divider
+    Divider,
+    Link
 } from '@chakra-ui/react'
 import { useState } from 'react';
 import Image from 'next/image';
@@ -93,12 +94,16 @@ export default function MobileList({ dataList, isLoading }: IProps) {
                     <div className='text-sm leading-[18px]'>{satsToQtum(detailData.inscriptionFees)} QTUM</div>
                 </div>
                 {
-                    detailData.txinfos?.length ? <div className='mt-4'>
-                        <div className='mb-4 text-[#7F8596]'>Transaction Info</div>
+                    detailData.txinfos?.length ? <div>
+                        <div className='mb-4 text-[#7F8596] text-sm'>Transaction Info</div>
                         {detailData.txinfos.map(item => (
-                            <div className='mt-2 ' key={item.txid}>
-                                <div className='font-normal'>{item.desp}</div>
-                                <div className='font-medium	'>{item.txid}</div>
+                            <div className='text-sm mb-4' key={item.txid}>
+                                <div className='font-medium'>{item.desp}</div>
+                                <div>
+                                    <Link color='brand.100' href={`https://testnet.qtum.info/tx/${item.txid}`}>
+                                        {item.txid}
+                                    </Link>
+                                </div>
                             </div>
                         ))}
                     </div> : null
