@@ -21,7 +21,7 @@ import store from 'store2';
 import dayjs from 'dayjs';
 
 let controller: AbortController | null = null;
-const orderListKey = 'orderList';
+const orderListKey = 'oderListV1';
 const encodedAddressPrefix = 'tq'; // qc for qtum | tq for qtum_testnet
 const debug = require('debug')('[inscribe]');
 
