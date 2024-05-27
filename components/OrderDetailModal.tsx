@@ -26,8 +26,8 @@ export default function OrderDetailModal({ isOpen, onClose, orderDetail }: IProp
         <Modal isOpen={isOpen} onClose={onClose} size="2xl" closeOnOverlayClick={false}>
             <ModalOverlay />
             <ModalContent className='w-[calc(100vw_-_32px)] l-4'>
-                <ModalHeader>Order details</ModalHeader>
-                <ModalCloseButton />
+                <ModalHeader className='leading-[64px]'>Order details</ModalHeader>
+                <ModalCloseButton top="30px" right="16px" />
                 <ModalBody pb={6}>
                     <div className='flex justify-between text-sm font-normal'>
                         <div className='mb-4 text-[#7F8596]'>Order ID</div>
@@ -52,7 +52,7 @@ export default function OrderDetailModal({ isOpen, onClose, orderDetail }: IProp
 
                     <Divider />
                     <div className='my-4'>
-                        <pre className="font-medium	py-[16px] rounded-[12px] px-[16px] dark:bg-[#282A33] bg-[#F3F3F0] break-all whitespace-break-spaces flex justify-between">
+                        <pre className="leading-6 text-xs py-[16px] rounded-[12px] px-[16px] dark:bg-[#282A33] bg-[#F3F3F0] break-all whitespace-break-spaces flex justify-between">
                             {JSON.stringify(orderDetail.inscribeInfo)}
                             {
                                 orderDetail.status === IOrderStatus.CLOSED ? <Image width={24} height={24} src="/failed.svg" alt="failed" /> : <Image width={24} height={24} src="/success.svg" alt="success" />

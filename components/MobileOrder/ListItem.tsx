@@ -5,8 +5,8 @@ import {
 
 export default function ListItem({ data, onGoDetail }: { data: IOrderItem, onGoDetail: (data: IOrderItem) => void }) {
     return (<div className="px-3 py-3 border border-[#E7E7E1] dark:border-[#494e5b80] rounded-xl">
-        <div className="flex justify-between mb-4">
-            <div className="text-[#7F8596] text-sm leading-[18px]">Order ID</div>
+        <div className="flex justify-between mb-4 text-sm">
+            <div className="text-[#7F8596] leading-[18px]">Order ID</div>
             <Link color='brand.100' href="javascript:;" onClick={() => onGoDetail(data)}>
                 {data.orderId}
             </Link>

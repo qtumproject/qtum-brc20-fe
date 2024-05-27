@@ -203,8 +203,8 @@ export default function PayModal({
         return (<Modal isOpen={isOpen} onClose={onClose} size="xl" closeOnOverlayClick={false}>
             <ModalOverlay />
             <ModalContent>
-                <ModalHeader>{walletLoading ? 'Inscription Process' : (isProgress ? 'Inscription Process' : 'Scan QR code to pay')}</ModalHeader>
-                <ModalCloseButton />
+                <ModalHeader className='leading-[64px]'>{walletLoading ? 'Inscription Process' : (isProgress ? 'Inscription Process' : 'Scan QR code to pay')}</ModalHeader>
+                <ModalCloseButton top="30px" right="16px" />
                 <ModalBody pb={6}>
                     {walletLoading ? renderLoading() : (isProgress ? renderProgress() : renderPayCode())}
                 </ModalBody>

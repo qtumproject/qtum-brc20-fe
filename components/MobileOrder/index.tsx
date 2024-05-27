@@ -77,7 +77,7 @@ export default function MobileList({ dataList, isLoading }: IProps) {
                 <Divider />
 
                 <div className='my-4'>
-                    <pre className="font-medium	py-[16px] rounded-[12px] px-[16px] dark:bg-[#282A33] bg-[#F3F3F0] break-all whitespace-break-spaces flex justify-between">
+                    <pre className="leading-6 text-xs py-[16px] rounded-[12px] px-[16px] dark:bg-[#282A33] bg-[#F3F3F0] break-all whitespace-break-spaces flex justify-between">
                         {JSON.stringify(detailData.inscribeInfo)}
                         {
                             detailData.status === IOrderStatus.CLOSED ? <Image width={24} height={24} src="/failed.svg" alt="failed" /> : <Image width={24} height={24} src="/success.svg" alt="success" />
