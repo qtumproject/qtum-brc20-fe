@@ -120,6 +120,7 @@ export default function Indexer() {
                             <Input
                                 placeholder='Search qbrc20 token name'
                                 value={tokenName}
+                                focusBorderColor="#2D73FF"
                                 onChange={(e) => setTokenName(e.target.value)}
                                 onKeyDown={e => {
                                     if (e.key === 'Enter') {
@@ -159,6 +160,7 @@ export default function Indexer() {
                             <Input
                                 placeholder='Search qbrc20 token name'
                                 value={tokenName}
+                                focusBorderColor="#2D73FF"
                                 onChange={(e) => setTokenName(e.target.value)}
                                 onKeyDown={e => {
                                     if (e.key === 'Enter') {

@@ -7,7 +7,7 @@ import {
     Td,
     TableContainer,
     SkeletonText,
-    Button
+    Link
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { IOrderItem, TOrderList } from '@/types';
@@ -43,7 +43,9 @@ export default function OrderTable({ dataList, isLoading }: IProps) {
     const renderData = () => dataList.map((data: IOrderItem) => {
         return (<Tr key={data.orderId}>
             <Td className='font-medium text-sm w-[300px]'>
-                <Button colorScheme="brand" variant='link' size='xs' onClick={() => handleOrderDetailShow(data)}>{data.orderId}</Button>
+                <Link color='brand.100' href="javascript:;" onClick={() => handleOrderDetailShow(data)}>
+                    {data.orderId}
+                </Link>
             </Td>
             <Td className='font-medium text-sm'>{data.tick}</Td>
             <Td className='font-medium text-sm'>{data.quantity}</Td>

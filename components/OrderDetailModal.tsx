@@ -76,7 +76,7 @@ export default function OrderDetailModal({ isOpen, onClose, orderDetail }: IProp
                                 <div className='text-sm mb-4' key={item.txid}>
                                     <div className='font-medium'>{item.desp}</div>
                                     <div>
-                                        <Link color='brand.100' href={`https://testnet.qtum.info/tx/${item.txid}`}>
+                                        <Link isExternal color='brand.100' href={`https://testnet.qtum.info/tx/${item.txid}`}>
                                             {item.txid}
                                         </Link>
                                     </div>

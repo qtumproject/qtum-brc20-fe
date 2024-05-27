@@ -66,6 +66,7 @@ export default function Indexer() {
                             <Input
                                 placeholder='Search the qbrc20 balance of the address'
                                 value={address}
+                                focusBorderColor="#2D73FF"
                                 onChange={(e) => setTokenName(e.target.value)}
                                 onKeyDown={e => {
                                     if (e.key === 'Enter') {
@@ -91,6 +92,7 @@ export default function Indexer() {
                             <Input
                                 placeholder='Search the qbrc20 balance of the address'
                                 value={address}
+                                focusBorderColor="#2D73FF"
                                 onChange={(e) => setTokenName(e.target.value)}
                                 onKeyDown={e => {
                                     if (e.key === 'Enter') {
