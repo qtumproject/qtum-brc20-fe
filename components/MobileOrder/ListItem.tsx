@@ -1,10 +1,13 @@
 import { IOrderItem } from '@/types';
+import {
+    Button
+} from '@chakra-ui/react';
 
-export default function ListItem({ data }: { data: IOrderItem }) {
+export default function ListItem({ data, onGoDetail }: { data: IOrderItem, onGoDetail: (data: IOrderItem) => void }) {
     return (<div className="px-3 py-3 border border-[#E7E7E1] dark:border-[#494e5b80] rounded-xl">
         <div className="flex justify-between mb-4">
-            <div className="text-[#7F8596] text-sm leading-[18px]">OrderId</div>
-            <div className='text-sm leading-[18px]'>{data.orderId}</div>
+            <div className="text-[#7F8596] text-sm leading-[18px]">Order ID</div>
+            <Button colorScheme="brand" variant='link' size='xs' onClick={() => onGoDetail(data)}>{data.orderId}</Button>
         </div>
         <div className="flex justify-between mb-4">
             <div className="text-[#7F8596] text-sm leading-[18px]">Tick</div>
