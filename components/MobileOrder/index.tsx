@@ -35,7 +35,6 @@ export default function MobileList({ dataList, isLoading }: IProps) {
     });
 
     const handleGoDetail = (data: IOrderItem) => {
-        console.log('data', data);
         setMode('detail');
         setDetailData(data);
     }
@@ -86,7 +85,7 @@ export default function MobileList({ dataList, isLoading }: IProps) {
                 </div>
 
                 <div className="flex justify-between mb-4">
-                    <div className="text-[#7F8596] text-sm leading-[18px]">Receving Address</div>
+                    <div className="text-[#7F8596] text-sm leading-[18px]">Receiving Address</div>
                     <div className='text-sm leading-[18px] break-all whitespace-break-spaces text-right'>{detailData.receiveAddress}</div>
                 </div>
                 <div className="flex justify-between mb-4">

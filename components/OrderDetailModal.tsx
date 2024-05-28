@@ -61,7 +61,7 @@ export default function OrderDetailModal({ isOpen, onClose, orderDetail }: IProp
                     </div>
 
                     <div className='flex justify-between text-sm font-normal'>
-                        <div className='mb-4 text-[#7F8596]'>Receving Address</div>
+                        <div className='mb-4 text-[#7F8596]'>Receiving Address</div>
                         <div className='font-medium	'>{orderDetail.receiveAddress}</div>
                     </div>
                     <div className='flex justify-between text-sm font-normal'>
