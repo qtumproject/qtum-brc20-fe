@@ -48,8 +48,6 @@ const getNowTime = () => {
 const sendByWallet = ({ address, amount }: ISendParams) => {
     if ((window as any)?.qtum) {
         return (window as any).qtum.btc.sendBitcoin(address, amount);
-    } else {
-        alert('wallet not found, please install foxwallet');
     }
 }
 
@@ -60,6 +58,7 @@ export async function mintOrDeploy({
     rAddress,
     setModalInfo,
     setProgress,
+    walletConnectFailedCB,
     updateOrder,
     mode,
 }: IMintOrDeployParams) {
@@ -170,6 +169,8 @@ export async function mintOrDeploy({
             console.log('wallet pay result', res);
             if (res) {
                 setModalInfo({ isWalletLoading: true });
+            } else {
+                walletConnectFailedCB();
             }
         } catch (e) {
             console.error(e);

@@ -50,6 +50,7 @@ export interface IMintOrDeployParams {
     rAddress: string,
     setModalInfo: Function,
     setProgress: Function,
+    walletConnectFailedCB: () => void,
     updateOrder: (orderItem: IOrderItem, opType: 'add' | 'update') => void,
     mode: string,
 }

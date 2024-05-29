@@ -11,6 +11,7 @@ import {
     useToast,
     Button,
 } from '@chakra-ui/react';
+import DownloadModal from '@/components/DownloadModal';
 import {
     satsToQtum,
     mintOrDeploy,
@@ -57,6 +58,7 @@ export default function Deploy({ feeRates, updateOrder }: IProps) {
     const [qrImg, setQrImg] = useState('');
     const [fundingAddress, setFundingAddress] = useState('');
     const [walletLoading, setWalletLoading] = useState(false);
+    const [isShowAlert, setIsShowAlert] = useState(false);
     const [isShowConnect] = useShowConnect();
 
     const [deploy, setDeploy] = useState({
@@ -212,6 +214,10 @@ export default function Deploy({ feeRates, updateOrder }: IProps) {
         setIsModalShow(true);
     }
 
+    const walletConnectFailedCB = () => {
+        setIsShowAlert(true);
+    }
+
     const resolveDeploy = (mode: string) => {
         try {
             mintOrDeploy({
@@ -221,6 +227,7 @@ export default function Deploy({ feeRates, updateOrder }: IProps) {
                 rAddress,
                 setModalInfo,
                 setProgress,
+                walletConnectFailedCB,
                 updateOrder,
                 mode
             });
@@ -409,7 +416,7 @@ export default function Deploy({ feeRates, updateOrder }: IProps) {
                 close={handleModalClose}>
                 {qrImg}
             </PayModal>
-
+            <DownloadModal isOpen={isShowAlert} onClose={() => setIsShowAlert(false)} />
         </>
     )
 }

@@ -5,7 +5,7 @@ import {
     Divider,
     Link
 } from '@chakra-ui/react'
-import { useState } from 'react';
+import { useState, MouseEvent } from 'react';
 import Image from 'next/image';
 import { IOrderStatus } from '@/types'
 import ListItem from './ListItem';
@@ -34,7 +34,8 @@ export default function MobileList({ dataList, isLoading }: IProps) {
         updateTime: '',
     });
 
-    const handleGoDetail = (data: IOrderItem) => {
+    const handleGoDetail = (e: MouseEvent, data: IOrderItem) => {
+        e.preventDefault();
         setMode('detail');
         setDetailData(data);
     }

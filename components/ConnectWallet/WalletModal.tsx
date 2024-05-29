@@ -6,8 +6,8 @@ import {
     ModalBody,
     ModalCloseButton,
 } from '@chakra-ui/react';
-// import { useState } from 'react';
-// import AlertConfirm from '@/components/AlertConfirm';
+import { useState } from 'react';
+import DownloadModal from '@/components/DownloadModal';
 import store from 'store2';
 import Image from 'next/image'
 
@@ -18,24 +18,17 @@ interface IProps {
 }
 
 export default function WalletModal({ isShow, close, connectCb }: IProps) {
-    // const [isShowAlert, setIsShowAlert] = useState(false);
+    const [isShowAlert, setIsShowAlert] = useState(false);
 
     const onClose = () => {
         close()
     }
     const handleConnectFoxwallet = async () => {
         if (typeof (window as any).qtum === 'undefined') {
-            alert('Fox Wallet has not installed!');
+            setIsShowAlert(true);
             return;
         }
         console.log('Fox wallet has installed');
-        // const network = await (window as any).qtum.btc.getNetwork();
-        // console.log('network', network)
-        // if (network !== 'tqtum') {
-        //     setIsShowAlert(true);
-        //     return;
-        // }
-
         try {
             // TODO change to livenet when switch to qtum
             await (window as any).qtum.btc.switchNetwork('testnet'); // testnet | livenet
@@ -51,7 +44,6 @@ export default function WalletModal({ isShow, close, connectCb }: IProps) {
             console.error(e)
             console.log('connect failed');
         }
-
     }
     return (
         <>
@@ -59,9 +51,9 @@ export default function WalletModal({ isShow, close, connectCb }: IProps) {
                 <Modal isOpen={isShow} onClose={onClose} size="sm" closeOnOverlayClick={false}>
                     <ModalOverlay />
                     <ModalContent>
-                        <ModalHeader>Connect Wallet</ModalHeader>
-                        <ModalCloseButton />
-                        <ModalBody pb={6}>
+                        <ModalHeader className='leading-[32px]'>Connect Wallet</ModalHeader>
+                        <ModalCloseButton top="16px" right="16px" />
+                        <ModalBody pb={4} px={3} pt={0}>
                             <div className='flex items-center dark:bg-[#31343F] dark:hover:bg-[#282A33] hover:bg-[#F3F3F0] border rounded-lg p-4 cursor-pointer' onClick={handleConnectFoxwallet}>
                                 <Image src="/foxwallet.jpg" alt='foxwallet' width={24} height={24} className='mr-3'></Image>
                                 Fox Wallet
@@ -70,7 +62,7 @@ export default function WalletModal({ isShow, close, connectCb }: IProps) {
                     </ModalContent>
                 </Modal>
             </div>
-            {/* <AlertConfirm isShowAlert={isShowAlert} /> */}
+            <DownloadModal isOpen={isShowAlert} onClose={() => setIsShowAlert(false)} />
         </>
     )
 }

@@ -1,13 +1,14 @@
+import { MouseEvent } from 'react';
 import { IOrderItem } from '@/types';
 import {
     Link
 } from '@chakra-ui/react';
 
-export default function ListItem({ data, onGoDetail }: { data: IOrderItem, onGoDetail: (data: IOrderItem) => void }) {
+export default function ListItem({ data, onGoDetail }: { data: IOrderItem, onGoDetail: (e: MouseEvent, data: IOrderItem) => void }) {
     return (<div className="px-3 py-3 border border-[#E7E7E1] dark:border-[#494e5b80] rounded-xl">
         <div className="flex justify-between mb-4 text-sm">
             <div className="text-[#7F8596] leading-[18px]">Order ID</div>
-            <Link color='brand.100' href="javascript:;" onClick={() => onGoDetail(data)}>
+            <Link color='brand.100' href="/" onClick={(e) => onGoDetail(e, data)}>
                 {data.orderId}
             </Link>
         </div>

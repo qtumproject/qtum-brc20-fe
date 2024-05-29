@@ -9,7 +9,7 @@ import {
     SkeletonText,
     Link
 } from '@chakra-ui/react';
-import { useState } from 'react';
+import { MouseEvent, useState } from 'react';
 import { IOrderItem, TOrderList } from '@/types';
 import OrderDetailModal from './OrderDetailModal';
 interface IProps {
@@ -34,7 +34,8 @@ export default function OrderTable({ dataList, isLoading }: IProps) {
         updateTime: '',
     });
 
-    const handleOrderDetailShow = (orderDetail: IOrderItem) => {
+    const handleOrderDetailShow = (e: MouseEvent, orderDetail: IOrderItem) => {
+        e.preventDefault();
         setIsOpen(true);
         setCurrentOrder(orderDetail);
 
@@ -43,7 +44,7 @@ export default function OrderTable({ dataList, isLoading }: IProps) {
     const renderData = () => dataList.map((data: IOrderItem) => {
         return (<Tr key={data.orderId}>
             <Td className='font-medium text-sm w-[300px]'>
-                <Link color='brand.100' href="javascript:;" onClick={() => handleOrderDetailShow(data)}>
+                <Link color='brand.100' href="/" onClick={(e) => handleOrderDetailShow(e, data)}>
                     {data.orderId}
                 </Link>
             </Td>
