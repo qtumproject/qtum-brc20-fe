@@ -47,7 +47,7 @@ export default function AlertConfirm({ isShowAlert, onConfirm, onClose }: {
                             Cancel
                         </Button>
                         <Button colorScheme='red' width='48%' height='53px' fontSize='16px' borderRadius='12px' onClick={handleConfirm}>
-                            Confrim
+                            Confirm
                         </Button>
                     </div>
                 </ModalContent>
