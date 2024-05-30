@@ -7,7 +7,7 @@ import {
     ModalCloseButton,
     Button,
 } from '@chakra-ui/react';
-
+import { openApp } from '@/utils';
 
 interface IProps {
     isOpen: boolean,
@@ -15,10 +15,8 @@ interface IProps {
 }
 
 export default function DownloadModal({ isOpen, onClose }: IProps) {
-
     const handleConfirm = () => {
-        // TODO add open app logic, if failed and then redirect to foxwallet homepage
-        location.href = "https://foxwallet.com"
+        openApp();
     }
 
     return (
