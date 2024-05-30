@@ -34,7 +34,7 @@ export default function AlertConfirm({ isShowAlert, onConfirm, onClose }: {
 
     return (
         <>
-            <Modal isOpen={isShowAlert} onClose={onClose} size={size} closeOnOverlayClick={false}>
+            <Modal isOpen={isShowAlert} onClose={onClose} size={size} closeOnOverlayClick={false} isCentered>
                 <ModalOverlay />
                 <ModalContent className='w-[calc(100vw_-_32px)] l-4'>
                     <ModalHeader className='leading-[32px]'>Reminder</ModalHeader>

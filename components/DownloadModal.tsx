@@ -20,7 +20,7 @@ export default function DownloadModal({ isOpen, onClose }: IProps) {
     }
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} size="sm" closeOnOverlayClick={false}>
+        <Modal isOpen={isOpen} onClose={onClose} size="sm" closeOnOverlayClick={false} isCentered>
             <ModalOverlay />
             <ModalContent className='w-[calc(100vw_-_32px)] l-4'>
                 <ModalHeader className='leading-[32px]'>Reminder</ModalHeader>

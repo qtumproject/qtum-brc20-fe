@@ -48,7 +48,7 @@ export default function WalletModal({ isShow, close, connectCb }: IProps) {
     return (
         <>
             <div className='hidden lg:block'>
-                <Modal isOpen={isShow} onClose={onClose} size="sm" closeOnOverlayClick={false}>
+                <Modal isOpen={isShow} onClose={onClose} size="sm" closeOnOverlayClick={false} isCentered>
                     <ModalOverlay />
                     <ModalContent>
                         <ModalHeader className='leading-[32px]'>Connect Wallet</ModalHeader>
