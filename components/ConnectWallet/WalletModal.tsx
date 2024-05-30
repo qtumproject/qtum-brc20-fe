@@ -37,6 +37,7 @@ export default function WalletModal({ isShow, close, connectCb }: IProps) {
             store.set('connected_wallet', 'foxwallet');
             console.log(store.get('connected_wallet'))
             if (accounts && accounts[0]) {
+                store.set('wallet_address', accounts[0]);
                 connectCb(accounts);
                 close();
             }
