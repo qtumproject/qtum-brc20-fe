@@ -147,7 +147,7 @@ export default function OrderTable({ dataList, isLoading }: IProps) {
                             <Th>Quantity</Th>
                             <Th>Type</Th>
                             <Th>Status</Th>
-                            <Th>CreateTime</Th>
+                            <Th>Create Time</Th>
                         </Tr>
                     </Thead>
                     <Tbody>
