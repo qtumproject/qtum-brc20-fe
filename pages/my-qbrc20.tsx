@@ -34,10 +34,10 @@ export default function MyQBRC20() {
 
     const getData = async ({ address }: IBrc20BalanceListParams) => {
         try {
-            const params: IBrc20BalanceListParams = {};
-            if (address) {
-                params.address = address;
+            if (!address) {
+                return;
             }
+            const params: IBrc20BalanceListParams = { address };
             setIsLoading(true);
             const { status: resStatus, data, statusText } = await axios.get('/api/v1/balances?chain_id=qtum', { params });
             setIsLoading(false);
@@ -48,11 +48,22 @@ export default function MyQBRC20() {
                     const { address_ticker_balance_list = [] } = resData;
                     setDataList(address_ticker_balance_list);
                     setShowList(address_ticker_balance_list)
-
                 } else {
+                    toast({
+                        title: msg,
+                        position: 'top',
+                        status: 'error',
+                        duration: 2000,
+                    })
                     console.error(msg);
                 }
             } else {
+                toast({
+                    title: statusText,
+                    position: 'top',
+                    status: 'error',
+                    duration: 2000,
+                });
                 console.error(statusText);
             }
         } catch (e) {
