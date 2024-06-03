@@ -17,11 +17,11 @@ import { IBrc20BalanceListParams, IBrc20BalanceListItem } from '@/types';
 import Image from 'next/image'
 
 export default function MyQBRC20() {
-
     const [isLoading, setIsLoading] = useState(false);
     const [address, setAddress] = useState('');
     const [tokenName, setTokenName] = useState('');
     const [dataList, setDataList] = useState<IBrc20BalanceListItem[] | []>([]);
+    const [showList, setShowList] = useState<IBrc20BalanceListItem[] | []>([]);
     const toast = useToast();
     const { onCopy: onCopyAddress } = useClipboard(address);
     const getAddress = () => {
@@ -41,11 +41,13 @@ export default function MyQBRC20() {
             setIsLoading(true);
             const { status: resStatus, data, statusText } = await axios.get('/api/v1/balances?chain_id=qtum', { params });
             setIsLoading(false);
+            console.log('data', data)
             if (resStatus === 200) {
                 const { code, data: resData, msg } = data || {};
                 if (code === 0) {
                     const { address_ticker_balance_list = [] } = resData;
-                    setDataList(address_ticker_balance_list)
+                    setDataList(address_ticker_balance_list);
+                    setShowList(address_ticker_balance_list)
 
                 } else {
                     console.error(msg);
@@ -70,12 +72,16 @@ export default function MyQBRC20() {
     }
 
     const onQueryChange = () => {
+        if (!tokenName) {
+            setShowList(dataList);
+            return;
+        }
         const queryResList = dataList.filter((item) => item.token_name === tokenName)
-        setDataList(queryResList)
+        setShowList(queryResList)
     }
 
     useEffect(() => {
-        getData({});
+        getData({ address });
     }, [address])
 
 
@@ -103,7 +109,7 @@ export default function MyQBRC20() {
                     </div>
 
                     <div className='w-full'>
-                        <BalanceTable dataList={dataList} isLoading={isLoading} />
+                        <BalanceTable dataList={showList} isLoading={isLoading} />
                     </div>
                 </div>
             </div>
@@ -131,7 +137,7 @@ export default function MyQBRC20() {
                                 placeholder='Search the token name'
                                 value={tokenName}
                                 focusBorderColor="#2D73FF"
-                                onChange={(e) => (e.target.value)}
+                                onChange={(e) => setTokenName(e.target.value)}
                                 onKeyDown={e => {
                                     if (e.key === 'Enter') {
                                         onQueryChange();
@@ -140,7 +146,7 @@ export default function MyQBRC20() {
                         </InputGroup>
                     </div>
                     <div className='w-full'>
-                        <MobileBalanceList dataList={dataList} isLoading={isLoading} />
+                        <MobileBalanceList dataList={showList} isLoading={isLoading} />
                     </div>
                 </div>
             </div>
