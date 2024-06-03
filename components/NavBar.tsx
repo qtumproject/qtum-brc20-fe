@@ -123,7 +123,7 @@ export default function NavBar() {
                                         return (
                                             <div key={nav.name} className="flex justify-between items-center text-sm text-[gray]">
                                                 <div className='py-12px text-sm leading-[66px] font-medium'>{nav.name}</div>
-                                                <div>comming soon</div>
+                                                <div>coming soon</div>
                                             </div>
                                         )
                                     }
