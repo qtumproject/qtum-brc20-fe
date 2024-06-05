@@ -1,6 +1,3 @@
-import { Buff } from '@cmdcode/buff-utils';
-import { Script, Signer, Tap, Tx } from '@cmdcode/tapscript';
-import { Noble, KeyPair } from '@cmdcode/crypto-utils';
 import QRCode from 'qrcode'
 import {
     qtumAddressInfo,
@@ -16,14 +13,15 @@ import {
     IDeployJson,
     IValidDeployParams,
     IValidMintParams,
-    IValidResult
+    IValidResult,
+    ISendParams,
 } from "@/types";
 import { axiosInstance } from '@/utils';
 import store from 'store2';
 import dayjs from 'dayjs';
 
 let controller: AbortController | null = null;
-const orderListKey = 'orderList';
+const orderListKey = 'oderListV1';
 const encodedAddressPrefix = 'tq'; // qc for qtum | tq for qtum_testnet
 const debug = require('debug')('[inscribe]');
 
@@ -47,17 +45,26 @@ const getNowTime = () => {
     return dayjs().format('YYYY/MM/DD HH:mm:ss');
 }
 
+const sendByWallet = ({ address, amount }: ISendParams) => {
+    if ((window as any)?.qtum) {
+        return (window as any).qtum.btc.sendBitcoin(address, amount);
+    }
+}
+
 export async function mintOrDeploy({
     scriptObj,
     inscriptionFees,
     totalFees,
     rAddress,
-    setFundingAddress,
-    setQrImg,
+    setModalInfo,
     setProgress,
+    walletConnectFailedCB,
     updateOrder,
+    mode,
 }: IMintOrDeployParams) {
     debug('inscribe begin')
+    const { Script, Signer, Tap, Tx } = (window as any).tapscript;
+    const { Noble, KeyPair } = (window as any).cryptoUtils;
     controller = new AbortController();
     let inscriptions = [];
 
@@ -70,11 +77,14 @@ export async function mintOrDeploy({
         quantity: scriptObj.op === 'mint' ? (scriptObj as IMintJson).amt : (scriptObj as IDeployJson).max,
         tick: scriptObj.tick,
         status: IOrderStatus.PENDING as string,
+        inscribeInfo: scriptObj,
+        receiveAddress: rAddress,
+        inscriptionFees: totalFees,
+        txinfos: [] as Array<{ desp: string, txid: any }>,
         createTime: getNowTime(),
         updateTime: getNowTime(),
     };
     updateOrder(currentOrder, 'add');
-
 
     let seckey = new KeyPair(privkey);
     let pubkey = seckey.pub.rawX;
@@ -137,21 +147,36 @@ export async function mintOrDeploy({
             script_orig: script
         }
     );
+    debug('Address that will receive the inscription: %o', rAddress);
+    debug('Total transfer amount: %o', satsToQtum(totalFees), 'QTUM');
 
     let fundingAddress = p2trEncode(init_tapkey, encodedAddressPrefix);
     debug('Funding address: %o', fundingAddress);
     debug('Funding Tapkey: %o', init_tapkey);
-    setFundingAddress(fundingAddress)
-
-    debug('Address that will receive the inscription: %o', rAddress);
-    debug('Total transfer amount: %o', satsToQtum(totalFees), 'QTUM');
-
-    let qr_value = "qtum:" + fundingAddress + "?amount=" + satsToQtum(totalFees);
-    debug("Qrcode value is: %o", qr_value);
-
-    const qrimg = createQR(qr_value);
-    setQrImg(qrimg as any);
-
+    if (mode === 'qtum') {
+        // web transaction
+        let qr_value = "qtum:" + fundingAddress + "?amount=" + satsToQtum(totalFees);
+        debug("Qrcode value is: %o", qr_value);
+        const qrImg = createQR(qr_value);
+        setModalInfo({
+            fundingAddress,
+            qrImg,
+        })
+    } else {
+        try {
+            // wallet transaction
+            const res = await sendByWallet({ address: fundingAddress, amount: totalFees });
+            console.log('wallet pay result', res);
+            if (res) {
+                setModalInfo({ isWalletLoading: true });
+            } else {
+                walletConnectFailedCB();
+            }
+        } catch (e) {
+            console.error(e);
+            return;
+        }
+    }
 
     try {
         await loopTilAddressReceivesMoney(fundingAddress, true);
@@ -164,12 +189,14 @@ export async function mintOrDeploy({
     }
     await waitSomeSeconds(2);
     let txinfo = await addressReceivedMoneyInThisTx(fundingAddress);
+    setModalInfo({ isWalletLoading: false });
     let txid = txinfo[0];
     let vout = txinfo[1];
     let amt = txinfo[2];
     debug('Funding Address receive the money, the txid, vout, amount is: %o %o %o', txid, vout, amt);
     currentOrder.status = IOrderStatus.INSCRIBING;
     currentOrder.updateTime = getNowTime();
+    currentOrder.txinfos[0] = { desp: 'To funding address transaction', txid: txid };
     updateOrder(currentOrder, 'update');
     setProgress({ step: 1, txid });
 
@@ -209,6 +236,8 @@ export async function mintOrDeploy({
         return;
     }
     debug('Inscription address receive the money, the txid is: %o', _txid);
+    currentOrder.txinfos[1] = { desp: 'To inscription address transaction', txid: _txid };
+    updateOrder(currentOrder, 'update');
     setProgress({ step: 2, txid: _txid });
 
     const inscribe = async (inscription: any, vout: any) => {
@@ -252,6 +281,8 @@ export async function mintOrDeploy({
             return;
         }
         debug('Receive address receive the money, the txid is: %o', _txid2);
+        currentOrder.txinfos[2] = { desp: 'To receive address transaction', txid: _txid2 };
+        updateOrder(currentOrder, 'update');
         setProgress({ step: 3, txid: _txid2 });
         currentOrder.status = IOrderStatus.SUCCESS;
         currentOrder.updateTime = getNowTime();
@@ -262,8 +293,6 @@ export async function mintOrDeploy({
     for (let i = 0; i < inscriptions.length; i++) {
         inscribe(inscriptions[i], i);
     };
-
-
 }
 
 export async function calcTotalFees({
@@ -341,6 +370,7 @@ export async function getQtumFee() {
 }
 
 export function p2trEncode(input: string, prefix = 'qc') {
+    const { Buff } = (window as any).buffUtils;
     const bytes = Buff.bytes(input)
     if (bytes.length !== 32) {
         throw new Error(`Invalid input size: ${bytes.hex} !== ${32}`)
@@ -349,10 +379,12 @@ export function p2trEncode(input: string, prefix = 'qc') {
 }
 
 export function p2trDecode(address: string) {
+    const { Buff } = (window as any).buffUtils;
     return Buff.bech32(address);
 }
 
 export const addressToScriptPubKey = (address: string): Array<string> => {
+    const { Buff } = (window as any).buffUtils;
     try {
         // p2pkh
         const hex = Buff.b58chk(address).slice(1).hex;

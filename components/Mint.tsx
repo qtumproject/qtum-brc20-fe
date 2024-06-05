@@ -11,6 +11,7 @@ import {
     useToast,
     Button,
 } from '@chakra-ui/react';
+import DownloadModal from '@/components/DownloadModal';
 import {
     satsToQtum,
     mintOrDeploy,
@@ -18,9 +19,11 @@ import {
     abortRequest,
     validMint
 } from '@/utils';
-import { IQtumFeeRates, TFeeType, IProgressInfo, IOrderItem } from '@/types';
+import { IQtumFeeRates, TFeeType, IProgressInfo, IOrderItem, IModalInfo } from '@/types';
+import { useShowConnect } from '@/hooks';
 import FeeType from "./FeeType";
 import PayModal from "./PayModal";
+import PayMode from './PayMode';
 
 interface IProps {
     defaultTick: string,
@@ -30,6 +33,7 @@ interface IProps {
 
 export default function Mint({ defaultTick, feeRates, updateOrder }: IProps) {
     const toast = useToast();
+    const [mode, setMode] = useState('qtum');
     const [step, setStep] = useState(1);
     const [tick, setTick] = useState(defaultTick)
     const [amount, setAmount] = useState("1");
@@ -53,6 +57,9 @@ export default function Mint({ defaultTick, feeRates, updateOrder }: IProps) {
     const [activeStep, setActiveStep] = useState(1);
     const [qrImg, setQrImg] = useState('');
     const [fundingAddress, setFundingAddress] = useState('');
+    const [walletLoading, setWalletLoading] = useState(false);
+    const [isShowAlert, setIsShowAlert] = useState(false);
+    const [isShowConnect] = useShowConnect();
 
     const [mint, setMint] = useState({
         p: 'brc-20',
@@ -173,11 +180,10 @@ export default function Mint({ defaultTick, feeRates, updateOrder }: IProps) {
         validTickAndAmount(tick, value);
     }
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         const valid = validSecondForm();
         if (valid) {
-            resolveMint();
-            setIsModalShow(true);
+            resolveMint(mode);
         }
     }
 
@@ -195,17 +201,35 @@ export default function Mint({ defaultTick, feeRates, updateOrder }: IProps) {
         abortRequest();
     }
 
-    const resolveMint = () => {
+    const setModalInfo = ({ fundingAddress, qrImg, isWalletLoading }: IModalInfo) => {
+        if (fundingAddress) {
+            setFundingAddress(fundingAddress);
+        }
+        if (qrImg) {
+            setQrImg(qrImg);
+        }
+        setIsProgress(false);
+        setTxIds([]);
+        setWalletLoading(!!isWalletLoading);
+        setIsModalShow(true);
+    }
+
+    const walletConnectFailedCB = () => {
+        setIsShowAlert(true);
+    }
+
+    const resolveMint = (mode: string) => {
         try {
             mintOrDeploy({
                 scriptObj: mint,
                 inscriptionFees,
                 totalFees,
                 rAddress,
-                setFundingAddress,
-                setQrImg,
+                setModalInfo,
                 setProgress,
+                walletConnectFailedCB,
                 updateOrder,
+                mode,
             });
         } catch (e: any) {
             toast({
@@ -215,6 +239,10 @@ export default function Mint({ defaultTick, feeRates, updateOrder }: IProps) {
                 duration: 2000,
             })
         }
+    }
+
+    const renderPayMode = () => {
+        return isShowConnect ? <PayMode initialMode={mode} onChange={(mode) => setMode(mode)} /> : null;
     }
 
     return (
@@ -322,6 +350,10 @@ export default function Mint({ defaultTick, feeRates, updateOrder }: IProps) {
                         </div>
                     </div>
 
+                    <div className='mb-4'>
+                        {renderPayMode()}
+                    </div>
+
                     <div className='mb-4 text-center hidden lg:block'>
                         <Button
                             mt={4}
@@ -362,18 +394,18 @@ export default function Mint({ defaultTick, feeRates, updateOrder }: IProps) {
                     </div>
                 </div >
             }
-
             <PayModal
                 isShow={isModalShow}
                 fundingAddress={fundingAddress}
                 totalPay={totalFees}
+                walletLoading={walletLoading}
                 isProgress={isProgress}
                 activeStep={activeStep}
                 txids={txids}
                 close={handleModalClose}>
                 {qrImg}
             </PayModal>
-
+            <DownloadModal isOpen={isShowAlert} onClose={() => setIsShowAlert(false)} />
         </>
     )
 }

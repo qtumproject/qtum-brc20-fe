@@ -19,17 +19,25 @@ import {
     Stepper,
     Box,
     Button,
+    Spinner,
+    Drawer,
+    DrawerBody,
+    DrawerHeader,
+    DrawerOverlay,
+    DrawerContent,
+    DrawerCloseButton,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { satsToQtum } from '@/utils';
+import AlertConfirm from '@/components/AlertConfirm';
 import Image from 'next/image';
-
 interface IProps {
     isShow: boolean,
     children: any,
     fundingAddress: string,
     totalPay: number,
     isProgress: boolean,
+    walletLoading: boolean,
     activeStep: number,
     txids: Array<string>
     close: Function,
@@ -41,12 +49,14 @@ export default function PayModal({
     fundingAddress,
     totalPay,
     isProgress,
+    walletLoading,
     activeStep,
     txids,
     close
 }: IProps) {
     const toast = useToast();
-
+    const [isShowAlert, setIsShowAlert] = useState(false);
+    const [width, setWidth] = useState(1024);
     const { onCopy: onCopyAddress } = useClipboard(fundingAddress);
     const count = satsToQtum(totalPay)
     const { onCopy: onCopyCount } = useClipboard(count);
@@ -59,6 +69,14 @@ export default function PayModal({
 
     const [isOpen, setIsOpen] = useState(false);
     useEffect(() => { setIsOpen(isShow) }, [isShow])
+    useEffect(() => {
+        setWidth(window.innerWidth);
+        const handleResize = () => setWidth(window.innerWidth);
+        window.addEventListener("resize", handleResize);
+        return () => {
+            window.removeEventListener("resize", handleResize);
+        };
+    }, []);
 
     const onAddressCopyClick = () => {
         onCopyAddress();
@@ -78,8 +96,33 @@ export default function PayModal({
             duration: 2000,
         })
     }
+
+    const handleCloseConfirm = () => {
+        close();
+    }
+
     const onClose = () => {
-        close()
+        if (txids.length === 3) {
+            close();
+            return;
+        }
+        setIsShowAlert(true);
+    }
+
+    const renderLoading = () => {
+        return (
+            <div className='flex flex-col items-center justify-center bg-white min-h-80'>
+                <Spinner
+                    thickness='4px'
+                    speed='0.65s'
+                    emptyColor='gray.200'
+                    color='brand.100'
+                    size='xl'
+                />
+                <div className='text-black mt-4 text-center'>Do not leave this page, the inscription is in progress.</div>
+            </div>
+
+        )
     }
 
     const renderPayCode = () => (<>
@@ -122,9 +165,9 @@ export default function PayModal({
 
     const renderProgress = () => {
         return <>
-            <Stepper index={activeStep} colorScheme='brand' orientation='vertical' width='480px' height='400px' gap='0'>
+            <Stepper index={activeStep} colorScheme='brand' orientation='vertical' height='400px' gap='0'>
                 {steps.map((step, index) => (
-                    <Step key={index}>
+                    <Step key={index} className="w-full">
                         <StepIndicator>
                             <StepStatus
                                 complete={<StepIcon />}
@@ -133,19 +176,19 @@ export default function PayModal({
                             />
                         </StepIndicator>
 
-                        <Box flexShrink='0'>
+                        <Box flexShrink='0' width="100%">
                             <StepTitle>{step.title}</StepTitle>
-                            <StepDescription className='w-[480px]'>{txids[index] ? `txid: ${txids[index]}` : ''}</StepDescription>
+                            <StepDescription className='w-[90%]'>{txids[index] ? `txid: ${txids[index]}` : ''}</StepDescription>
                         </Box>
 
                         <StepSeparator />
                     </Step>
                 ))}
-            </Stepper>
-            <div className='mb-4 text-center'>
+            </Stepper >
+            <div className='mt-4 text-center'>
                 <Button
                     mt={4}
-                    width='400px'
+                    width='90%'
                     type="submit"
                     variant='brandPrimary'
                     onClick={onClose}
@@ -156,32 +199,47 @@ export default function PayModal({
         </>
     }
 
+    const renderModal = () => {
+        return (<Modal isOpen={isOpen} onClose={onClose} size="xl" closeOnOverlayClick={false}>
+            <ModalOverlay />
+            <ModalContent>
+                <ModalHeader className='leading-[64px]'>{walletLoading ? 'Inscription Process' : (isProgress ? 'Inscription Process' : 'Scan QR code to pay')}</ModalHeader>
+                <ModalCloseButton top="30px" right="16px" />
+                <ModalBody pb={6}>
+                    {walletLoading ? renderLoading() : (isProgress ? renderProgress() : renderPayCode())}
+                </ModalBody>
+            </ModalContent>
+        </Modal>)
+    }
+
+    const renderDrawer = () => {
+        return (
+            <Drawer placement='bottom' onClose={onClose} isOpen={isOpen}>
+                <DrawerOverlay />
+                <DrawerContent>
+                    <DrawerHeader>{walletLoading ? 'Inscription Process' : (isProgress ? 'Inscription Process' : 'Scan QR code to pay')}</DrawerHeader>
+                    <DrawerCloseButton />
+                    <DrawerBody>
+                        {walletLoading ? renderLoading() : (isProgress ? renderProgress() : renderPayCode())}
+                    </DrawerBody>
+                </DrawerContent>
+            </Drawer>
+        )
+    }
+
+
+    const renderMainBody = () => {
+        if (width <= 600) {
+            return renderDrawer();
+        } else {
+            return renderModal();
+        }
+    }
+
     return (
         <>
-            <div className='hidden lg:block'>
-                <Modal isOpen={isOpen} onClose={onClose} size="xl" closeOnOverlayClick={false}>
-                    <ModalOverlay />
-                    <ModalContent>
-                        <ModalHeader>{isProgress ? 'Inscription Process' : 'Scan QR code to pay'}</ModalHeader>
-                        <ModalCloseButton />
-                        <ModalBody pb={6}>
-                            {isProgress ? renderProgress() : renderPayCode()}
-                        </ModalBody>
-                    </ModalContent>
-                </Modal>
-            </div>
-            <div className='lg:hidden'>
-                <Modal isOpen={isOpen} onClose={onClose} size="xl" closeOnOverlayClick={false}>
-                    <ModalOverlay />
-                    <ModalContent className='w-[calc(100vw_-_32px)] l-4'>
-                        <ModalHeader>{isProgress ? 'Inscription Process' : 'Scan QR code to pay'}</ModalHeader>
-                        <ModalCloseButton />
-                        <ModalBody pb={6}>
-                            {isProgress ? renderProgress() : renderPayCode()}
-                        </ModalBody>
-                    </ModalContent>
-                </Modal>
-            </div>
+            {renderMainBody()}
+            <AlertConfirm isShowAlert={isShowAlert} onConfirm={handleCloseConfirm} onClose={() => setIsShowAlert(false)} />
         </>
     )
 }

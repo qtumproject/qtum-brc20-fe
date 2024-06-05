@@ -1,5 +1,5 @@
 import { modalAnatomy as parts } from '@chakra-ui/anatomy'
-import { createMultiStyleConfigHelpers } from '@chakra-ui/styled-system'
+import { createMultiStyleConfigHelpers, defineStyle } from '@chakra-ui/styled-system'
 
 const { definePartsStyle, defineMultiStyleConfig } =
   createMultiStyleConfigHelpers(parts.keys)
@@ -15,8 +15,20 @@ const baseStyle = definePartsStyle({
   dialog: {
     borderRadius: '24px',
   },
+  header: {
+    textAlign: 'center'
+  }
 })
+
+const sm = defineStyle({
+  maxWidth: "343px",
+})
+
+const sizes = {
+  sm: definePartsStyle({ header: sm, dialog: sm }),
+}
 
 export const modalTheme = defineMultiStyleConfig({
   baseStyle,
+  sizes
 })

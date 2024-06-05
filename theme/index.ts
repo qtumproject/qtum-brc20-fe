@@ -3,6 +3,7 @@ import { buttonTheme } from './components/Button'
 import { inputTheme } from './components/Input'
 import { numberInputTheme } from './components/NumberInput'
 import { modalTheme } from './components/Modal'
+import { drawerTheme } from './components/Drawer'
 import { stepperTheme } from './components/Stepper';
 import { tableTheme } from './components/Table';
 
@@ -21,6 +22,7 @@ const theme = extendTheme({
     Input: inputTheme,
     NumberInput: numberInputTheme,
     Modal: modalTheme,
+    Drawer: drawerTheme,
     Stepper: stepperTheme,
     Table: tableTheme,
   },
